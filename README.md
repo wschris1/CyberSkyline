@@ -15,8 +15,8 @@ challenges/<challenge-name>/
 
 Copy `challenges/_template` to start a challenge. Replace the bracketed guidance in both files. The solving guide can explain the tools, commands, and reasoning a player needs, but must stop before stating the final flag or answer. Keep challenge artifacts and private scoring material outside this repository; link to an externally hosted artifact in the question if one is needed.
 
-Upload new challenge images to `IMAGES/`. Supported upload formats are PNG, JPEG, GIF, and WebP. Move or copy an image into its challenge folder as `question.png` when adding the question and guide.
+Upload new challenge images or plain-text inputs to `IMAGES/`. Supported image formats are PNG, JPEG, GIF, and WebP; text inputs use `.txt`. Move or copy an image into its challenge folder as `question.png` when adding the question and guide.
 
 ## Check before committing
 
-Run `python3 .github/scripts/check_challenges.py`. The same check runs in GitHub Actions on pushes and pull requests. It requires both text files for every challenge, permits an optional question image and supported images in `IMAGES/`, rejects other challenge files, and catches common flag and answer leaks. Review the text and images yourself too: an automated check cannot recognize every possible answer.
+Run `python3 .github/scripts/check_challenges.py`. The same check runs in GitHub Actions on pushes and pull requests. It requires both text files for every challenge, permits an optional question image plus supported images and text inputs in `IMAGES/`, rejects other challenge files, and catches common flag and answer leaks. Review the text and images yourself too: an automated check cannot recognize every possible answer.

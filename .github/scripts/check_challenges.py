@@ -51,12 +51,17 @@ def main() -> int:
 
         data = (ROOT / path).read_bytes()
         if path.parts[0] == "IMAGES" and path.name != ".gitkeep":
-            signatures = UPLOAD_IMAGE_SIGNATURES.get(path.suffix.lower(), ())
-            if len(path.parts) != 2 or not any(data.startswith(sig) for sig in signatures):
-                problems.append(f"{name}: expected a supported image in IMAGES/")
-            elif path.suffix.lower() == ".webp" and data[8:12] != b"WEBP":
-                problems.append(f"{name}: invalid WebP image")
-            continue
+            if len(path.parts) != 2:
+                problems.append(f"{name}: expected a file directly in IMAGES/")
+            elif path.suffix.lower() in UPLOAD_IMAGE_SIGNATURES:
+                signatures = UPLOAD_IMAGE_SIGNATURES[path.suffix.lower()]
+                if not any(data.startswith(sig) for sig in signatures):
+                    problems.append(f"{name}: invalid image signature")
+                elif path.suffix.lower() == ".webp" and data[8:12] != b"WEBP":
+                    problems.append(f"{name}: invalid WebP image")
+                continue
+            elif path.suffix.lower() != ".txt":
+                problems.append(f"{name}: expected an image or plain-text challenge input")
         if path.parts[0] == "challenges" and path.name == "question.png":
             if not data.startswith(b"\x89PNG\r\n\x1a\n"):
                 problems.append(f"{name}: question.png is not a PNG image")
