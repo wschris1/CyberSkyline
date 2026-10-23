@@ -1,0 +1,14 @@
+# Local answer and scoring material must never enter this repository.
+answer*
+answers*
+flag*
+flags*
+*.key
+*.pem
+.env
+.env.*
+
+# Local editor and Python files.
+__pycache__/
+*.pyc
+.DS_Store

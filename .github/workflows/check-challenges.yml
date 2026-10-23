@@ -1,0 +1,13 @@
+name: Check challenge content
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check challenge files and answer leaks
+        run: python3 .github/scripts/check_challenges.py
