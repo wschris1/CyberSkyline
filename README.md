@@ -15,6 +15,16 @@ challenges/<challenge-name>/
 
 Copy `challenges/_template` to start a challenge. Replace the bracketed guidance in both files. The solving guide can explain the tools, commands, and reasoning a player needs, but must stop before stating the final flag or answer. Keep challenge artifacts and private scoring material outside this repository; link to an externally hosted artifact in the question if one is needed.
 
+## Investigation guides
+
+- [Map itinerary](challenges/map-itinerary/how-to-solve.md)
+- [Vessel tracking](challenges/vessel-tracking/how-to-solve.md)
+- [Wordlist hashes](challenges/wordlist-hashes/how-to-solve.md)
+- [Encrypted files](challenges/encrypted-files/how-to-solve.md)
+- [Password hint sheet](challenges/password-hint-sheet/how-to-solve.md)
+- [Encoded backup](challenges/encoded-backup/how-to-solve.md)
+- [Nginx basic authentication](challenges/nginx-basic-auth/how-to-solve.md)
+
 Upload new challenge images or plain-text inputs to `IMAGES/`. Supported image formats are PNG, JPEG, GIF, and WebP; text inputs use `.txt`. Move or copy an image into its challenge folder as `question.png` when adding the question and guide.
 
 ## Check before committing
