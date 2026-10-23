@@ -2,6 +2,12 @@
 
 This repository holds CTF challenge questions and guides for solving them. It does not hold flags, final answers, answer hashes, validation keys, or private scoring data.
 
+## Start here
+
+- [CTF playbook](docs/ctf-playbook.md): first checks, techniques by challenge type, independent verification, and publication review.
+- [Investigation notes and handoff template](docs/investigation-notes-template.md): copy outside the repository to record evidence, failed approaches, checkpoints, and next steps.
+- [Instructions for AI contributors](AGENTS.md): repository rules and expectations for future assistants.
+
 ## Challenge guides
 
 | Challenge | Method |
