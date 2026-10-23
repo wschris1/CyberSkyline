@@ -2,6 +2,19 @@
 
 This repository holds CTF challenge questions and guides for solving them. It does not hold flags, final answers, answer hashes, validation keys, or private scoring data.
 
+## Challenge guides
+
+| Challenge | Method |
+| --- | --- |
+| [Cybersecurity community](challenges/cybersecurity-community/question.md) | [Research workflow](challenges/cybersecurity-community/how-to-solve.md) |
+| [Device default passwords](challenges/device-default-passwords/question.md) | [Identify the device and consult its documentation](challenges/device-default-passwords/how-to-solve.md) |
+| [Water-damaged barcode](challenges/water-damaged-barcode/question.md) | [Decode visible bars and verify the institution](challenges/water-damaged-barcode/how-to-solve.md) |
+| [Intercepted secure message](challenges/intercepted-secure-message/question.md) | [Decode phonetic words and dot groups](challenges/intercepted-secure-message/how-to-solve.md) |
+| [Cooking With This XOR That](challenges/cooking-with-this-xor-that/question.md) | [Reverse several XOR feedback schemes](challenges/cooking-with-this-xor-that/how-to-solve.md) |
+| [Archived internal memos](challenges/archived-internal-memos/question.md) | [Use known plaintext to test for keystream reuse](challenges/archived-internal-memos/how-to-solve.md) |
+| [Scrambled Python code](challenges/scrambled-python-code/question.md) | [Inspect bytecode and invert its input check](challenges/scrambled-python-code/how-to-solve.md) |
+| [Live relay cipher](challenges/live-relay-cipher/question.md) | [Recover generator state from predictable padding](challenges/live-relay-cipher/how-to-solve.md) |
+
 ## Challenge format
 
 Each challenge has two required text files. If the image is part of the question, it may also have a `question.png`:
