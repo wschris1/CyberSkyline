@@ -12,6 +12,13 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 REQUIRED_FILES = {"question.md", "how-to-solve.md"}
 ALLOWED_FILES = REQUIRED_FILES | {"question.png"}
+UPLOAD_IMAGE_SIGNATURES = {
+    ".png": (b"\x89PNG\r\n\x1a\n",),
+    ".jpg": (b"\xff\xd8\xff",),
+    ".jpeg": (b"\xff\xd8\xff",),
+    ".gif": (b"GIF87a", b"GIF89a"),
+    ".webp": (b"RIFF",),
+}
 PRIVATE_NAME = re.compile(r"^(?:answers?|flags?)(?:[._-]|$)", re.IGNORECASE)
 FLAG_TEXT = re.compile(rb"\b(?:flag|ctf|cyberskyline)\{[^}\r\n]+\}", re.IGNORECASE)
 ANSWER_LINE = re.compile(
@@ -43,6 +50,13 @@ def main() -> int:
                 challenge_files[path.parts[1]].add(path.parts[2])
 
         data = (ROOT / path).read_bytes()
+        if path.parts[0] == "IMAGES" and path.name != ".gitkeep":
+            signatures = UPLOAD_IMAGE_SIGNATURES.get(path.suffix.lower(), ())
+            if len(path.parts) != 2 or not any(data.startswith(sig) for sig in signatures):
+                problems.append(f"{name}: expected a supported image in IMAGES/")
+            elif path.suffix.lower() == ".webp" and data[8:12] != b"WEBP":
+                problems.append(f"{name}: invalid WebP image")
+            continue
         if path.parts[0] == "challenges" and path.name == "question.png":
             if not data.startswith(b"\x89PNG\r\n\x1a\n"):
                 problems.append(f"{name}: question.png is not a PNG image")
