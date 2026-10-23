@@ -16,5 +16,4 @@ Use the original image, not a resized preview. The bars have two widths and matc
 ## References
 
 - [American Library Association: Bar Codes in Libraries](https://www.ala.org/tools/bar-codes-libraries) explains the item/patron digit, four-digit library identifier, and why an identifier alone may not be unique.
-- [Maine InfoNet: Maine Barcode Symbol Registry](https://www.maineinfonet.org/mainecat/maine-barcode-symbol-registry/) documents one regional 14-digit Codabar convention. Its registry is an example of the format, not evidence that this sticker came from Maine.
 - [ResourceMate: How is the Mod10 check digit calculated?](https://www.resourcemate.com/support/help/help/HowIsTheMod10CheckDigitCalculated.html) gives the calculation and a 14-digit example.
