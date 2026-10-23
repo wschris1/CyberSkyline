@@ -14,6 +14,9 @@ This repository holds CTF challenge questions and guides for solving them. It do
 | [Archived internal memos](challenges/archived-internal-memos/question.md) | [Use known plaintext to test for keystream reuse](challenges/archived-internal-memos/how-to-solve.md) |
 | [Scrambled Python code](challenges/scrambled-python-code/question.md) | [Inspect bytecode and invert its input check](challenges/scrambled-python-code/how-to-solve.md) |
 | [Live relay cipher](challenges/live-relay-cipher/question.md) | [Recover generator state from predictable padding](challenges/live-relay-cipher/how-to-solve.md) |
+| [Unauthorized network services](challenges/unauthorized-network-services/question.md) | [Correlate Zeek logs and assess exposed services](challenges/unauthorized-network-services/how-to-solve.md) |
+| [Blurred messages](challenges/blurred-messages/question.md) | [Match fonts and recover text through pixel comparison](challenges/blurred-messages/how-to-solve.md) |
+| [Cyber Command](challenges/cyber-command/question.md) | [Decrypt TLS and extract hashes; password recovery remains incomplete](challenges/cyber-command/how-to-solve.md) |
 
 ## Challenge format
 
