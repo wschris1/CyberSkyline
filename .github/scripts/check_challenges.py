@@ -21,9 +21,18 @@ UPLOAD_IMAGE_SIGNATURES = {
 }
 PRIVATE_NAME = re.compile(r"^(?:answers?|flags?)(?:[._-]|$)", re.IGNORECASE)
 FLAG_TEXT = re.compile(rb"\b(?:flag|ctf|cyberskyline)\{[^}\r\n]+\}", re.IGNORECASE)
+PLATFORM_FLAG_TEXT = re.compile(rb"\bSKY-[A-Z]{4}-[0-9]{4}\b")
 ANSWER_LINE = re.compile(
     rb"^[ \t]*(?:final[ \t]+)?(?:answer|flag)[ \t]*[:=][ \t]*\S+",
     re.IGNORECASE | re.MULTILINE,
+)
+EPHEMERAL_INSTANCE = re.compile(
+    rb"https://[0-9a-f]{16,}-[0-9]+\.gateway\.cityinthe\.cloud(?:/|\b)",
+    re.IGNORECASE,
+)
+PERSONAL_PATH = re.compile(
+    rb"(?:[A-Za-z]:\\Us" + rb"ers\\[^\\\r\n\t ]+\\|/Us" + rb"ers/[^/\r\n\t ]+/)",
+    re.IGNORECASE,
 )
 
 
@@ -69,7 +78,13 @@ def main() -> int:
         if b"\0" in data:
             problems.append(f"{name}: binary files are not allowed")
             continue
-        for pattern, label in ((FLAG_TEXT, "flag-like text"), (ANSWER_LINE, "answer line")):
+        for pattern, label in (
+            (FLAG_TEXT, "flag-like text"),
+            (PLATFORM_FLAG_TEXT, "platform flag-like text"),
+            (ANSWER_LINE, "answer line"),
+            (EPHEMERAL_INSTANCE, "ephemeral challenge instance URL"),
+            (PERSONAL_PATH, "personal filesystem path"),
+        ):
             match = pattern.search(data)
             if match:
                 line = data.count(b"\n", 0, match.start()) + 1

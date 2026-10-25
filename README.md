@@ -5,7 +5,9 @@ This repository holds CTF challenge questions and guides for solving them. It do
 ## Start here
 
 - [CTF playbook](docs/ctf-playbook.md): first checks, techniques by challenge type, independent verification, and publication review.
+- [AI contributor workflow](docs/ai-workflow.md): task scoping, evidence labels, bounded automation, handoff, and answer-free publication.
 - [Investigation notes and handoff template](docs/investigation-notes-template.md): copy outside the repository to record evidence, failed approaches, checkpoints, and next steps.
+- [Reusable investigation tools](tools/README.md): dependency-free helpers for artifact inventory, safe extraction, timestamps, URLs, decoding, candidate filtering, and challenge scaffolding.
 - [Instructions for AI contributors](AGENTS.md): repository rules and expectations for future assistants.
 
 ## Challenge guides
@@ -48,8 +50,26 @@ Copy `challenges/_template` to start a challenge. Replace the bracketed guidance
 - [Encoded backup](challenges/encoded-backup/how-to-solve.md)
 - [Nginx basic authentication](challenges/nginx-basic-auth/how-to-solve.md)
 
+## Reusable tools
+
+The `tools/` directory contains small Python utilities designed for minimal analysis environments. They use only the standard library, expose `--help`, and default to preserving evidence or redacting sensitive values. Start by checking the environment and inventorying private artifacts:
+
+```bash
+python3 tools/environment_report.py
+python3 tools/artifact_inventory.py --json /private/path/to/artifacts
+```
+
+See the [tool catalog and recipes](tools/README.md) for safe archive extraction, timestamp conversion, URL triage, explicit decoding, candidate filtering, and new-challenge creation. Keep all artifact paths and outputs outside this repository.
+
 Upload new challenge images or plain-text inputs to `IMAGES/`. Supported image formats are PNG, JPEG, GIF, and WebP; text inputs use `.txt`. Move or copy an image into its challenge folder as `question.png` when adding the question and guide.
 
 ## Check before committing
 
-Run `python3 .github/scripts/check_challenges.py`. The same check runs in GitHub Actions on pushes and pull requests. It requires both text files for every challenge, permits an optional question image plus supported images and text inputs in `IMAGES/`, rejects other challenge files, and catches common flag and answer leaks. Review the text and images yourself too: an automated check cannot recognize every possible answer.
+Run both validation commands:
+
+```bash
+python3 .github/scripts/check_challenges.py
+python3 -m unittest discover -s tests -v
+```
+
+The same checks run in GitHub Actions on pushes and pull requests. The content check requires both text files for every challenge, permits an optional question image plus supported images and text inputs in `IMAGES/`, rejects other challenge files, and catches common flag and answer leaks. Review the text, commands, URLs, and images yourself too: an automated check cannot recognize every possible answer.

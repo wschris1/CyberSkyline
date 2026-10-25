@@ -8,6 +8,20 @@ flags*
 .env
 .env.*
 
+# Private investigation work and common generated evidence.
+.private/
+scratch/
+work/
+*.pcap
+*.pcapng
+*.har
+*.sqlite
+*.sqlite3
+*.db
+*.log
+*.potfile
+*.restore
+
 # Local editor and Python files.
 __pycache__/
 *.pyc

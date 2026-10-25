@@ -11,3 +11,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check challenge files and answer leaks
         run: python3 .github/scripts/check_challenges.py
+      - name: Test reusable investigation tools
+        run: python3 -m unittest discover -s tests -v
