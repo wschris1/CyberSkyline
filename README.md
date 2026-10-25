@@ -23,6 +23,7 @@ This repository holds CTF challenge questions and guides for solving them. It do
 | [Unauthorized network services](challenges/unauthorized-network-services/question.md) | [Correlate Zeek logs and assess exposed services](challenges/unauthorized-network-services/how-to-solve.md) |
 | [Blurred messages](challenges/blurred-messages/question.md) | [Match fonts and recover text through pixel comparison](challenges/blurred-messages/how-to-solve.md) |
 | [Cyber Command](challenges/cyber-command/question.md) | [Decrypt TLS and extract hashes; password recovery remains incomplete](challenges/cyber-command/how-to-solve.md) |
+| [Cyber Command: admin flag](challenges/cyber-command-admin-flag/question.md) | [Chain a redirect, dangling markup, framing, and CSRF](challenges/cyber-command-admin-flag/how-to-solve.md) |
 
 ## Challenge format
 
