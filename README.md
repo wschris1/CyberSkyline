@@ -23,6 +23,7 @@ This repository holds CTF challenge questions and guides for solving them. It do
 | [Unauthorized network services](challenges/unauthorized-network-services/question.md) | [Correlate Zeek logs and assess exposed services](challenges/unauthorized-network-services/how-to-solve.md) |
 | [Blurred messages](challenges/blurred-messages/question.md) | [Match fonts and recover text through pixel comparison](challenges/blurred-messages/how-to-solve.md) |
 | [Cyber Command](challenges/cyber-command/question.md) | [Decrypt TLS and extract hashes; password recovery remains incomplete](challenges/cyber-command/how-to-solve.md) |
+| [DMZ terminal](challenges/dmz-terminal/question.md) | [Fingerprint the protected service and validate an internal HTTP pivot](challenges/dmz-terminal/how-to-solve.md) |
 
 ## Challenge format
 
