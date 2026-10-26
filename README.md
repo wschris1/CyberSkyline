@@ -24,6 +24,8 @@ This repository holds CTF challenge questions and guides for solving them. It do
 | [Blurred messages](challenges/blurred-messages/question.md) | [Match fonts and recover text through pixel comparison](challenges/blurred-messages/how-to-solve.md) |
 | [Cyber Command](challenges/cyber-command/question.md) | [Decrypt TLS and extract hashes; password recovery remains incomplete](challenges/cyber-command/how-to-solve.md) |
 | [DMZ terminal](challenges/dmz-terminal/question.md) | [Fingerprint the protected service and validate an internal HTTP pivot](challenges/dmz-terminal/how-to-solve.md) |
+| [Web security source review](challenges/web-security-source-review/question.md) | [Map source-controlled routes and verify each browser-facing weakness](challenges/web-security-source-review/how-to-solve.md) |
+| [Scanner Unix socket](challenges/scanner-unix-socket/question.md) | [Correlate local listeners with the owning process and use the intended socket pivot](challenges/scanner-unix-socket/how-to-solve.md) |
 
 ## Challenge format
 
