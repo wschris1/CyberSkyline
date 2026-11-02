@@ -22,6 +22,18 @@ sha256sum /private/path/to/artifact
 
 Check availability before relying on a command. If `find` is missing, use `rg --files`, archive listings, or known directory globs. Preserve raw outputs before converting them. Avoid printing private results into a transcript intended for publication.
 
+## Triage a multi-question challenge
+
+Before a long investigation, make a private question-to-evidence map. This prevents a result for one question from silently becoming an answer to another.
+
+| Question | Exact output and constraints | Likely evidence | Depends on | Attempt limit | Status |
+| --- | --- | --- | --- | --- | --- |
+| Qn | Required value, units, and syntax | File, request, packet, or source | Earlier discovery, if any | Remaining submissions | Not started / candidate / verified |
+
+Start with low-cost facts directly observable in the supplied evidence. Reuse discoveries when later questions depend on them, but verify each answer against its own wording. For a one-attempt question, finish the evidence and independent checks before submitting. Do not spend scarce attempts on synonym guesses or use a platform rejection as proof that the underlying analysis was otherwise correct.
+
+Keep a small hypothesis log: what observation would support the idea, what would refute it, the next bounded test, and the result. If a tool reports truncation, parse errors, incomplete capture, or a stopped search, carry that limit into the question's status. Before giving a value, use the [answer readiness gate](verification-checklist.md#answer-readiness-gate).
+
 ## Keep an evidence trail
 
 For each question, maintain a private record of the source location, observation, interpretation, and check. Locations can be packet numbers, stream IDs, connection UIDs, JSON keys, database rows, image coordinates, or byte offsets.
