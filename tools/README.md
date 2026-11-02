@@ -162,4 +162,4 @@ python3 -m unittest discover -s tests -v
 python3 .github/scripts/check_challenges.py
 ```
 
-Primary format references: [PCAP Capture File Format](https://www.ietf.org/archive/id/draft-ietf-opsawg-pcap-09.html), [Python SQLite](https://docs.python.org/3/library/sqlite3.html), [HTTP/1.1 framing](https://www.rfc-editor.org/rfc/rfc9112.html), [SSH transport key encoding](https://www.rfc-editor.org/rfc/rfc4253.html), and [Ed25519 SSH keys](https://www.rfc-editor.org/rfc/rfc8709.html).
+Primary format references: [PCAP Capture File Format](https://datatracker.ietf.org/doc/draft-ietf-opsawg-pcap/), [Python SQLite](https://docs.python.org/3/library/sqlite3.html), [HTTP/1.1 framing](https://www.rfc-editor.org/rfc/rfc9112.html), [SSH transport key encoding](https://www.rfc-editor.org/rfc/rfc4253.html), and [Ed25519 SSH keys](https://www.rfc-editor.org/rfc/rfc8709.html).
