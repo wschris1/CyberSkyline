@@ -1,30 +1,49 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="CyberSkyline — CTF field guide. Investigate. Verify. Document." width="100%">
+  <img src="assets/banner.svg" alt="CyberSkyline: evidence-led CTF field guide" width="100%">
+</p>
+
+<p align="center">
+  <strong>Investigate carefully. Verify the evidence. Share the method.</strong><br>
+  A public field guide for cybersecurity challenges and reproducible CTF research.
+</p>
+
+<p align="center">
+  <a href="docs/challenges.md"><strong>Explore 38 challenges</strong></a> ·
+  <a href="tools/README.md"><strong>Use 18 tools</strong></a> ·
+  <a href="docs/README.md"><strong>Read 6 playbooks</strong></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml"><img src="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml/badge.svg" alt="Repository checks"></a>
-  <a href="tools/README.md">18 Python tools</a> ·
-  <a href="docs/challenges.md">38 challenge guides</a> ·
-  <a href="docs/README.md">6 skill playbooks</a>
 </p>
 
-A practical CTF notebook for people and AI assistants: investigate artifacts, test hypotheses, verify evidence, and write reproducible methods. **Public guides contain methods, not final answers or recovered credentials.**
+---
 
-## Choose your starting point
+## Find a challenge
 
-| I want to… | Start here |
-| --- | --- |
-| Investigate a new challenge | [CTF playbook](docs/ctf-playbook.md) |
-| Find a command-line helper | [Tool catalog and recipes](tools/README.md) |
-| Continue with an AI assistant | [AI workflow](docs/ai-workflow.md) · [Repository instructions](AGENTS.md) |
-| Fix a terminal or permissions problem | [Terminal workflow](docs/terminal-workflow.md) |
-| Double-check a result | [Verification checklist](docs/verification-checklist.md) |
-| Resume without repeating failed attempts | [Private handoff template](docs/investigation-notes-template.md) |
+The library pairs each prompt with an investigation guide. Guides explain the evidence to inspect, how to check a result, and what remains unresolved.
 
-## Quick start
+| Area | Guides | Start here |
+| --- | ---: | --- |
+| [Network, services & logs](docs/challenges.md#network-services-and-logs) | 7 | Service identification, packet captures, access logs |
+| [Encoding, crypto & passwords](docs/challenges.md#encoding-cryptography-and-passwords) | 13 | Ciphers, encrypted files, hashes, candidate testing |
+| [Web & browser evidence](docs/challenges.md#web-and-browser-evidence) | 6 | Browser history, authentication, authorized web labs |
+| [Files, images & reversing](docs/challenges.md#files-images-and-reverse-engineering) | 6 | Binary files, images, bytecode, storage media |
+| [OSINT & research](docs/challenges.md#osint-and-research) | 6 | Maps, historical records, public sources |
 
-Use Python 3.10 or later. The included helpers use the standard library; no pip dependencies are required. Run commands from the repository root and substitute your own **private working directory outside this checkout**.
+**[Browse the complete challenge library →](docs/challenges.md)**
+
+## Start an investigation
+
+1. **Read the full prompt.** Record the exact questions, formats, constraints, and authorized scope.
+2. **Preserve the evidence.** Keep original artifacts and private working notes outside this repository. Start with the [CTF investigation playbook](docs/ctf-playbook.md).
+3. **Choose a narrow tool.** Use the [tool catalog](tools/README.md) and the relevant [skill playbook](docs/README.md).
+4. **Verify before writing.** Check a candidate against the original evidence using the [verification checklist](docs/verification-checklist.md).
+5. **Publish the method.** Document reproducible steps and limits without publishing final responses or recovered credentials.
+
+### Local quick start
+
+The helpers require Python 3.10 or later and use the standard library. Run from the repository root, replacing the example path with a private working directory outside this checkout.
 
 ```bash
 python3 tools/environment_report.py --no-version
@@ -32,65 +51,48 @@ python3 tools/artifact_inventory.py --json /private/work/challenge
 python3 tools/safe_extract.py /private/work/challenge/input.zip
 ```
 
-Inspect a helper's `--help` before using it. Output may contain challenge evidence even when a tool hides sensitive fields by default. Keep raw inputs and generated results private.
+Read each helper's `--help` before using it. The [tool catalog](tools/README.md) explains inputs, limits, and exit codes.
 
-## Toolkit
+## Featured field notes
 
-| Area | Included helpers |
+| Investigation | Technique |
 | --- | --- |
-| **Setup & preservation** | [Environment report](tools/environment_report.py), [artifact inventory](tools/artifact_inventory.py), [archive validation and extraction](tools/safe_extract.py) |
-| **Binary investigation** | [Strings with offsets](tools/strings_extract.py), [hex view](tools/hex_view.py), [binary comparison](tools/binary_diff.py), [entropy windows](tools/entropy_scan.py), [embedded signatures](tools/signature_scan.py) |
-| **Encoding & credentials** | [Explicit decoding](tools/decode_value.py), [repeating XOR](tools/xor_bytes.py), [candidate filtering](tools/candidate_filter.py), [SSH public-key structure and fingerprints](tools/ssh_public_key.py) |
-| **Logs, web & timelines** | [JSONL schema and counts](tools/jsonl_summary.py), [SQLite inspection](tools/sqlite_inspect.py), [saved HTTP responses](tools/http_response_inspect.py), [URL inventory](tools/url_inventory.py), [timestamp conversion](tools/timestamp_convert.py) |
-| **Writing** | [Challenge scaffold](tools/new_challenge.py) |
+| [Service Enumeration](challenges/service-enumeration/how-to-solve.md) | Separate port discovery from protocol and banner evidence |
+| [Cyber Command](challenges/cyber-command/how-to-solve.md) | Inspect TLS authentication traffic and distinguish extraction from recovery |
+| [Browser History Investigation](challenges/browser-history-investigation/how-to-solve.md) | Query visit records and validate timestamp conversions |
+| [Encrypted SQLite Backup](challenges/encrypted-sqlite-backup/how-to-solve.md) | Identify an encrypted format and verify candidate keys |
+| [Remote Desktop Bitmap Cache](challenges/remote-desktop-bitmap-cache/how-to-solve.md) | Reconstruct image records and correlate session metadata |
 
-**[Browse examples, limits, and exit codes →](tools/README.md)**
+The full library includes both completed methods and open investigations. Each guide states its own status and limits.
 
-## Skill playbooks
+## Repository map
 
-Read the matching playbook before choosing a tool. Each includes common mistakes and a way to check the result.
+```text
+challenges/   Question and method guide for each challenge
+docs/         Investigation workflow, checklists, and playbooks
+tools/        18 dependency-free command-line helpers
+tests/        Tests for tools and publication checks
+assets/       README artwork
+```
 
-| Network & systems | Data & investigation |
-| --- | --- |
-| [Service enumeration](docs/skills/service-enumeration.md) | [Encoding, cryptography & passwords](docs/skills/encoding-crypto-passwords.md) |
-| [SMB, SSH & compliance checks](docs/skills/smb-ssh-compliance.md) | [Files, images & reverse engineering](docs/skills/files-images-reversing.md) |
-| [Packets, logs & timelines](docs/skills/packet-log-forensics.md) | [Web & OSINT](docs/skills/web-osint.md) |
+## Contribute
 
-These are readable repository guides, not automatically installed AI plugins. See the [skills index](docs/README.md) for suggested workflows.
-
-## Challenge library
-
-**[Browse all 38 challenges by category →](docs/challenges.md)**
-
-| Guide | What it teaches |
-| --- | --- |
-| [Service enumeration](challenges/service-enumeration/how-to-solve.md) | Separate port discovery, protocol identification, and exact banner evidence |
-| [Hercules compliance audit](challenges/hercules-compliance-audit/how-to-solve.md) | Trace SMB evidence, local profiles, remote accounts, and permission boundaries; investigation remains incomplete |
-| [Unauthorized network services](challenges/unauthorized-network-services/how-to-solve.md) | Correlate Zeek records and assess exposed services |
-| [Blurred messages](challenges/blurred-messages/how-to-solve.md) | Compare fonts and reproduce the image transformation |
-| [Cyber Command](challenges/cyber-command/how-to-solve.md) | Decrypt TLS and inspect authentication evidence; password recovery remains incomplete |
-| [Cyber Command: admin flag](challenges/cyber-command-admin-flag/how-to-solve.md) | Trace redirect, framing, and CSRF behavior in the supplied challenge |
-
-## Contribute a method
-
-Read [AGENTS.md](AGENTS.md), then create a skeleton:
+Start with [repository instructions](AGENTS.md) and scaffold a question/guide pair:
 
 ```bash
 python3 tools/new_challenge.py example-challenge "Example challenge"
 ```
 
-Each challenge requires `question.md` and `how-to-solve.md`; an original prompt image may be included as `question.png`. Explain the observed method, verification, and unresolved work. Replace response-bearing values with descriptive placeholders.
+A challenge folder contains `question.md` and `how-to-solve.md`; `question.png` is optional. Keep captures, databases, key logs, decrypted output, screenshots containing responses, flags, and credentials outside the repository. Public guides contain methods and verification steps.
 
-`IMAGES/` accepts PNG, JPEG, GIF, WebP, and `.txt` inputs that meet the same publication rules. Review them before upload. Captures, databases, key logs, decrypted output, private notes, final answers, and scoring data stay outside the repository.
-
-Run the checks and review the complete staged diff:
+Before committing, review the entire diff and run:
 
 ```bash
 python3 .github/scripts/check_challenges.py
 python3 -m unittest discover -s tests -v
 git diff --check
-git diff --cached --check
-git diff --cached
 ```
 
-GitHub Actions runs the content check and test suite. Automated detection catches selected leak patterns; manual review is still required for ordinary-looking facts, URLs, and images that answer a challenge.
+GitHub Actions runs the content check and tests on Python 3.10 and 3.12. The automated leak check supports manual review; it cannot recognize every answer-bearing detail.
+
+<sub>[AI investigation workflow](docs/ai-workflow.md) · [Terminal troubleshooting](docs/terminal-workflow.md) · [Verification checklist](docs/verification-checklist.md) · [Private handoff template](docs/investigation-notes-template.md)</sub>

@@ -1,8 +1,17 @@
 # Challenge library
 
-[Home](../README.md) · [Toolkit](../tools/README.md) · [Skill playbooks](README.md)
+[Home](../README.md) · [Investigation playbook](ctf-playbook.md) · [Tools](../tools/README.md) · [Skill playbooks](README.md)
 
-All 38 challenge question/guide pairs are indexed below. A guide records methods and limits; inclusion does not mean every question was solved. Read its status and verification sections before resuming. Final answers and raw response-bearing evidence remain private.
+Explore 38 challenge prompts with paired method guides. Each guide records its own status, verification steps, and limits. Final answers and raw evidence stay private.
+
+| Category | Guides | Focus |
+| --- | ---: | --- |
+| [Network, services, and logs](#network-services-and-logs) | 7 | Traffic, services, and event records |
+| [Encoding, cryptography, and passwords](#encoding-cryptography-and-passwords) | 13 | Encodings, keys, and candidate verification |
+| [Web and browser evidence](#web-and-browser-evidence) | 6 | Browser records and authorized web labs |
+| [Files, images, and reverse engineering](#files-images-and-reverse-engineering) | 6 | Binary artifacts and reconstruction |
+| [OSINT and research](#osint-and-research) | 6 | Public and historical sources |
+
 
 ## Network, services, and logs
 
