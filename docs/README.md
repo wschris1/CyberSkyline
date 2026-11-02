@@ -2,7 +2,7 @@
 
 Start with [AGENTS.md](../AGENTS.md) and [the AI investigation workflow](ai-workflow.md). For live terminal work, also read [hosts, permissions, and reliable commands](terminal-workflow.md). These playbooks are repository reference material for both humans and AI assistants; they are not automatically installed plugins. Ask a future assistant to read the repository instructions and the matching playbook before giving commands.
 
-[Home](../README.md) · [18-tool catalog](../tools/README.md) · [All challenge guides](challenges.md) · [General CTF playbook](ctf-playbook.md)
+[Home](../README.md) · [19-tool catalog](../tools/README.md) · [All challenge guides](challenges.md) · [General CTF playbook](ctf-playbook.md)
 
 | Situation | Read | Essential double-check |
 | --- | --- | --- |
@@ -11,6 +11,7 @@ Start with [AGENTS.md](../AGENTS.md) and [the AI investigation workflow](ai-work
 | PCAP, TLS secrets, logs, or browser history | [Packet and log forensics](skills/packet-log-forensics.md) | Reassembly, distinct-count unit, time units, and complete records |
 | Encodings, hashes, passwords, or cryptography | [Encoding, crypto, and password recovery](skills/encoding-crypto-passwords.md) | Bytes, algorithm parameters, exact constraints, and full verification |
 | Images, archives, hidden data, or executables | [Files, images, and reverse engineering](skills/files-images-reversing.md) | Original artifact, format, extraction order, and independent validation |
+| An authenticated web-app challenge | [Web-app CTF investigation](skills/web-app-testing.md) | Role and session context, controlled boundary tests, and verified effects |
 | Web requests, historical facts, locations, or identities | [Web and OSINT](skills/web-osint.md) | Raw request, permitted scope, date, and authoritative corroboration |
 
 Use the [verification checklist](verification-checklist.md) before reporting a result. Copy the [session template](investigation-notes-template.md) into a **private location outside this public repository** to resume work without repeating unsuccessful attempts.
