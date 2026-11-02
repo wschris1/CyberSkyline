@@ -14,6 +14,7 @@ NAVIGATION = (
     ROOT / "tools" / "README.md",
 )
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+HTML_TARGET = re.compile(r'\b(?:href|src)="([^"]+)"')
 CHALLENGE_LINK = re.compile(
     r"\]\(\.\./challenges/([^/]+)/(question|how-to-solve)\.md\)"
 )
@@ -67,7 +68,7 @@ class RepositoryNavigationTests(unittest.TestCase):
     def test_navigation_links_resolve_within_repository(self) -> None:
         for document in NAVIGATION:
             text = document.read_text(encoding="utf-8")
-            for raw in MARKDOWN_LINK.findall(text):
+            for raw in MARKDOWN_LINK.findall(text) + HTML_TARGET.findall(text):
                 target = raw.strip("<>").split("#", 1)[0].split("?", 1)[0]
                 if not target:
                     continue
