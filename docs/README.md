@@ -22,4 +22,4 @@ The [service-enumeration challenge](../challenges/service-enumeration/how-to-sol
 
 `target` refers only to the hostname explicitly supplied by the active challenge. Other names in uppercase are placeholders unless the text says otherwise. Set them from current evidence before use. Examples are selective investigation steps, not a script to run wholesale. Check local `--help` when a flag differs on the installed version. Tool names mentioned here are options, not a requirement to install everything.
 
-Public documentation describes methods. Keep raw captures, passwords, candidate results, key logs, and answer-bearing screenshots in the private workspace.
+Public documentation describes methods. Keep raw captures, passwords, candidate results, key logs, and answer-bearing screenshots in the private workspace. If you cannot edit this repository, use the [contribution handoff for any AI](contribution-handoff.md).
