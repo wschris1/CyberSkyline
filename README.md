@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="wschris CyberSecurity: evidence-led CTF field guide" width="100%">
+  <img src="assets/wschris-cybersecurity-banner.svg" alt="wschris CyberSecurity: evidence-led CTF field guide" width="100%">
 </p>
 
 <p align="center">
