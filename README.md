@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml"><img src="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml/badge.svg" alt="Repository checks"></a>
   <a href="tools/README.md">18 Python tools</a> ·
-  <a href="docs/challenges.md">29 challenge guides</a> ·
+  <a href="docs/challenges.md">38 challenge guides</a> ·
   <a href="docs/README.md">6 skill playbooks</a>
 </p>
 
@@ -60,7 +60,7 @@ These are readable repository guides, not automatically installed AI plugins. Se
 
 ## Challenge library
 
-**[Browse all 29 challenges by category →](docs/challenges.md)**
+**[Browse all 38 challenges by category →](docs/challenges.md)**
 
 | Guide | What it teaches |
 | --- | --- |
