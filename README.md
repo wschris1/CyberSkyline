@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="CyberSkyline: evidence-led CTF field guide" width="100%">
+  <img src="assets/banner.svg" alt="wschris CyberSecurity: evidence-led CTF field guide" width="100%">
 </p>
 
 <p align="center">
   <strong>Investigate carefully. Verify the evidence. Share the method.</strong><br>
-  A public field guide for cybersecurity challenges and reproducible CTF research.
+  wschris CyberSecurity is a public field guide for cybersecurity challenges and reproducible CTF research.
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml"><img src="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml/badge.svg" alt="Repository checks"></a>
+  <a href="https://github.com/wschris1/wschris-CyberSecurity/actions/workflows/check-challenges.yml"><img src="https://github.com/wschris1/wschris-CyberSecurity/actions/workflows/check-challenges.yml/badge.svg" alt="Repository checks"></a>
 </p>
 
 ---
