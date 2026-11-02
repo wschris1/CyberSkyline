@@ -20,7 +20,7 @@ UPLOAD_IMAGE_SIGNATURES = {
     ".webp": (b"RIFF",),
 }
 PRIVATE_NAME = re.compile(r"^(?:answers?|flags?)(?:[._-]|$)", re.IGNORECASE)
-FLAG_TEXT = re.compile(rb"\b(?:flag|ctf|cyberskyline)\{[^}\r\n]+\}", re.IGNORECASE)
+FLAG_TEXT = re.compile(rb"\b(?:flag|ctf|cyber[ _-]*skyline)\{[^}\r\n]+\}", re.IGNORECASE)
 PLATFORM_FLAG_TEXT = re.compile(rb"\bSKY-[A-Z]{4}-[0-9]{4}\b", re.IGNORECASE)
 ANSWER_LINE = re.compile(
     rb"^[ \t]*(?:final[ \t]+)?(?:answer|flag)[ \t]*[:=][ \t]*\S+",
