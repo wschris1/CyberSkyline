@@ -22,6 +22,27 @@
 - [ ] Byte order, bit order, offsets, padding, character encoding, and delimiters were made explicit where relevant.
 - [ ] Parser acceptance, syntactic validity, or a printed PASS has not been overstated as proof of the final answer.
 
+## Answer readiness gate
+
+Use this gate **for each question immediately before giving a value to the user**. Keep the working record private, especially when it contains a flag, credential, hash, or instance-specific URL.
+
+| Field | Record privately |
+| --- | --- |
+| Question and format | Exact wording, exclusions, requested units, date context, and submission syntax |
+| Candidate and source | Proposed value plus a precise locator in the original artifact, response, packet, row, or authoritative record |
+| Reproduction | Transformations, tool/version, parameters, and a rerun from unchanged input |
+| Independent check | A different check against the original evidence that does not reuse the candidate's assumption |
+| Conflicts and limits | Competing candidates, missing records, parser errors, truncation, search coverage, or stale sources |
+| Platform feedback | Accepted, rejected, or not submitted; keep this separate from technical verification |
+
+Apply one of these outcomes:
+
+- **Verified:** The original evidence supports the value, the reproduction and meaningful independent check agree, the exact requested format is satisfied, and no material contradiction remains. Give the answer with a short evidence basis.
+- **Candidate:** The value is plausible but a required check or source is missing. Label it as unverified and state the specific check needed. Do not present it as a final answer.
+- **Unresolved:** The evidence cannot support a defensible value. State what is missing and the next bounded step rather than guessing.
+
+An independent check must test a different failure mode. Repeating the same OCR text in two tools, copying a prior assistant's answer, or reformatting the same search snippet does not count. If a second check is impossible, say so and limit the claim. Platform acceptance is useful feedback, but do not claim it happened without seeing it.
+
 ## Final response
 
 - [ ] The exact requested scope of each value is satisfied: full sentence versus token, hostname versus URL, directory versus file, and version versus banner.
