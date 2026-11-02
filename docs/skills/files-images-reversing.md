@@ -8,6 +8,16 @@ List archive members before extracting into an isolated working directory. Check
 
 For databases, determine whether the file is plain SQLite, encrypted, compressed, or a wrapper before changing settings. SQLCipher-compatible variants may differ in page size, KDF, HMAC, and compatibility parameters. A “not a database” error does not establish a wrong password by itself. Confirm the format from the supplied application or versioned documentation and test one model at a time.
 
+## Disk images, filesystems, and snapshots
+
+Treat a disk image as a container, not as a directory of files. Record the image format, byte size, checksum, sector size, and partition layout before interpreting a filesystem offset. Partition tools may report offsets in sectors while extraction tools expect bytes; keep the unit with every recorded number. Use a read-only parser on the original and work from a copy if mounting or repair is necessary. Do not let an inspection tool replay a journal or alter the only copy.
+
+For a filesystem pool, separate the pool identifier and physical capacity from a dataset's logical size and available space. Record the exact property or metadata field used for each answer. A snapshot name includes its dataset path as well as the snapshot component; list the full name before extracting from it. Scrub start and completion times are distinct events, so identify which the question asks for and convert from the source timezone before rounding.
+
+When extracting a candidate file, note the partition or dataset, snapshot, path, and extraction command privately. Confirm its length and digest against the source image or a second read-only extraction. Keep response-bearing files and any mounted copy outside the public checkout.
+
+Related guide: [forensic drive pool](../../challenges/forensic-drive-pool/how-to-solve.md). References: [Sleuth Kit partition layout](https://sleuthkit.org/sleuthkit/man/mmls.html), [Sleuth Kit filesystem listing](https://www.sleuthkit.org/sleuthkit/man/fls.html), and [OpenZFS read-only import](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-import.8.html).
+
 ## Images, barcodes, and steganography
 
 Use the original pixels. Keep analysis crops, channel extractions, thresholding, and contrast changes as separate, reproducible derivatives. Inspect dimensions, color mode, alpha, metadata, palettes, appended data, and likely embedded file signatures before trying every steganography tool.
