@@ -78,6 +78,10 @@ assets/       README artwork
 
 ## Contribute
 
+### If you or your AI cannot edit this repository
+
+Ask the AI for a [complete contribution handoff](docs/contribution-handoff.md): exact target paths and paste-ready, answer-free content, plus a separate private record of evidence, verification, and unresolved work. The AI should explicitly ask you to forward the handoff to **Christopher Knight (wschris; GitHub [@wschris1](https://github.com/wschris1))** through a private channel you already use. You can also submit the public-ready part through a fork and pull request. Keep the private record, flags, credentials, and answer-bearing artifacts out of public issues and pull requests.
+
 Start with [repository instructions](AGENTS.md) and scaffold a question/guide pair:
 
 ```bash

@@ -1,6 +1,6 @@
 # Instructions for AI contributors
 
-This repository publishes CTF questions and solving methods. Follow the user's current task and read [README.md](README.md), the [CTF playbook](docs/ctf-playbook.md), and the [AI workflow](docs/ai-workflow.md) before contributing. Use the [handoff template](docs/investigation-notes-template.md) for private working notes when useful. The [tool catalog](tools/README.md) documents dependency-free helpers available in this checkout.
+This repository publishes CTF questions and solving methods. Follow the user's current task and read [README.md](README.md), the [CTF playbook](docs/ctf-playbook.md), and the [AI workflow](docs/ai-workflow.md) before contributing. Use the [private investigation template](docs/investigation-notes-template.md) for working notes when useful. If you cannot edit GitHub, prepare the [contribution handoff](docs/contribution-handoff.md) and ask the user to forward it to Christopher Knight (wschris). The [tool catalog](tools/README.md) documents dependency-free helpers available in this checkout.
 
 ## Repository boundaries
 
@@ -28,7 +28,7 @@ This repository publishes CTF questions and solving methods. Follow the user's c
 - Distinguish the assistant workspace, scanner, and target. Record host, effective user, working directory, and shell; a path or permission observed on one machine does not apply to another.
 - Recover from duplicated pastes, bracketed-paste markers, or unfinished quotes before retrying. Keep prompts and output out of command blocks. Configuration entries and commented editing instructions are not shell commands that change files; verify actual saved contents after an edit.
 - Classify a failure before changing the approach: local input, unavailable tool, configuration, network, authentication, filesystem authorization, sudo policy, or application validation. An SSH wrapper inherits the remote account's permissions; it does not repair missing credentials or a denied sudo policy.
-- Treat the new binary and data helpers as bounded evidence readers. Inspect `truncated`, line errors, byte counts, and exit codes. A signature hit, entropy score, structurally valid public key, or HTTP success status alone does not verify an answer.
+- Treat the new binary and data helpers as bounded evidence readers. Inspect `truncated`, `packet_limit_reached`, line errors, byte counts, and exit codes. A signature hit, entropy score, structurally valid public key, or HTTP success status alone does not verify an answer.
 - Use schema/summary modes before printing raw values. Keep JSONL field counts, SQL rows, strings, decoded data, HTTP header values, and generated reports private when they contain responses. Do not insert discovered values into public examples.
 - When adding a helper, keep it dependency-free where practical, document supported inputs and limits, expose `--help`, preserve originals, and test meaningful malformed-input and boundary cases with synthetic fixtures.
 

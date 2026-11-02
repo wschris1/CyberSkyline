@@ -41,7 +41,7 @@ python3 tools/environment_report.py --json
 
 Select the narrowest tool that can answer the current question. If a preferred tool is missing, document the fallback and any loss of assurance. Avoid installing a large dependency when an existing parser or a short standard-library check is sufficient.
 
-For multi-host terminal work, follow the [terminal workflow](terminal-workflow.md): identify the machine and account before using a path, and distinguish malformed local input from remote authentication or authorization. Read the matching [skill playbook](README.md). The expanded [tool catalog](../tools/README.md) includes strings/hex/diffs, signatures, entropy, XOR, JSONL, SQLite, saved HTTP, and SSH public-key checks. Inspect limits and `truncated` fields before claiming complete coverage.
+For multi-host terminal work, follow the [terminal workflow](terminal-workflow.md): identify the machine and account before using a path, and distinguish malformed local input from remote authentication or authorization. Read the matching [skill playbook](README.md). The expanded [tool catalog](../tools/README.md) includes strings/hex/diffs, signatures, entropy, XOR, JSONL, SQLite, saved HTTP, and SSH public-key checks. Inspect limits and `truncated` or `packet_limit_reached` fields before claiming complete coverage.
 
 ## 4. Build an evidence chain
 
@@ -99,7 +99,7 @@ When work stops or changes agents, update the private handoff with:
 - unresolved assumptions and the next bounded experiment;
 - actions that must not be repeated or expanded without authorization.
 
-Never describe a background job, partial decode, candidate, or unverified inference as complete.
+Never describe a background job, partial decode, candidate, or unverified inference as complete. If you cannot edit GitHub, prepare a [contribution handoff](contribution-handoff.md) with complete public-ready files and separate private review context, then ask the user to forward it to Christopher Knight (wschris).
 
 ## 8. Publish an answer-free guide
 
