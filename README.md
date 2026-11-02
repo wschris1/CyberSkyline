@@ -9,8 +9,9 @@
 
 <p align="center">
   <a href="docs/challenges.md"><strong>Explore 38 challenges</strong></a> ·
-  <a href="tools/README.md"><strong>Use 18 tools</strong></a> ·
-  <a href="docs/README.md"><strong>Read 6 playbooks</strong></a>
+  <a href="docs/ctf-playbook.md"><strong>Start the CTF playbook</strong></a> ·
+  <a href="tools/README.md"><strong>Use 19 tools</strong></a> ·
+  <a href="docs/README.md"><strong>Read 7 playbooks</strong></a>
 </p>
 
 <p align="center">
@@ -51,7 +52,7 @@ python3 tools/artifact_inventory.py --json /private/work/challenge
 python3 tools/safe_extract.py /private/work/challenge/input.zip
 ```
 
-Read each helper's `--help` before using it. The [tool catalog](tools/README.md) explains inputs, limits, and exit codes.
+On Windows PowerShell, use `py -3` (or `python`) and replace `/private/work` with a private path outside the checkout, such as `C:\CTF-work`. Read each helper's `--help` before using it. The [tool catalog](tools/README.md) explains inputs, limits, and exit codes.
 
 ## Featured field notes
 
@@ -63,14 +64,14 @@ Read each helper's `--help` before using it. The [tool catalog](tools/README.md)
 | [Encrypted SQLite Backup](challenges/encrypted-sqlite-backup/how-to-solve.md) | Identify an encrypted format and verify candidate keys |
 | [Remote Desktop Bitmap Cache](challenges/remote-desktop-bitmap-cache/how-to-solve.md) | Reconstruct image records and correlate session metadata |
 
-The full library includes both completed methods and open investigations. Each guide states its own status and limits.
+The full library includes both completed methods and open investigations. Read each guide for its verification steps and limits.
 
 ## Repository map
 
 ```text
 challenges/   Question and method guide for each challenge
 docs/         Investigation workflow, checklists, and playbooks
-tools/        18 dependency-free command-line helpers
+tools/        19 dependency-free command-line helpers
 tests/        Tests for tools and publication checks
 assets/       README artwork
 ```
