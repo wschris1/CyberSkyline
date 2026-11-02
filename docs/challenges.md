@@ -2,7 +2,7 @@
 
 [Home](../README.md) · [Toolkit](../tools/README.md) · [Skill playbooks](README.md)
 
-All 29 challenge question/guide pairs are indexed below. A guide records methods and limits; inclusion does not mean every question was solved. Read its status and verification sections before resuming. Final answers and raw response-bearing evidence remain private.
+All 38 challenge question/guide pairs are indexed below. A guide records methods and limits; inclusion does not mean every question was solved. Read its status and verification sections before resuming. Final answers and raw response-bearing evidence remain private.
 
 ## Network, services, and logs
 
@@ -30,6 +30,9 @@ All 29 challenge question/guide pairs are indexed below. A guide records methods
 | [Wordlist Hashes](../challenges/wordlist-hashes/question.md) | [Read guide](../challenges/wordlist-hashes/how-to-solve.md) | Candidate construction and full-hash checks |
 | [Password Hint Sheet](../challenges/password-hint-sheet/question.md) | [Read guide](../challenges/password-hint-sheet/how-to-solve.md) | Constraints, candidate coverage, and validation |
 | [Time-Seeded WPS Handshake](../challenges/wps-time-seed/question.md) | [Read guide](../challenges/wps-time-seed/how-to-solve.md) | Time-derived seeds and protocol verification |
+| [Encrypted SQLite Backup](../challenges/encrypted-sqlite-backup/question.md) | [Read guide](../challenges/encrypted-sqlite-backup/how-to-solve.md) | Identify an encrypted database, test password candidates, and inspect its records |
+| [Encryption Validation Service](../challenges/encryption-validation-service/question.md) | [Read guide](../challenges/encryption-validation-service/how-to-solve.md) | Read supplied crypto code and test a validation weakness in an authorized service |
+| [Friendly Archive Upload](../challenges/friendly-archive-upload/question.md) | [Read guide](../challenges/friendly-archive-upload/how-to-solve.md) | Recover layered archive credentials from a failed encoded upload |
 
 ## Web and browser evidence
 
@@ -39,6 +42,8 @@ All 29 challenge question/guide pairs are indexed below. A guide records methods
 | [Nginx Basic Authentication](../challenges/nginx-basic-auth/question.md) | [Read guide](../challenges/nginx-basic-auth/how-to-solve.md) | Authentication format and candidate verification |
 | [Cyber Command](../challenges/cyber-command/question.md) | [Read guide](../challenges/cyber-command/how-to-solve.md) | TLS decryption and authentication evidence; password recovery incomplete |
 | [Cyber Command: admin flag](../challenges/cyber-command-admin-flag/question.md) | [Read guide](../challenges/cyber-command-admin-flag/how-to-solve.md) | Redirects, framing, and CSRF in the supplied lab |
+| [Shipping Order Web App](../challenges/shipping-order-web-app/question.md) | [Read guide](../challenges/shipping-order-web-app/how-to-solve.md) | Inspect a shipping web app and recover a restricted order's arrival information |
+| [Ersatz Motel SQL Injection](../challenges/ersatz-motel-sqli/question.md) | [Read guide](../challenges/ersatz-motel-sqli/how-to-solve.md) | Trace a reservation form's SQL injection to a targeted credential |
 
 ## Files, images, and reverse engineering
 
@@ -48,6 +53,8 @@ All 29 challenge question/guide pairs are indexed below. A guide records methods
 | [Scrambled Python Code](../challenges/scrambled-python-code/question.md) | [Read guide](../challenges/scrambled-python-code/how-to-solve.md) | Bytecode inspection and input-check inversion |
 | [Water-Damaged Barcode](../challenges/water-damaged-barcode/question.md) | [Read guide](../challenges/water-damaged-barcode/how-to-solve.md) | Barcode structure and independent identification |
 | [YARA Secret Hunt](../challenges/yara-secret-hunt/question.md) | [Read guide](../challenges/yara-secret-hunt/how-to-solve.md) | Rules, file triage, and matching evidence |
+| [Forensic Drive Pool](../challenges/forensic-drive-pool/question.md) | [Read guide](../challenges/forensic-drive-pool/how-to-solve.md) | Inspect a storage pool, snapshots, scrub time, and recovered files |
+| [Remote Desktop Bitmap Cache](../challenges/remote-desktop-bitmap-cache/question.md) | [Read guide](../challenges/remote-desktop-bitmap-cache/how-to-solve.md) | Parse cached bitmaps and correlate session metadata |
 
 ## OSINT and research
 
@@ -57,3 +64,6 @@ All 29 challenge question/guide pairs are indexed below. A guide records methods
 | [Device Default Passwords](../challenges/device-default-passwords/question.md) | [Read guide](../challenges/device-default-passwords/how-to-solve.md) | Device identification and vendor documentation |
 | [Map Itinerary](../challenges/map-itinerary/question.md) | [Read guide](../challenges/map-itinerary/how-to-solve.md) | Geographic clues and route reconstruction |
 | [Vessel Tracking](../challenges/vessel-tracking/question.md) | [Read guide](../challenges/vessel-tracking/how-to-solve.md) | Historical location and vessel records |
+| [This Way Pleaae!](../challenges/this-way-pleaae/question.md) | [Read guide](../challenges/this-way-pleaae/how-to-solve.md) | Map courier location clues to a program, office history, and a coded meeting point |
+| [Censored Social Post Flag](../challenges/censored-social-flag/question.md) | [Read guide](../challenges/censored-social-flag/how-to-solve.md) | Trace an old censored social post to an uncensored source |
+
