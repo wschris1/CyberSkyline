@@ -17,6 +17,7 @@ This repository publishes CTF questions and solving methods. Follow the user's c
 - Prefer the repository helpers for initial inventory, archive validation, timestamp comparison, URL redaction, and candidate filtering. Read a helper's `--help` and interpretation limits before use; its output is evidence to evaluate, not an automatic conclusion.
 - Record exact evidence locations, transformations, assumptions, and failed approaches privately. Label observations, inferences, and independently verified results clearly.
 - Verify the recovered bytes or value against the original evidence. Valid syntax, readable output, a plausible word, or a weak checksum alone is insufficient.
+- Before giving any CTF answer, apply the [answer readiness gate](docs/verification-checklist.md#answer-readiness-gate) separately to each question. Report a verified value with its evidence basis; label an unverified candidate or unresolved question instead of guessing.
 - Estimate candidate counts and measured throughput before expensive cracking or brute force. Save checkpoints and explain the coverage of completed searches.
 - Do not invent tool results, recovered values, platform acceptance, or steps that were never run. Distinguish a suggested reproduction command from the method actually used.
 - If work is incomplete, state what succeeded, what remains unverified, and the next useful step. Do not describe extraction, decryption, or a partial search as complete recovery.
