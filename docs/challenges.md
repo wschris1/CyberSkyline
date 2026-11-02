@@ -1,4 +1,4 @@
-# Challenge library
+# wschris CyberSecurity challenge library
 
 [Home](../README.md) · [Investigation playbook](ctf-playbook.md) · [Tools](../tools/README.md) · [Skill playbooks](README.md)
 
