@@ -96,7 +96,7 @@ python3 tools/pcap_summary.py /private/work/traffic.pcap --max-packets 1000
 
 This metadata-only helper reads classic PCAP v2 files with microsecond or nanosecond timestamps in either byte order. It reports link type, packet and byte counts, first/last and earliest/latest UTC timestamps, length inconsistencies, and out-of-order timestamps. `capture_truncated_packets` counts records whose captured length is shorter than the reported original length; it does not mean the PCAP file itself is cut off. A `packet_limit_reached: true` result means the `--max-packets` limit stopped the scan, so counts and timestamp bounds cover only that prefix.
 
-Input defaults to 32 MiB and can be raised with `--max-bytes`. The helper rejects a physically truncated record and PCAPNG. It does not decode protocols, reconstruct streams, or validate packet payloads. Use Wireshark or TShark on a copy when protocol-level evidence matters.
+Input defaults to 32 MiB and can be raised with `--max-bytes`. The helper rejects a physically truncated record in the scanned prefix and rejects PCAPNG. It does not decode protocols, reconstruct streams, or validate packet payloads. Use Wireshark or TShark on a copy when protocol-level evidence matters.
 
 ## Saved HTTP and URL evidence
 
