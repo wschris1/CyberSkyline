@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title description">
+  <title id="title">CyberSkyline CTF field guide</title>
+  <desc id="description">A dark blue banner with a teal skyline and the words Investigate. Verify. Document.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101e35"/>
+      <stop offset="1" stop-color="#07101f"/>
+    </linearGradient>
+    <linearGradient id="buildings" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#243d57"/>
+      <stop offset="1" stop-color="#102038"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="320" rx="20" fill="url(#background)"/>
+  <path d="M720 266h480M720 218h480M720 170h480M720 122h480M768 74v192M816 74v192M864 74v192M912 74v192M960 74v192M1008 74v192M1056 74v192M1104 74v192M1152 74v192" stroke="#20334b" stroke-width="1" opacity=".6"/>
+  <path d="M742 266v-58h46v-54h47v112h22V98h62v168h23V178h47v88h22V130h64v136h22V70h55v196h25v-44h33v44Z" fill="url(#buildings)"/>
+  <path d="M742 208h46v-54h47v112h22V98h62v168h23V178h47v88h22V130h64v136h22V70h55v196h25v-44h33" fill="none" stroke="#4dd9c0" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="1124" cy="70" r="6" fill="#4dd9c0"/>
+  <path d="M65 65h40" stroke="#4dd9c0" stroke-width="4" stroke-linecap="round"/>
+  <text x="65" y="103" fill="#73e5d0" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="4">CTF FIELD GUIDE</text>
+  <text x="61" y="175" fill="#f5f8ff" font-family="Arial, Helvetica, sans-serif" font-size="63" font-weight="700" letter-spacing="-2">CyberSkyline</text>
+  <text x="65" y="220" fill="#b7c8dc" font-family="Arial, Helvetica, sans-serif" font-size="22">Investigate. Verify. Document.</text>
+  <text x="65" y="272" fill="#718aa5" font-family="Arial, Helvetica, sans-serif" font-size="14" letter-spacing="1">PRACTICAL TOOLS / REPRODUCIBLE METHODS</text>
+</svg>

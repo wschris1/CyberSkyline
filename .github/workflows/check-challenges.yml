@@ -4,12 +4,23 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.12']
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Check challenge files and answer leaks
         run: python3 .github/scripts/check_challenges.py
-      - name: Test reusable investigation tools
+      - name: Test investigation tools and publication checks
         run: python3 -m unittest discover -s tests -v
+      - name: Check whitespace
+        run: git show --format= --check HEAD

@@ -21,6 +21,16 @@ This repository publishes CTF questions and solving methods. Follow the user's c
 - Do not invent tool results, recovered values, platform acceptance, or steps that were never run. Distinguish a suggested reproduction command from the method actually used.
 - If work is incomplete, state what succeeded, what remains unverified, and the next useful step. Do not describe extraction, decryption, or a partial search as complete recovery.
 
+## Terminal guidance and tool selection
+
+- Read the matching [skill playbook](docs/README.md), [terminal workflow](docs/terminal-workflow.md), and [verification checklist](docs/verification-checklist.md). For guided terminal work, give one clean command at a time, state its execution machine outside the code block, and use the returned output to choose the next step.
+- Distinguish the assistant workspace, scanner, and target. Record host, effective user, working directory, and shell; a path or permission observed on one machine does not apply to another.
+- Recover from duplicated pastes, bracketed-paste markers, or unfinished quotes before retrying. Keep prompts and output out of command blocks. Configuration entries and commented editing instructions are not shell commands that change files; verify actual saved contents after an edit.
+- Classify a failure before changing the approach: local input, unavailable tool, configuration, network, authentication, filesystem authorization, sudo policy, or application validation. An SSH wrapper inherits the remote account's permissions; it does not repair missing credentials or a denied sudo policy.
+- Treat the new binary and data helpers as bounded evidence readers. Inspect `truncated`, line errors, byte counts, and exit codes. A signature hit, entropy score, structurally valid public key, or HTTP success status alone does not verify an answer.
+- Use schema/summary modes before printing raw values. Keep JSONL field counts, SQL rows, strings, decoded data, HTTP header values, and generated reports private when they contain responses. Do not insert discovered values into public examples.
+- When adding a helper, keep it dependency-free where practical, document supported inputs and limits, expose `--help`, preserve originals, and test meaningful malformed-input and boundary cases with synthetic fixtures.
+
 ## Writing and validation
 
 - Each challenge requires `question.md` and `how-to-solve.md`; `question.png` is optional. Follow the existing template and layout checks.

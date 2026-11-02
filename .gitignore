@@ -10,6 +10,7 @@ flags*
 
 # Private investigation work and common generated evidence.
 .private/
+.ctf-private/
 scratch/
 work/
 *.pcap
@@ -21,6 +22,7 @@ work/
 *.log
 *.potfile
 *.restore
+*.keylog
 
 # Local editor and Python files.
 __pycache__/

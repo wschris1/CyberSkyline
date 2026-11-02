@@ -18,6 +18,16 @@ Copy this template to a working directory **outside the Git checkout**. The comp
 - Time conventions: [timezone, epoch, units, capture date]
 - Missing capabilities: [unavailable tools, hardware, or artifacts]
 
+| Execution surface | Observed hostname and account | Working directory / shell | Relevant files and permissions |
+| --- | --- | --- | --- |
+| Assistant workspace | [observed] | [observed] | [private paths] |
+| Scanner terminal | [observed] | [observed] | [private paths] |
+| Remote target | [observed; how authenticated] | [observed] | [private paths and allowed operations] |
+
+- Current prompt and last successful command: [record privately; exclude real credentials from shareable excerpts]
+- Current failure layer: [input / configuration / network / authentication / authorization / validation]
+- Incomplete tool coverage: [truncated output, parser errors, limits, interrupted searches]
+
 ## Evidence and confidence
 
 | Question | Source location | Observation | Interpretation and assumptions | Verification performed | Status | Submission feedback |

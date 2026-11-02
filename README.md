@@ -1,75 +1,96 @@
-# CyberSkyline CTF
+<p align="center">
+  <img src="assets/banner.svg" alt="CyberSkyline — CTF field guide. Investigate. Verify. Document." width="100%">
+</p>
 
-This repository holds CTF challenge questions and guides for solving them. It does not hold flags, final answers, answer hashes, validation keys, or private scoring data.
+<p align="center">
+  <a href="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml"><img src="https://github.com/wschris1/CyberSkyline/actions/workflows/check-challenges.yml/badge.svg" alt="Repository checks"></a>
+  <a href="tools/README.md">18 Python tools</a> ·
+  <a href="docs/challenges.md">29 challenge guides</a> ·
+  <a href="docs/README.md">6 skill playbooks</a>
+</p>
 
-## Start here
+A practical CTF notebook for people and AI assistants: investigate artifacts, test hypotheses, verify evidence, and write reproducible methods. **Public guides contain methods, not final answers or recovered credentials.**
 
-- [CTF playbook](docs/ctf-playbook.md): first checks, techniques by challenge type, independent verification, and publication review.
-- [AI contributor workflow](docs/ai-workflow.md): task scoping, evidence labels, bounded automation, handoff, and answer-free publication.
-- [Investigation notes and handoff template](docs/investigation-notes-template.md): copy outside the repository to record evidence, failed approaches, checkpoints, and next steps.
-- [Reusable investigation tools](tools/README.md): dependency-free helpers for artifact inventory, safe extraction, timestamps, URLs, decoding, candidate filtering, and challenge scaffolding.
-- [Instructions for AI contributors](AGENTS.md): repository rules and expectations for future assistants.
+## Choose your starting point
 
-## Challenge guides
-
-| Challenge | Method |
+| I want to… | Start here |
 | --- | --- |
-| [Cybersecurity community](challenges/cybersecurity-community/question.md) | [Research workflow](challenges/cybersecurity-community/how-to-solve.md) |
-| [Device default passwords](challenges/device-default-passwords/question.md) | [Identify the device and consult its documentation](challenges/device-default-passwords/how-to-solve.md) |
-| [Water-damaged barcode](challenges/water-damaged-barcode/question.md) | [Decode visible bars and verify the institution](challenges/water-damaged-barcode/how-to-solve.md) |
-| [Intercepted secure message](challenges/intercepted-secure-message/question.md) | [Decode phonetic words and dot groups](challenges/intercepted-secure-message/how-to-solve.md) |
-| [Cooking With This XOR That](challenges/cooking-with-this-xor-that/question.md) | [Reverse several XOR feedback schemes](challenges/cooking-with-this-xor-that/how-to-solve.md) |
-| [Archived internal memos](challenges/archived-internal-memos/question.md) | [Use known plaintext to test for keystream reuse](challenges/archived-internal-memos/how-to-solve.md) |
-| [Scrambled Python code](challenges/scrambled-python-code/question.md) | [Inspect bytecode and invert its input check](challenges/scrambled-python-code/how-to-solve.md) |
-| [Live relay cipher](challenges/live-relay-cipher/question.md) | [Recover generator state from predictable padding](challenges/live-relay-cipher/how-to-solve.md) |
-| [Unauthorized network services](challenges/unauthorized-network-services/question.md) | [Correlate Zeek logs and assess exposed services](challenges/unauthorized-network-services/how-to-solve.md) |
-| [Blurred messages](challenges/blurred-messages/question.md) | [Match fonts and recover text through pixel comparison](challenges/blurred-messages/how-to-solve.md) |
-| [Cyber Command](challenges/cyber-command/question.md) | [Decrypt TLS and extract hashes; password recovery remains incomplete](challenges/cyber-command/how-to-solve.md) |
-| [Cyber Command: admin flag](challenges/cyber-command-admin-flag/question.md) | [Chain a redirect, dangling markup, framing, and CSRF](challenges/cyber-command-admin-flag/how-to-solve.md) |
+| Investigate a new challenge | [CTF playbook](docs/ctf-playbook.md) |
+| Find a command-line helper | [Tool catalog and recipes](tools/README.md) |
+| Continue with an AI assistant | [AI workflow](docs/ai-workflow.md) · [Repository instructions](AGENTS.md) |
+| Fix a terminal or permissions problem | [Terminal workflow](docs/terminal-workflow.md) |
+| Double-check a result | [Verification checklist](docs/verification-checklist.md) |
+| Resume without repeating failed attempts | [Private handoff template](docs/investigation-notes-template.md) |
 
-## Challenge format
+## Quick start
 
-Each challenge has two required text files. If the image is part of the question, it may also have a `question.png`:
-
-```text
-challenges/<challenge-name>/
-├── question.md       # The prompt and information given to players
-├── how-to-solve.md   # The method and reasoning, without the final answer
-└── question.png      # Optional image supplied with the prompt
-```
-
-Copy `challenges/_template` to start a challenge. Replace the bracketed guidance in both files. The solving guide can explain the tools, commands, and reasoning a player needs, but must stop before stating the final flag or answer. Keep challenge artifacts and private scoring material outside this repository; link to an externally hosted artifact in the question if one is needed.
-
-## Investigation guides
-
-- [Map itinerary](challenges/map-itinerary/how-to-solve.md)
-- [Vessel tracking](challenges/vessel-tracking/how-to-solve.md)
-- [Wordlist hashes](challenges/wordlist-hashes/how-to-solve.md)
-- [Encrypted files](challenges/encrypted-files/how-to-solve.md)
-- [Password hint sheet](challenges/password-hint-sheet/how-to-solve.md)
-- [Encoded backup](challenges/encoded-backup/how-to-solve.md)
-- [Nginx basic authentication](challenges/nginx-basic-auth/how-to-solve.md)
-
-## Reusable tools
-
-The `tools/` directory contains small Python utilities designed for minimal analysis environments. They use only the standard library, expose `--help`, and default to preserving evidence or redacting sensitive values. Start by checking the environment and inventorying private artifacts:
+Use Python 3.10 or later. The included helpers use the standard library; no pip dependencies are required. Run commands from the repository root and substitute your own **private working directory outside this checkout**.
 
 ```bash
-python3 tools/environment_report.py
-python3 tools/artifact_inventory.py --json /private/path/to/artifacts
+python3 tools/environment_report.py --no-version
+python3 tools/artifact_inventory.py --json /private/work/challenge
+python3 tools/safe_extract.py /private/work/challenge/input.zip
 ```
 
-See the [tool catalog and recipes](tools/README.md) for safe archive extraction, timestamp conversion, URL triage, explicit decoding, candidate filtering, and new-challenge creation. Keep all artifact paths and outputs outside this repository.
+Inspect a helper's `--help` before using it. Output may contain challenge evidence even when a tool hides sensitive fields by default. Keep raw inputs and generated results private.
 
-Upload new challenge images or plain-text inputs to `IMAGES/`. Supported image formats are PNG, JPEG, GIF, and WebP; text inputs use `.txt`. Move or copy an image into its challenge folder as `question.png` when adding the question and guide.
+## Toolkit
 
-## Check before committing
+| Area | Included helpers |
+| --- | --- |
+| **Setup & preservation** | [Environment report](tools/environment_report.py), [artifact inventory](tools/artifact_inventory.py), [archive validation and extraction](tools/safe_extract.py) |
+| **Binary investigation** | [Strings with offsets](tools/strings_extract.py), [hex view](tools/hex_view.py), [binary comparison](tools/binary_diff.py), [entropy windows](tools/entropy_scan.py), [embedded signatures](tools/signature_scan.py) |
+| **Encoding & credentials** | [Explicit decoding](tools/decode_value.py), [repeating XOR](tools/xor_bytes.py), [candidate filtering](tools/candidate_filter.py), [SSH public-key structure and fingerprints](tools/ssh_public_key.py) |
+| **Logs, web & timelines** | [JSONL schema and counts](tools/jsonl_summary.py), [SQLite inspection](tools/sqlite_inspect.py), [saved HTTP responses](tools/http_response_inspect.py), [URL inventory](tools/url_inventory.py), [timestamp conversion](tools/timestamp_convert.py) |
+| **Writing** | [Challenge scaffold](tools/new_challenge.py) |
 
-Run both validation commands:
+**[Browse examples, limits, and exit codes →](tools/README.md)**
+
+## Skill playbooks
+
+Read the matching playbook before choosing a tool. Each includes common mistakes and a way to check the result.
+
+| Network & systems | Data & investigation |
+| --- | --- |
+| [Service enumeration](docs/skills/service-enumeration.md) | [Encoding, cryptography & passwords](docs/skills/encoding-crypto-passwords.md) |
+| [SMB, SSH & compliance checks](docs/skills/smb-ssh-compliance.md) | [Files, images & reverse engineering](docs/skills/files-images-reversing.md) |
+| [Packets, logs & timelines](docs/skills/packet-log-forensics.md) | [Web & OSINT](docs/skills/web-osint.md) |
+
+These are readable repository guides, not automatically installed AI plugins. See the [skills index](docs/README.md) for suggested workflows.
+
+## Challenge library
+
+**[Browse all 29 challenges by category →](docs/challenges.md)**
+
+| Guide | What it teaches |
+| --- | --- |
+| [Service enumeration](challenges/service-enumeration/how-to-solve.md) | Separate port discovery, protocol identification, and exact banner evidence |
+| [Hercules compliance audit](challenges/hercules-compliance-audit/how-to-solve.md) | Trace SMB evidence, local profiles, remote accounts, and permission boundaries; investigation remains incomplete |
+| [Unauthorized network services](challenges/unauthorized-network-services/how-to-solve.md) | Correlate Zeek records and assess exposed services |
+| [Blurred messages](challenges/blurred-messages/how-to-solve.md) | Compare fonts and reproduce the image transformation |
+| [Cyber Command](challenges/cyber-command/how-to-solve.md) | Decrypt TLS and inspect authentication evidence; password recovery remains incomplete |
+| [Cyber Command: admin flag](challenges/cyber-command-admin-flag/how-to-solve.md) | Trace redirect, framing, and CSRF behavior in the supplied challenge |
+
+## Contribute a method
+
+Read [AGENTS.md](AGENTS.md), then create a skeleton:
+
+```bash
+python3 tools/new_challenge.py example-challenge "Example challenge"
+```
+
+Each challenge requires `question.md` and `how-to-solve.md`; an original prompt image may be included as `question.png`. Explain the observed method, verification, and unresolved work. Replace response-bearing values with descriptive placeholders.
+
+`IMAGES/` accepts PNG, JPEG, GIF, WebP, and `.txt` inputs that meet the same publication rules. Review them before upload. Captures, databases, key logs, decrypted output, private notes, final answers, and scoring data stay outside the repository.
+
+Run the checks and review the complete staged diff:
 
 ```bash
 python3 .github/scripts/check_challenges.py
 python3 -m unittest discover -s tests -v
+git diff --check
+git diff --cached --check
+git diff --cached
 ```
 
-The same checks run in GitHub Actions on pushes and pull requests. The content check requires both text files for every challenge, permits an optional question image plus supported images and text inputs in `IMAGES/`, rejects other challenge files, and catches common flag and answer leaks. Review the text, commands, URLs, and images yourself too: an automated check cannot recognize every possible answer.
+GitHub Actions runs the content check and test suite. Automated detection catches selected leak patterns; manual review is still required for ordinary-looking facts, URLs, and images that answer a challenge.

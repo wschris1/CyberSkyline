@@ -29,6 +29,16 @@ TOOLS = {
     "ffmpeg": ["-version"],
     "magick": ["-version"],
     "zbarimg": ["--version"],
+    "nmap": ["--version"],
+    "smbclient": ["--version"],
+    "ssh": ["-V"],
+    "curl": ["--version"],
+    "nc": ["-h"],
+    "dig": ["-v"],
+    "readelf": ["--version"],
+    "objdump": ["--version"],
+    "gdb": ["--version"],
+    "7z": ["i"],
 }
 
 
