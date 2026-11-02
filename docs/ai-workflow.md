@@ -58,6 +58,8 @@ For each transformation, record input, exact operation, output location, and rev
 
 Do not promote readable output, a matching prefix, a valid checksum, or a platform-shaped string to “verified” without checking what that evidence actually proves.
 
+Before giving a value to the user, complete the [answer readiness gate](verification-checklist.md#answer-readiness-gate) for that question in private notes. Check the original source locator, rerun the transformation, test a different failure mode, resolve material conflicts, and confirm the requested format. If any part remains unverified, label the value as a candidate or say the question is unresolved. Keep platform feedback separate from technical verification.
+
 ## 5. Bound searches and automation
 
 Before dictionary work, fuzzing, brute force, or large enumeration:
