@@ -68,10 +68,15 @@ The full library includes both completed methods and open investigations. Read e
 
 ## Repository map
 
+### Discord automation
+
+The [Cyber Skyline Discord bot](bots/skyline_archive/README.md) saves each question under `challenges/<season-year>/<competition>/<category>/<level>/` and pings you when a competition survey's actual form is ready. It supports manual or timed scans, repeat-scan deduplication, and survey watches that survive restarts. See its Windows setup guide or the [imported question index](docs/skyline-questions.md).
+
 ```text
-challenges/   Question and method guide for each challenge
+challenges/   Authored guides and season/type/category/level question imports
 docs/         Investigation workflow, checklists, and playbooks
 tools/        19 dependency-free command-line helpers
+bots/         Optional Discord archive and survey watcher
 tests/        Tests for tools and publication checks
 assets/       README artwork
 ```

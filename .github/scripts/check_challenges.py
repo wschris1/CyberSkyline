@@ -12,6 +12,11 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 REQUIRED_FILES = {"question.md", "how-to-solve.md"}
 ALLOWED_FILES = REQUIRED_FILES | {"question.png"}
+IMPORTED_QUESTION = re.compile(
+    r"^challenges/(?:spring|summer|fall|winter)-(?:19|20)\d{2}/"
+    r"(?:gym|practice-game|individual|team-game)/[a-z0-9-]+/"
+    r"(?:easy|medium|hard|unrated)/[a-z0-9-]+-q[1-9]\d*\.md$"
+)
 UPLOAD_IMAGE_SIGNATURES = {
     ".png": (b"\x89PNG\r\n\x1a\n",),
     ".jpg": (b"\xff\xd8\xff",),
@@ -46,6 +51,7 @@ def main() -> int:
     names = sorted({os.fsdecode(name) for name in listed.stdout.split(b"\0") if name})
     challenge_files: dict[str, set[str]] = defaultdict(set)
     problems: list[str] = []
+    imported_questions = 0
 
     for name in names:
         path = Path(name)
@@ -53,8 +59,10 @@ def main() -> int:
             problems.append(f"{name}: private answer or flag filename")
 
         if path.parts[0] == "challenges":
-            if len(path.parts) != 3:
-                problems.append(f"{name}: expected challenges/<name>/<file>")
+            if IMPORTED_QUESTION.fullmatch(path.as_posix()):
+                imported_questions += 1
+            elif len(path.parts) != 3:
+                problems.append(f"{name}: expected a legacy challenge pair or season/type/category/level/<name>-qN.md")
             else:
                 challenge_files[path.parts[1]].add(path.parts[2])
 
@@ -103,7 +111,7 @@ def main() -> int:
         return 1
 
     count = len(challenge_files) - ("_template" in challenge_files)
-    print(f"Challenge check passed ({count} published challenges).")
+    print(f"Challenge check passed ({count} published guides; {imported_questions} imported questions).")
     return 0
 
 

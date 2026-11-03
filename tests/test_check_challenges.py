@@ -76,6 +76,22 @@ class ChallengeCheckTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("missing how-to-solve.md", output)
 
+    def test_accepts_season_question_without_a_method_file(self):
+        question = self.root / "challenges/spring-2026/practice-game/forensics/easy/example-q1.md"
+        question.parent.mkdir(parents=True)
+        question.write_text("# Example question\nRead the supplied synthetic input.\n")
+        code, output = self.check()
+        self.assertEqual(code, 0, output)
+        self.assertIn("1 imported questions", output)
+
+    def test_rejects_incorrect_import_hierarchy(self):
+        question = self.root / "challenges/spring-2026/forensics/easy/example-q1.md"
+        question.parent.mkdir(parents=True)
+        question.write_text("# Example question\n")
+        code, output = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("season/type/category/level", output)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -36,7 +36,7 @@ class RepositoryNavigationTests(unittest.TestCase):
 
         challenges = {
             path.name for path in (ROOT / "challenges").iterdir()
-            if path.is_dir() and path.name != "_template"
+            if path.is_dir() and path.name != "_template" and (path / "question.md").is_file()
         }
         tools = {
             path.name for path in (ROOT / "tools").glob("*.py")
@@ -55,7 +55,7 @@ class RepositoryNavigationTests(unittest.TestCase):
         index = (ROOT / "docs" / "challenges.md").read_text(encoding="utf-8")
         actual = {
             path.name for path in (ROOT / "challenges").iterdir()
-            if path.is_dir() and path.name != "_template"
+            if path.is_dir() and path.name != "_template" and (path / "question.md").is_file()
         }
         links = CHALLENGE_LINK.findall(index)
         expected = {(slug, kind) for slug in actual for kind in ("question", "how-to-solve")}

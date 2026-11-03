@@ -34,7 +34,8 @@ This repository publishes CTF questions and solving methods. Follow the user's c
 
 ## Writing and validation
 
-- Each challenge requires `question.md` and `how-to-solve.md`; `question.png` is optional. Follow the existing template and layout checks.
+- Authored guides under `challenges/<name>/` require `question.md` and `how-to-solve.md`; `question.png` is optional. Follow the existing template and layout checks.
+- Bot imports use `challenges/<season-year>/<competition>/<category>/<level>/<challenge>-qN.md`, with one file per question and its shared prompt. Competition folders are `gym`, `practice-game`, `individual`, and `team-game`; levels are `easy`, `medium`, `hard`, or `unrated` when no level is supplied. The generated index is `docs/skyline-questions.md`; the bot manifest records managed files. Imported question files do not require an authored solving guide.
 - A guide should explain why the method fits, how to reproduce it, how to check it, and its limits. Use descriptive placeholders for response-bearing values, including values embedded in commands or URLs.
 - Keep illustrative snippets runnable after documented substitutions. Avoid adding dependencies or large scripts when a short explanation or existing tool is sufficient.
 - Run `python3 .github/scripts/check_challenges.py`, `python3 -m unittest discover -s tests -v`, and `git diff --check`. Review every staged path and the full staged diff before committing.
