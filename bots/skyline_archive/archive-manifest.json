@@ -1,5 +1,288 @@
 {
   "challenges": {
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01526ad4ea5fef1fce1d6": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/easy/meta-q1.md",
+          "sha": "1aa0280dd54fb8d70b70fa3e9d1368304891de9b"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/easy/meta-q2.md",
+          "sha": "6590a6aac6b3fdafa2bbd857eea3379999ba705a"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/easy/meta-q3.md",
+          "sha": "48bd6b1de5db249fcec00e701623df6dc86bcf84"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/osint/easy/meta-q4.md",
+          "sha": "19e440c0f09d2f669f9df9cf8ba486f89510160a"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/osint/easy/meta-q5.md",
+          "sha": "564cdc056f17a302eaac3ad6fd502898386841e7"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/osint/easy/meta-q6.md",
+          "sha": "14b76711df715cc81cd1234cd88268f0435ee24f"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01526ad4ea5fef1fce1d6",
+      "title": "Meta (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01528ad4ea5fef1fce278": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/easy/lookup-q1.md",
+          "sha": "e5bfe45c8dc8be80b2c90ccc7e67bf085b3144d3"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/easy/lookup-q2.md",
+          "sha": "eb7485a0125662e3e6eb590a706e79791f716e7b"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/easy/lookup-q3.md",
+          "sha": "ccb0c4c4d1c446703a51c9f4672a1f8c44f61f3e"
+        }
+      ],
+      "level": "easy",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01528ad4ea5fef1fce278",
+      "title": "Lookup (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01528ad4ea5fef1fce2bb": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/easy/threat-intel-q1.md",
+          "sha": "70f2b7cd8130fe0021cf47a2d3547fe4ce4204c7"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/easy/threat-intel-q2.md",
+          "sha": "577abfffc75c8a62bbd4cc76dfed283d758baf78"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/easy/threat-intel-q3.md",
+          "sha": "b5696964d11d29e4cb2e4ee873e191d86a6e0b25"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/osint/easy/threat-intel-q4.md",
+          "sha": "14eac4586b74bbf61a55497c00c00d015bfd9767"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/osint/easy/threat-intel-q5.md",
+          "sha": "4e666d7e7e311cf73351d4495e0dcc551c3f5c53"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/osint/easy/threat-intel-q6.md",
+          "sha": "f21088758837231f6425f3f08e403e708116ea4a"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01528ad4ea5fef1fce2bb",
+      "title": "Threat Intel (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b0152aad4ea5fef1fce336": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/easy/http-headers-q1.md",
+          "sha": "77690652b170b35fc169aa78441e4f72efde5dde"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/easy/http-headers-q2.md",
+          "sha": "8aba310fd08ed2d565fd7e50b18c3a8d9e0efc05"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/easy/http-headers-q3.md",
+          "sha": "56a58bdf6cec75c3c1db670a1112162e355c7138"
+        }
+      ],
+      "level": "easy",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b0152aad4ea5fef1fce336",
+      "title": "HTTP Headers (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b0152bad4ea5fef1fce37b": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/medium/ssl-q1.md",
+          "sha": "a84636f38b37f53398573df101811bcfd8173419"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/medium/ssl-q2.md",
+          "sha": "b8a51244a6ffadc09726518551a39b1ee7f96695"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/medium/ssl-q3.md",
+          "sha": "169c089e95eb44489857d34880718291e57ae765"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b0152bad4ea5fef1fce37b",
+      "title": "SSL (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b0152bad4ea5fef1fce3c9": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/medium/barcode-q1.md",
+          "sha": "06ebbc60d1cda19213767178e69ed8c32424d6f8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/medium/barcode-q2.md",
+          "sha": "6e0f3e6a4dfbc982c62bbf5825c7ef13de64fa72"
+        }
+      ],
+      "level": "medium",
+      "questions": 2,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b0152bad4ea5fef1fce3c9",
+      "title": "Barcode (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b02df9ad4ea5fef1fd1b9b": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/easy/whois-q1.md",
+          "sha": "9cabdb17d075c55e32779d483f5710b0b7ad0953"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/easy/whois-q2.md",
+          "sha": "46ea78ec60d198b4dd1d9b1ef35b9d884bd874ad"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/easy/whois-q3.md",
+          "sha": "a514406e090349284d1aadeee92e2ea57b279509"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/osint/easy/whois-q4.md",
+          "sha": "647a6fde853f88a49fb1a17e42a70e3e2a4997da"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/osint/easy/whois-q5.md",
+          "sha": "1d2b89d665037b2dc6913031bb9c34d838544573"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b02df9ad4ea5fef1fd1b9b",
+      "title": "WHOIS (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b02dfbad4ea5fef1fd1be5": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/easy/pgp-lookup-q1.md",
+          "sha": "8024418024f0ec50acad62ea104d397348647619"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/easy/pgp-lookup-q2.md",
+          "sha": "b7b0715b8dfcf9954247e6bd40a4f1dee49062c4"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/easy/pgp-lookup-q3.md",
+          "sha": "1d26f3f70d69f72befd9a4d6a9fded89d69341cc"
+        }
+      ],
+      "level": "easy",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b02dfbad4ea5fef1fd1be5",
+      "title": "PGP Lookup (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/6aa1c357daaab5f6def3b8de": {
+      "category": "Open Source Intelligence",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/osint/hard/owasp-q1.md",
+          "sha": "888d43cd68399bb29aa3edd3321d2c0ea4aecaf6"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/osint/hard/owasp-q2.md",
+          "sha": "c4ab8f19d052cc5a864263344732c3c377974b10"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/osint/hard/owasp-q3.md",
+          "sha": "7c9a6e864ec4b9a5a41cc84a88b2cdc24e13bd0c"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/osint/hard/owasp-q4.md",
+          "sha": "d23bca5169d4a62e82f5175945ce4b1a14bb88bd"
+        }
+      ],
+      "level": "hard",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/6aa1c357daaab5f6def3b8de",
+      "title": "OWASP (Hard)"
+    },
     "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2151": {
       "category": "Forensics",
       "competition": "gym",
