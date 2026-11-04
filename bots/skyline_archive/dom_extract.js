@@ -1,6 +1,10 @@
 () => {
   // Read rendered DOM only. Never inspect React state, cookies, or network payloads.
   const text = (node) => (node?.textContent || "").trim();
+  // Module cards put completion counters inside their heading. They are not
+  // part of the category identity used by the picker and scan filters.
+  const headingLabel = node => node ? Array.from(node.childNodes)
+    .filter(n => n.nodeType === 3).map(n => n.textContent).join("").trim() || text(node) : "";
   const escape = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/([\\`*_{}\[\]()|#!])/g, "\\$1");
   function render(node) {
@@ -46,15 +50,15 @@
   const tidy = s => s.trim();
   const links = Array.from(document.querySelectorAll("a[href]")).map(a => ({
     href: a.getAttribute("href"),
-    title: text(a.querySelector("h2")) || text(a.querySelector("h3")) || text(a),
+    title: headingLabel(a.querySelector("h2")) || headingLabel(a.querySelector("h3")) || text(a),
   })).filter(a => /^\/(world|module)\/[a-f0-9/]+$/.test(a.href));
   const heading = document.querySelector("h1");
-  const headingText = heading ? Array.from(heading.childNodes).filter(n => n.nodeType === 3)
-    .map(n => n.textContent).join("").trim() || text(heading) : "";
+  const headingText = headingLabel(heading);
   const result = {links, event: headingText, challenge: null, issue: null};
   const menus = Array.from(document.querySelectorAll('[role="listbox"].ui.inline.dropdown'));
+  const category = menus.length ? text(menus[0].querySelector('[role="alert"]')) : "";
+  if (category) result.category = category;
   if (menus.length < 2) return result;
-  const category = text(menus[0].querySelector('[role="alert"]'));
   const title = text(menus[1].querySelector('[role="alert"]'));
   result.category = category;
   result.title = title;
