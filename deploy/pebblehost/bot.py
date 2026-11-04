@@ -17,14 +17,14 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "1ef3ae16156e1da6c0649c7c0c6e698002c22006"
+SOURCE_REVISION = "3b1de1ddd92d49e1ce97fa00ed776f1e6fba658f"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
     'bots/skyline_archive/__main__.py': '74c93f4abc973b89e25f31a6c7ffc8ab612fd3baf1affc9bd981d9c729632fa9',
-    'bots/skyline_archive/ai_verification.py': 'd08a98ac013ccff1897deca828924a46f2718c09cd99a3859212dc0d826f8a49',
+    'bots/skyline_archive/ai_verification.py': '3a7698aecccc019821bf2b3f47ed3189534a8d643b43f2cfae58e51e351fd093',
     'bots/skyline_archive/attachments.py': '9ec25f809ffdad0eaed1dfcbbfe5d693d9943f5b009fd47f817b6cd2de5caedc',
     'bots/skyline_archive/bot.py': 'c25dd4896db78df2aa17468fbf8e8dd4610e805ac8f7734769b6615cdcc17adb',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
@@ -37,7 +37,7 @@ SOURCE_FILES = {
     'bots/skyline_archive/settings.py': '96193faa067b5efba8ce668799ef5469c119314882823b5f8d3846930484ffd4',
     'bots/skyline_archive/storage.py': '94213608f429e69430d1f4457e4ff76c34d8fb2ccf0df794c7c8e91ac33bd7b3',
     'bots/skyline_archive/survey.py': '86f2bef2980443f9e57439dc1e377b0de3a06b0d1ea3ed73fda949eaf037f4dc',
-    'bots/skyline_archive/ui.py': '80e148f189133a2ba61d468523064b1c6b033d97733fb8b5712c10a0ebbff98b',
+    'bots/skyline_archive/ui.py': '02d075ea1231f9458a94f4b78bcd075ec5dc32bfc50c1c2c43ce8eafced9094d',
     'bots/skyline_archive/verification.py': '66b34df2cc9376ec7db1d84a6f5862aa0f20c13a2e905b9714e6c26409a0fde6',
     'bots/skyline_archive/verify_worker.py': '3376446cb7a8d91f2ec7bafc56171463f49573f31e5bc9023575d09ba7a214fc',
     'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
