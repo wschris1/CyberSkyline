@@ -15,10 +15,16 @@ const fixture = JSON.parse(process.argv[2]);
 const node = (value, counters = '') => ({
   textContent: value + counters,
   childNodes: [{nodeType: 3, textContent: value}, {nodeType: 1, textContent: counters}],
+  querySelector: () => null,
 });
+const heading = (value, counters) => {
+  const label = node(value, counters);
+  return fixture.nested ? {textContent: label.textContent, childNodes: [label],
+    querySelector: selector => selector === ':scope > .content' ? label : null} : label;
+};
 const cards = fixture.cards.map(card => ({
   getAttribute: () => card.href,
-  querySelector: selector => selector === 'h3' ? node(card.name, card.counters) : null,
+  querySelector: selector => selector === 'h3' ? heading(card.name, card.counters) : null,
   textContent: card.name + card.counters,
 }));
 const menus = fixture.menus.map(value => ({querySelector: () => node(value)}));
@@ -34,8 +40,8 @@ process.stdout.write(JSON.stringify(extract()));
 
 @unittest.skipUnless(shutil.which('node'), 'Node is needed for DOM fixture tests')
 class ExtractorDiscoveryTests(unittest.TestCase):
-    def extract(self, menus):
-        fixture = dict(menus=menus, cards=[dict(
+    def extract(self, menus, nested=False):
+        fixture = dict(menus=menus, nested=nested, cards=[dict(
             href='/module/' + '1'*24 + '/' + '2'*24,
             name='Network Traffic Analysis', counters='11 Challenges66 Questions0% Completion')])
         result = subprocess.run(['node', '-e', HARNESS, str(EXTRACTOR), json.dumps(fixture)],
@@ -51,6 +57,10 @@ class ExtractorDiscoveryTests(unittest.TestCase):
         result = self.extract(['Network Traffic Analysis'])
         self.assertEqual(result['category'], 'Network Traffic Analysis')
         self.assertIsNone(result['challenge'])
+
+    def test_semantic_ui_card_content_excludes_nested_subheader_counts(self):
+        result = self.extract([], nested=True)
+        self.assertEqual(result['links'][0]['title'], 'Network Traffic Analysis')
 
     def test_incomplete_question_layout_keeps_discovery_metadata(self):
         result = self.extract(['Network Traffic Analysis', 'Synthetic capture (Easy)'])

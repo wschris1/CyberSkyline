@@ -3,8 +3,12 @@
   const text = (node) => (node?.textContent || "").trim();
   // Module cards put completion counters inside their heading. They are not
   // part of the category identity used by the picker and scan filters.
-  const headingLabel = node => node ? Array.from(node.childNodes)
-    .filter(n => n.nodeType === 3).map(n => n.textContent).join("").trim() || text(node) : "";
+  const headingLabel = node => {
+    if (!node) return "";
+    const label = node.querySelector(':scope > .content') || node;
+    return Array.from(label.childNodes).filter(n => n.nodeType === 3)
+      .map(n => n.textContent).join("").trim() || text(label);
+  };
   const escape = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/([\\`*_{}\[\]()|#!])/g, "\\$1");
   function render(node) {
