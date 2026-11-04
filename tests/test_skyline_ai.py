@@ -161,6 +161,28 @@ class AITests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(tool.call_args.args[0],dict(file_id=0,operation='metadata'))
         sent=json.dumps(request.call_args_list)
         self.assertNotIn('/private/do-not-send',sent)
+        self.assertEqual(request.call_args_list[0].args[0]['tool_choice'],'auto')
+
+    async def test_no_cached_files_requests_explanation_without_inspection_tools(self):
+        self.payload['files']=[]
+        self.payload['unavailable_files']=[dict(name='large.bin',status='oversized')]
+        value,request,tool=await self.run_ai([final_response(explanation='The original file is oversized and unavailable.')])
+        self.assertEqual(value['outcome'],'Inconclusive')
+        self.assertIn('oversized',value['evidence'])
+        tool.assert_not_awaited()
+        request.assert_awaited_once()
+        body=request.call_args.args[0]
+        self.assertEqual(body['tools'],[])
+        self.assertEqual(body['tool_choice'],'none')
+        context=json.loads(body['input'][0]['content'])
+        self.assertEqual(context['files'],[])
+        self.assertEqual(context['unavailable_files'],self.payload['unavailable_files'])
+
+    async def test_unexpected_inspection_without_files_still_fails_closed(self):
+        self.payload['files']=[]
+        value,_,tool=await self.run_ai([tool_response()])
+        self.assertEqual(value['outcome'],'Verification error')
+        tool.assert_not_awaited()
 
     async def test_exact_proposed_answer_and_missing_artifact_status_are_passed(self):
         self.payload['unavailable_files']=[dict(name='large.bin',status='oversized')]

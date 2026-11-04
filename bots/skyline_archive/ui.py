@@ -198,7 +198,8 @@ class SettingsView(OwnerView):
 
     def summary(self,notice=''):
         prefs=self.client.preferences.effective()
-        rows=[f'**{k.replace("_"," ")}:** {v}' for k,v in prefs.items()]
+        labels={'enabled':'scheduled scans','ai_enabled':'AI assistance'}
+        rows=[f'**{labels.get(k,k.replace("_"," "))}:** {v}' for k,v in prefs.items()]
         mappings=self.client.store.rows('SELECT kind,scope,discord_id FROM mappings ORDER BY kind,scope')
         mapped='\n'.join(f"{m['scope']} → <#{m['discord_id']}>" for m in mappings[:8]) or 'Created from source categories when archiving is enabled.'
         ai = 'OpenAI: ' + self.client.ai.status() if hasattr(self.client,'ai') else ''

@@ -31,6 +31,8 @@ Keep capitalization and whitespace exact. Choose tools from the actual evidence 
 You may suggest an answer and explain a hypothesis, but an AI opinion never verifies correctness.
 Only the local verify operation can return an independently checked verdict. Cite returned E1, E2,
 etc. evidence IDs, and explicitly mention truncation, conflicting timestamps and missing files.
+Only inspect files listed in files. If that list is empty, no inspection tool is available:
+explain the missing evidence and availability status without inventing a file or observation.
 For creation time inspect original EXIF, not filesystem modification/download dates. Do not assume
 UTC when EXIF has no timezone. Distinguish original capture time from digitization and modification.
 Never treat the proposed answer as evidence for itself. If no useful evidence exists, explain the
@@ -70,7 +72,7 @@ class OpenAIAssistant:
         self.request = request or self._request
 
     def status(self):
-        return 'configured' if getattr(self.settings, 'openai_api_key', '') else 'API key missing'
+        return 'API key loaded (connection not tested here)' if getattr(self.settings, 'openai_api_key', '') else 'API key missing'
 
     def reserve(self):
         key = 'openai-requests/' + datetime.now(timezone.utc).date().isoformat()
@@ -136,8 +138,8 @@ class OpenAIAssistant:
                 raise AIError('AI evidence context reached its size limit.')
             self.reserve()
             response = await self.request(dict(model=model, store=False, instructions=INSTRUCTIONS,
-                input=history, tools=[TOOL], parallel_tool_calls=False,
-                tool_choice='none' if round_number == 3 else 'auto',
+                input=history, tools=[TOOL] if payload['files'] else [], parallel_tool_calls=False,
+                tool_choice='none' if not payload['files'] or round_number == 3 else 'auto',
                 max_output_tokens=getattr(self.settings, 'ai_output_tokens', 1600),
                 text=dict(format=dict(type='json_schema', name='evidence_assessment', schema=SCHEMA, strict=True))))
             if not isinstance(response, dict) or response.get('status') != 'completed':

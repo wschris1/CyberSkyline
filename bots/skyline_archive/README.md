@@ -172,6 +172,12 @@ key into Discord, ChatGPT, logs or GitHub. Model and request limits are private
 environment settings and require a restart. Choose a model your API project can
 access; the configurable default is `gpt-5.4-mini`. API usage uses your OpenAI
 project's billing/credits, and is not activated by the bot's Discord token.
+The settings screen labels **scheduled scans** and **AI assistance** separately.
+**API key loaded** confirms configuration only; a verification result whose
+method says **OpenAI assisted** confirms a completed API response. A provider
+error is reported explicitly. If no challenge files are cached, the model gets
+their unavailable/oversized status without a file-inspection tool and explains
+the missing evidence. This remains **Inconclusive**, not an incorrect answer.
 
 AI runs only for an owner-initiated verification, not for archive scans or survey
 watches. Up to **4 API requests and 3 evidence tools per job**, **40 attempted
