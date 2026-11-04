@@ -17,34 +17,37 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "6076de275f8a8a64a8f20130b4cff24d4f50034a"
+SOURCE_REVISION = "1ef3ae16156e1da6c0649c7c0c6e698002c22006"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
     'bots/skyline_archive/__main__.py': '74c93f4abc973b89e25f31a6c7ffc8ab612fd3baf1affc9bd981d9c729632fa9',
+    'bots/skyline_archive/ai_verification.py': 'd08a98ac013ccff1897deca828924a46f2718c09cd99a3859212dc0d826f8a49',
     'bots/skyline_archive/attachments.py': '9ec25f809ffdad0eaed1dfcbbfe5d693d9943f5b009fd47f817b6cd2de5caedc',
-    'bots/skyline_archive/bot.py': 'b93d7a179d2fab5dc11d72c170d5945d22a4bd3c070af248d24bb2c77ea5cce4',
+    'bots/skyline_archive/bot.py': 'c25dd4896db78df2aa17468fbf8e8dd4610e805ac8f7734769b6615cdcc17adb',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
     'bots/skyline_archive/discord_archive.py': 'a760e48f73ca8dcf400d71612654d4e38dfe87b563020ee7eda4179739d293f1',
     'bots/skyline_archive/dom_extract.js': '3739ac987f2b7a83df02832b92e161ab83e6c0d6da2d457470b2c8e3680ef5fb',
     'bots/skyline_archive/github.py': '3568e6a96df23e853bbb4af0cc9aa82cb8fdf6deb35538b961113d41b637bd0e',
-    'bots/skyline_archive/preferences.py': '1e9c2e552b08bc5e914ea1c53716da50b3e574a0f04a00e62174500360c3dcb9',
+    'bots/skyline_archive/preferences.py': 'e2fc76df6b5031d38c076b885e94f2f9c00cb864104df244c3994b63cfa4a5cc',
     'bots/skyline_archive/progress.py': '02e78726bb4c1806a124eee2acbe0ab673dd8e1b255766014b4605b71d82b8a5',
     'bots/skyline_archive/scanner.py': '928c4d659bcef5b2f550dc7c21f80c6e455ad459f321fc22a90f390d51c21b2f',
-    'bots/skyline_archive/settings.py': '318f4da540d26a4647e4acecae795d42d5d7fa9a25456a023e51f0e4d62284a7',
+    'bots/skyline_archive/settings.py': '96193faa067b5efba8ce668799ef5469c119314882823b5f8d3846930484ffd4',
     'bots/skyline_archive/storage.py': '94213608f429e69430d1f4457e4ff76c34d8fb2ccf0df794c7c8e91ac33bd7b3',
     'bots/skyline_archive/survey.py': '86f2bef2980443f9e57439dc1e377b0de3a06b0d1ea3ed73fda949eaf037f4dc',
-    'bots/skyline_archive/ui.py': '7f5e4be6d6926d14d2f1a9a95c069e65d7e821c95f61e5d57fcf8982c200f3bf',
-    'bots/skyline_archive/verification.py': '6dd6631e814c13c8d61be353f59e9ffee2480040c0877588bd1951d9f67de727',
-    'bots/skyline_archive/verify_worker.py': '2467a671a05113fc47e488d2c9c32d6da7b6ef9d42c84f29498166a2571c26f4',
+    'bots/skyline_archive/ui.py': '80e148f189133a2ba61d468523064b1c6b033d97733fb8b5712c10a0ebbff98b',
+    'bots/skyline_archive/verification.py': '66b34df2cc9376ec7db1d84a6f5862aa0f20c13a2e905b9714e6c26409a0fde6',
+    'bots/skyline_archive/verify_worker.py': '3376446cb7a8d91f2ec7bafc56171463f49573f31e5bc9023575d09ba7a214fc',
     'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
     'tools/_common.py': '33eda94911afe784e2fbc22731126ac8ca318db14f9eade5ae814f597a702a6f',
     'tools/artifact_inventory.py': '76ce149815cfdff979c3f238eb9a6aecbb94b6cc0d72e2765865b8f7818a7dce',
     'tools/decode_value.py': '1cdd1025c45ab3340bf4d87655bb7e9ae0c20e88d20f08fa11769a9127d6a02f',
     'tools/http_response_inspect.py': '0dbaf8926a600f105f5ad3ebae15532cf48500ad521994035f9ad48864971a82',
+    'tools/image_metadata.py': 'd9143846eb8ca9f3ba3654d2ceecfddc744d6bb1970715e02f3185bc52b93840',
     'tools/pcap_summary.py': 'f24a1e78cc021c1327bca732613643ed1546f93eb39e25b3ff2d97668e422b96',
+    'tools/strings_extract.py': '14078c9f0f7a7ba32d448a9e5e15cccce25d9256bac8d5399d30ac13805fadeb',
     'tools/timestamp_convert.py': 'b63cbdc2f06bf6d9e020f3565c23b7d5066e05b3b79f7212db00c103fbd227f4',
 }
 
@@ -64,6 +67,12 @@ DISCORD_ARCHIVE_HUB_ID=0
 DISCORD_NOTIFICATION_CHANNEL_ID=0
 DEFAULT_PREVIEW=false
 DISCORD_MESSAGE_CONTENT=false
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.4-mini
+AI_VERIFY_ENABLED=false
+AI_MAX_DAILY_REQUESTS=40
+AI_MAX_OUTPUT_TOKENS=1600
+AI_TIMEOUT_SECONDS=120
 """
 
 
