@@ -42,19 +42,31 @@ class SkylineCommands(app_commands.Group):
     async def sync(self, interaction: discord.Interaction, event_url: str | None = None, preview: bool = False):
         target = skyline_url(event_url or self.client.settings.event_url)
         self.client.start_sync(target, preview=preview)
-        await interaction.response.send_message("Scan started. Use `/skyline status` for progress and the final GitHub link.", ephemeral=True)
+        mode = "Preview started; nothing will be uploaded." if preview else "Scan started; questions will be uploaded after it finishes."
+        await interaction.response.send_message(mode + " Use `/skyline status` for progress or `/skyline stop` to cancel.", ephemeral=True)
 
     @app_commands.command(name="sync-all", description="Scan every event still accessible on your Competition dashboard.")
+    @app_commands.describe(preview="Count and validate only; do not upload.")
     async def sync_all(self, interaction: discord.Interaction, preview: bool = False):
         self.client.start_sync(all_events=True, preview=preview)
-        await interaction.response.send_message("Scanning accessible events. Closed events will be listed as skipped. Use `/skyline status` for results.", ephemeral=True)
+        mode = "Preview started; nothing will be uploaded." if preview else "Scan started; questions will be uploaded after it finishes."
+        await interaction.response.send_message(
+            mode + " Scanning accessible events; closed events will be listed as skipped. "
+            "Use `/skyline status` for progress or `/skyline stop` to cancel.", ephemeral=True)
+
+    @app_commands.command(name="stop", description="Cancel the current scan or preview before GitHub publication starts.")
+    async def stop(self, interaction: discord.Interaction):
+        await interaction.response.send_message(self.client.stop_sync(), ephemeral=True)
 
     @app_commands.command(name="status", description="Show scan progress, result, and automatic-sync settings.")
     async def status(self, interaction: discord.Interaction):
         interval = self.client.settings.interval
         schedule = f"Every {interval} minutes" if interval else "Off"
+        mode = ""
+        if self.client.scan_task and not self.client.scan_task.done():
+            mode = "**Mode:** " + ("Preview (no uploads)" if self.client.scan_preview else "Scan and upload") + "\n"
         await interaction.response.send_message(
-            (f"**Archive:** {self.client.archive_status}\n**Automatic sync:** {schedule}\n"
+            (f"{mode}**Archive:** {self.client.archive_status}\n**Automatic sync:** {schedule}\n"
              f"**Repository:** https://github.com/{self.client.settings.repository}")[:1950], ephemeral=True)
 
     @app_commands.command(name="watch-survey", description="Ping you here when a survey website actually loads a usable form.")
@@ -95,6 +107,8 @@ class SkylineBot(discord.Client):
         self.tree.add_command(SkylineCommands(self), guild=discord.Object(id=settings.guild_id))
         self.archive_status = "No scan run yet."
         self.scan_task = None
+        self.scan_phase = "idle"
+        self.scan_preview = False
         self.background = []
         self.http_session = None
         self.surveys = SurveyManager(settings.state_dir / "survey-watches.json", SurveyProbe(settings), self.send_survey_ping)
@@ -108,9 +122,34 @@ class SkylineBot(discord.Client):
 
     def start_sync(self, event_url=None, all_events=False, preview=False):
         if self.scan_task and not self.scan_task.done():
-            raise ArchiveError("A scan is already running. Use /skyline status to check it.")
-        self.archive_status = "Starting scan…"
+            raise ArchiveError("A scan is already running. Use /skyline status to check it or /skyline stop to cancel.")
+        self.scan_phase = "scanning"
+        self.scan_preview = preview
+        self.archive_status = "Starting preview…" if preview else "Starting scan…"
         self.scan_task = asyncio.create_task(self.run_sync(event_url, all_events, preview))
+        self.scan_task.add_done_callback(self.scan_finished)
+
+    def stop_sync(self):
+        if not self.scan_task or self.scan_task.done():
+            return "No scan is running. Use `/skyline sync` or `/skyline sync-all` to start one."
+        if self.scan_phase == "publishing":
+            # Cancelling an HTTP request cannot undo a GitHub ref update that
+            # may already have reached the server. Let publication report its result.
+            return "GitHub publication has already started and cannot be cancelled. Use `/skyline status` for its result."
+        if self.scan_phase == "stopping":
+            return "The scan is already stopping. Use `/skyline status` to check when cleanup finishes."
+        self.scan_phase = "stopping"
+        self.archive_status = "Stopping scan; closing its browser. Nothing will be uploaded."
+        self.scan_task.cancel()
+        return "Stop requested. Nothing from this scan will be uploaded. Use `/skyline status` to check when it has stopped."
+
+    def scan_finished(self, task):
+        # Also handles cancellation before run_sync executes its first line.
+        # A second stop must not interrupt the scanner's browser cleanup.
+        if task is self.scan_task:
+            if task.cancelled() and self.scan_phase == "stopping":
+                self.archive_status = "Scan stopped. Nothing uploaded. You can start another scan."
+            self.scan_phase = "idle"
 
     async def run_sync(self, event_url, all_events, preview):
         started = time.monotonic()
@@ -129,6 +168,7 @@ class SkylineBot(discord.Client):
             if preview:
                 self.archive_status = "Preview complete: " + summary + " Nothing uploaded."
             else:
+                self.scan_phase = "publishing"
                 self.archive_status = "Publishing " + summary
                 publication = await GitHub(self.settings, self.http_session).publish(result.challenges)
                 self.archive_status = "Complete: " + summary

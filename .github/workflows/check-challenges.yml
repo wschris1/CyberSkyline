@@ -25,5 +25,9 @@ jobs:
         run: python3 .github/scripts/check_challenges.py
       - name: Test investigation tools and publication checks
         run: python3 -m unittest discover -s tests -v
+      - name: Install optional bot dependencies
+        run: python3 -m pip install -r bots/skyline_archive/requirements.txt
+      - name: Test Discord scan controls
+        run: python3 -m unittest discover -s tests -p 'test_skyline_bot.py' -v
       - name: Check whitespace
         run: git show --format= --check HEAD

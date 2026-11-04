@@ -11,12 +11,20 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline sync event_url:<event overview URL>` | Scan one event and upload all accessible question prompts. |
 | `/skyline sync preview:true event_url:<event overview URL>` | Check extraction and counts without uploading. |
 | `/skyline sync-all` | Discover events on your Competition dashboard and scan those still accessible. |
+| `/skyline stop` | Cancel the current scan or preview before GitHub publication starts. |
 | `/skyline status` | Show progress, completion, upload link, or the reason a scan failed. |
 | `/skyline watch-survey challenge_url:<survey challenge URL>` | Watch for its survey link, then check the actual website and ping you in this channel. |
 | `/skyline survey-status` | Show your saved survey watches and what each is waiting for. |
 | `/skyline unwatch-survey watch_id:<ID>` | Remove a watch. Remove it before intentionally rearming a finished watch. |
 
 Commands work only in the configured server and only for the Discord user IDs in `DISCORD_OWNER_IDS`.
+
+`/skyline stop` cancels the current scan and closes its browser without taking the
+Discord bot offline. Wait until `/skyline status` says **Scan stopped** before
+starting another scan. Collected questions from that run are discarded; an upload
+that has already started cannot be cancelled or undone by this command. Survey
+watches keep running, and any configured automatic scans still run on their next
+scheduled interval. Start and status messages show whether the run is a preview.
 
 ## Windows setup
 
