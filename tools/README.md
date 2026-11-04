@@ -2,7 +2,7 @@
 
 [Home](../README.md) · [Skill playbooks](../docs/README.md) · [Verification checklist](../docs/verification-checklist.md)
 
-**19 command-line helpers. Python 3.10+. Standard library only.** Run from the repository root. These helpers operate on local files; they do not scan hosts, log into accounts, submit answers, or install other tools. `environment_report.py` can invoke installed programs to read their versions; `--no-version` only checks paths.
+**20 command-line helpers. Python 3.10+. Standard library only.** Run from the repository root. These helpers operate on local files; they do not scan hosts, log into accounts, submit answers, or install other tools. `environment_report.py` can invoke installed programs to read their versions; `--no-version` only checks paths.
 
 Keep original artifacts and generated evidence outside the Git checkout. Use copies for analysis. Each helper supports `--help`; select one that resolves a specific question rather than running the entire catalog blindly.
 
@@ -12,6 +12,7 @@ Keep original artifacts and generated evidence outside the Git checkout. Use cop
 | --- | --- | --- |
 | Check local capabilities | [environment_report.py](environment_report.py) | Paths and optional version lines; no environment variables |
 | Preserve an artifact inventory | [artifact_inventory.py](artifact_inventory.py) | Sizes, SHA-256, header signatures; TSV or JSON |
+| Read embedded image metadata | [image_metadata.py](image_metadata.py) | JPEG/TIFF/PNG EXIF tags with original byte offsets; bounded, no image decoding or filesystem dates |
 | List or extract an archive | [safe_extract.py](safe_extract.py) | ZIP/tar validation; traversal, links, special files, duplicate paths, size limits, and destination checks |
 | Locate readable strings | [strings_extract.py](strings_extract.py) | JSON with byte offsets and encodings; printable ASCII, including ASCII-range UTF-16LE/BE |
 | Inspect exact bytes | [hex_view.py](hex_view.py) | Hex/ASCII rows with absolute offsets; 256 bytes by default |
@@ -42,6 +43,20 @@ python3 tools/safe_extract.py /private/work/input.zip --extract /private/work/ex
 Archive extraction requires a new or empty destination. Archive checks reduce common extraction risks; they do not make extracted content trustworthy. Inventory signatures are hints to confirm with a format-aware parser.
 
 ## Binary triage
+
+For image creation time, inspect the original downloaded image:
+
+```bash
+python3 tools/image_metadata.py /private/work/original.jpg
+```
+
+This reads selected ASCII/numeric EXIF tags, including original/digitized dates,
+camera make/model/software and GPS rational fields. It reports original byte
+offsets and rejects truncated, cyclic or excessive metadata. It does not parse
+XMP, maker notes or thumbnail tags, decode image pixels, infer a timezone or
+establish that metadata is authentic. Missing creation tags cannot be replaced
+by the filesystem modification time. Output may contain challenge answers;
+keep it private. Input is a regular file of at most 64 MiB; errors return 1.
 
 ```bash
 python3 tools/strings_extract.py /private/work/sample.bin --minimum 6 --limit 100

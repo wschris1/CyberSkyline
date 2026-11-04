@@ -10,7 +10,7 @@
 <p align="center">
   <a href="docs/challenges.md"><strong>Explore 38 challenges</strong></a> ·
   <a href="docs/ctf-playbook.md"><strong>Start the CTF playbook</strong></a> ·
-  <a href="tools/README.md"><strong>Use 19 tools</strong></a> ·
+  <a href="tools/README.md"><strong>Use 20 tools</strong></a> ·
   <a href="docs/README.md"><strong>Read 7 playbooks</strong></a>
 </p>
 
@@ -75,7 +75,7 @@ The [NCL TRACKER Discord bot](bots/skyline_archive/README.md) saves each questio
 ```text
 challenges/   Authored guides and season/type/category/level question imports
 docs/         Investigation workflow, checklists, and playbooks
-tools/        19 dependency-free command-line helpers
+tools/        20 dependency-free command-line helpers
 bots/         Optional Discord archive and survey watcher
 tests/        Tests for tools and publication checks
 assets/       README artwork

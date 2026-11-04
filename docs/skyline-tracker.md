@@ -1,6 +1,6 @@
 # NCL TRACKER archive workflow
 
-NCL TRACKER retains its GitHub importer, preview mode, survey watches, timer and owner checks. The Discord archive is an additional destination. All `/skyline` commands and their controls remain restricted to `DISCORD_OWNER_IDS` in `DISCORD_GUILD_ID`; component interactions also check the initiating owner. No additional API key or AI service is needed.
+NCL TRACKER retains its GitHub importer, preview mode, survey watches, timer and owner checks. The Discord archive is an additional destination. All `/skyline` commands and their controls remain restricted to `DISCORD_OWNER_IDS` in `DISCORD_GUILD_ID`; component interactions also check the initiating owner. Local checks need no additional service. Optional OpenAI assistance requires its own private API key.
 
 ## First use
 
@@ -81,8 +81,16 @@ The bot displays the exact proposed answer as a JSON string (escaped newlines/ta
 | Total packets in one whole classic PCAP | `tools/pcap_summary.py`; filters, truncation, parser warnings and PCAPNG cannot yield a verified count |
 | Final status of one saved HTTP response | `tools/http_response_inspect.py`; questions about individual redirects need another adapter |
 | Explicit timestamp conversion | `tools/timestamp_convert.py`; one explicit epoch/unit and ISO UTC with six fractional digits |
+| Image creation time, optionally rounded down to the minute | `tools/image_metadata.py`; original JPEG/TIFF/PNG EXIF dates, conflicts reported, no filesystem-time or timezone guesses |
 
 Question shapes are deliberately narrow. A filtered count, derived value, multi-step decoding, ambiguous evidence set, unsupported metadata field or format-only match is **Inconclusive**. Available code is integrated through fixed adapters; the bot never turns question text, attachments or answers into shell commands, imports or executable code. No AI opinion is used as proof.
+
+Enable optional **OpenAI assistance** in `/skyline settings` after adding your
+private API key. When a local check is inconclusive, the AI can select evidence
+tools, explain findings and suggest an unverified candidate or next check.
+Its assessment is distinguished from a local verified result; API/tool errors
+never become incorrect answers. Read the [setup, data-sharing and usage-limit
+details](../bots/skyline_archive/README.md#optional-openai-answer-assistance).
 
 Each check runs in the configured Python interpreter in an isolated child process with JSON stdin and a stripped environment. Only one worker runs at a time. There is a 15-second wall timeout, 64 MiB per-file limit, cache hash validation and bounded output. On Linux/PebbleHost the worker also has 8 CPU seconds, 512 MiB address space, a 1 MiB file-write limit and 64 file descriptors. These are resource limits, not a general OS sandbox. Only fixed trusted repository code executes; adapters make no network calls. On Windows the wall/file/input limits remain but POSIX resource limits do not apply.
 

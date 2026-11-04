@@ -2,7 +2,7 @@
 
 Scan Cyber Skyline questions into season/competition/category/level folders on GitHub and get a Discord ping when a competition survey's website actually becomes usable.
 
-The bot runs on your Windows PC or an always-on host. Discord controls it; GitHub stores the public question archive, while a private database records Discord posts, question threads, files, settings and verification evidence. No AI subscription or model API key is required.
+The bot runs on your Windows PC or an always-on host. Discord controls it; GitHub stores the public question archive, while a private database records Discord posts, question threads, files, settings and verification evidence. Local checks need no AI subscription or key. Optional OpenAI assistance uses a separately configured API key.
 
 ## What it does
 
@@ -18,7 +18,7 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline reindex` | Index older manifest-managed GitHub questions locally without reposting them. |
 | `/skyline settings` | Change schedule, destinations, mappings, notifications and default preview in Discord. |
 | `/skyline session recheck` | Validate a refreshed session and unblock scans. |
-| `/skyline verify answer:<exact text>` | In a question thread, check a proposed answer using supported evidence adapters. Omit `answer` to select a normal message. |
+| `/skyline verify answer:<exact text>` | Check a proposed answer using local evidence, then optional OpenAI assistance if inconclusive. Omit `answer` to select a normal message. |
 | `/skyline watch-survey challenge_url:<survey challenge URL>` | Watch for its survey link, then check the actual website and ping you in this channel. |
 | `/skyline survey-status` | Show your saved survey watches and what each is waiting for. |
 | `/skyline unwatch-survey watch_id:<ID>` | Remove a watch. Remove it before intentionally rearming a finished watch. |
@@ -133,6 +133,72 @@ One successful batch produces one commit. Unchanged scans produce no commits. Cl
 Use `/skyline settings` to choose a progress hub or notification channel, set a frequency (60–10080 minutes), and enable scheduled scans. A nonempty `SKYLINE_EVENT_URL` scopes them to that event; otherwise they discover all accessible events. The saved default preview applies to both manual and scheduled scans. Explicit `preview:true` / `preview:false` and picker buttons override it for one run.
 
 Existing `SYNC_INTERVAL_MINUTES` and `SKYLINE_EVENT_URL` are still environment defaults. A positive environment interval requires an event URL; `0` defaults scheduling off. Saved settings override the corresponding environment defaults, survive restarts, and apply to the next run. The timer checks every 15 seconds and preserves its last scheduled start time. It waits while any scan, discovery, reindex or session check is active, and while login is known invalid. Existing installs need a progress destination selected before scheduled scans resume. Survey watches keep their separate polling cycle.
+
+## Optional OpenAI answer assistance
+
+The local verifier runs first. It now supports original EXIF creation timestamps
+in JPEG, TIFF and PNG images, including questions asking to round down to the
+minute. It compares original/digitized tags, reports conflicting dates, and never
+substitutes the host's download/modification time. The result establishes a match
+to embedded metadata, not that the camera clock was accurate. XMP, maker notes,
+image pixels and arbitrary date conversions are not handled by this adapter.
+
+When local checks are inconclusive, opt-in OpenAI assistance can inspect cached
+files with the repository's metadata, file facts, text, strings, PCAP and saved
+HTTP tools. It can select a local verification check, explain evidence, suggest
+an unverified candidate and give a concrete next check. It cannot run arbitrary
+commands, execute attachments, browse challenge sites or submit answers.
+**Verified correct/incorrect** still requires a local check of the original
+question and exact proposed answer. Otherwise the result remains **Inconclusive**,
+with a separate AI assessment. Tool/API failures are **Verification error**.
+Full long reports are attached privately to the thread.
+
+On PebbleHost, add these entries to `/home/container/private/skyline.env` using
+the private panel file editor, preserving existing entries:
+
+```dotenv
+OPENAI_API_KEY=<your-private-API-key>
+OPENAI_MODEL=gpt-5.4-mini
+AI_VERIFY_ENABLED=false
+AI_MAX_DAILY_REQUESTS=40
+AI_MAX_OUTPUT_TOKENS=1600
+AI_TIMEOUT_SECONDS=120
+```
+
+Restart once to load the key. Run `/skyline settings` and select **Toggle OpenAI
+assistance**. This saved switch overrides `AI_VERIFY_ENABLED` and survives
+restarts. Disable it from the same menu without restarting. Never paste an API
+key into Discord, ChatGPT, logs or GitHub. Model and request limits are private
+environment settings and require a restart. Choose a model your API project can
+access; the configurable default is `gpt-5.4-mini`. API usage uses your OpenAI
+project's billing/credits, and is not activated by the bot's Discord token.
+
+AI runs only for an owner-initiated verification, not for archive scans or survey
+watches. Up to **4 API requests and 3 evidence tools per job**, **40 attempted
+API requests per UTC day**, 1,600 output tokens per request and 120 seconds per
+job are the defaults. Attempts count even if they fail, and the daily counter
+persists in the existing private SQLite key/value storage. Set the daily limit
+to 0 to block requests. These are request/token limits, not a dollar spending
+cap; set any desired project budget/limits in OpenAI too. No automatic retries
+increase the number of requests.
+
+Enabling this sends the question, shared instructions, exact proposed answer,
+filenames, availability status and bounded evidence excerpts to OpenAI. It does
+not upload whole binary files or send Skyline sessions, bot tokens, server IDs or
+host paths. Requests use `store:false`; this disables stored Responses, not all
+provider retention. Text/string inspection covers only the first 8 KiB and marks
+truncation. Images are inspected for metadata, not uploaded for visual analysis.
+Large memory images, full packet-protocol analysis, OSINT browsing and arbitrary
+code execution need separate tools. Missing files remain missing evidence.
+
+Existing verification records already persist the answer, user, timestamp,
+method, outcome and full evidence/AI explanation. No schema migration or repost
+is needed. Tests mock the API and use synthetic image metadata. An actual billed
+OpenAI call must be checked after supplying your own key.
+
+Primary references: [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling),
+[Responses migration and storage](https://developers.openai.com/api/docs/guides/migrate-to-responses),
+[GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini).
 
 ## Private state and hosting
 

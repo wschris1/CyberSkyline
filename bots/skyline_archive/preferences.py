@@ -4,7 +4,7 @@ from .core import ArchiveError
 
 
 DEFAULTS = dict(enabled=False,frequency=60,archive_enabled=False,archive_hub=0,notification_channel=0,
-                notify_login=True,notify_results=False,default_preview=False,category_prefix='')
+                notify_login=True,notify_results=False,default_preview=False,category_prefix='',ai_enabled=False)
 
 
 class Preferences:
@@ -17,16 +17,19 @@ class Preferences:
                     'archive_hub': getattr(self.settings,'archive_hub',0),
                     'archive_enabled': bool(getattr(self.settings,'archive_hub',0)),
                     'notification_channel':getattr(self.settings,'notification_channel',0),
-                    'default_preview':getattr(self.settings,'default_preview',False)}
+                    'default_preview':getattr(self.settings,'default_preview',False),
+                    'ai_enabled':getattr(self.settings,'ai_verify_enabled',False)}
         return {k:self.store.get(k,v,'settings') for k,v in defaults.items()}
 
     async def save(self, values, guild):
         if not values.keys() <= DEFAULTS.keys():
             raise ArchiveError('Unknown setting.')
         result = {**self.effective(),**values}
-        for key in ('enabled','archive_enabled','notify_login','notify_results','default_preview'):
+        for key in ('enabled','archive_enabled','notify_login','notify_results','default_preview','ai_enabled'):
             if type(result[key]) is not bool:
                 raise ArchiveError(f'{key} must be true or false.')
+        if values.get('ai_enabled') and not getattr(self.settings,'openai_api_key',''):
+            raise ArchiveError('Set OPENAI_API_KEY in the private PebbleHost configuration and restart before enabling AI. Never paste keys into Discord.')
         if type(result['frequency']) is not int or not 60 <= result['frequency'] <= 10080:
             raise ArchiveError('Automatic scan frequency must be 60–10080 minutes.')
         if not isinstance(result['category_prefix'],str) or len(result['category_prefix']) > 35:

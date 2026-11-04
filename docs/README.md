@@ -2,7 +2,7 @@
 
 Start with [AGENTS.md](../AGENTS.md) and [the AI investigation workflow](ai-workflow.md). For live terminal work, also read [hosts, permissions, and reliable commands](terminal-workflow.md). These playbooks are repository reference material for both humans and AI assistants; they are not automatically installed plugins. Ask a future assistant to read the repository instructions and the matching playbook before giving commands.
 
-[Home](../README.md) · [19-tool catalog](../tools/README.md) · [All challenge guides](challenges.md) · [General CTF playbook](ctf-playbook.md)
+[Home](../README.md) · [20-tool catalog](../tools/README.md) · [All challenge guides](challenges.md) · [General CTF playbook](ctf-playbook.md)
 
 | Situation | Read | Essential double-check |
 | --- | --- | --- |

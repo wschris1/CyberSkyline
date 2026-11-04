@@ -46,6 +46,12 @@ class Settings:
     notification_channel: int = 0
     default_preview: bool = False
     message_content: bool = False
+    openai_api_key: str = field(default='',repr=False)
+    openai_model: str = 'gpt-5.4-mini'
+    ai_verify_enabled: bool = False
+    ai_daily_requests: int = 40
+    ai_output_tokens: int = 1600
+    ai_timeout: int = 120
 
     @property
     def auth_file(self):
@@ -88,13 +94,20 @@ class Settings:
         headless = env.get("HEADLESS", "true").lower()
         if headless not in ("true", "false"):
             raise ArchiveError("HEADLESS must be true or false.")
+        model = env.get('OPENAI_MODEL','gpt-5.4-mini').strip()
+        if not re.fullmatch(r'[A-Za-z0-9_.:-]{1,100}',model):
+            raise ArchiveError('OPENAI_MODEL must be a valid model ID, not a URL.')
         return cls(token, git_token, guild, owner_ids, repository, branch, event_url, interval,
                    number(env, "REQUEST_DELAY_SECONDS", 2, 1, 60),
                    number(env, "MAX_CHALLENGES", 2000, 1, 10000), state, headless == "true",
                    number(env, "DISCORD_ARCHIVE_HUB_ID", 0, 0, 2**64 - 1),
                    number(env, "DISCORD_NOTIFICATION_CHANNEL_ID", 0, 0, 2**64 - 1),
                    boolean(env, "DEFAULT_PREVIEW"),
-                   boolean(env, "DISCORD_MESSAGE_CONTENT"))
+                   boolean(env, "DISCORD_MESSAGE_CONTENT"),
+                   env.get('OPENAI_API_KEY','').strip(), model, boolean(env,'AI_VERIFY_ENABLED'),
+                   number(env,'AI_MAX_DAILY_REQUESTS',40,0,500),
+                   number(env,'AI_MAX_OUTPUT_TOKENS',1600,256,4096),
+                   number(env,'AI_TIMEOUT_SECONDS',120,15,180))
 
 
 def load_settings(**kwargs):

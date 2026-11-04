@@ -1,6 +1,7 @@
 """Fixed verification adapters. No shell, dynamic commands, eval, network or artifact execution."""
 
 import hashlib
+from datetime import datetime
 import json
 from pathlib import Path
 import re
@@ -9,7 +10,7 @@ import zipfile
 
 # -I ignores inherited import paths. Only this installed, hash-pinned repository is added.
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
-from tools import artifact_inventory, decode_value, pcap_summary, http_response_inspect, timestamp_convert
+from tools import artifact_inventory, decode_value, pcap_summary, http_response_inspect, timestamp_convert, image_metadata, strings_extract
 
 LIMIT = 64*1024*1024
 
@@ -28,24 +29,105 @@ def choose_file(files, question):
     return selected[0] if len(selected) == 1 else None
 
 
+def metadata_check(path, plain, answer):
+    creation = re.fullmatch(r'when was (?:the |this )?(?:image|photo|photograph|picture) (?:created|taken)\??'
+                            r'(?:[. ]+round down to the nearest minute)?', plain)
+    if not creation:
+        return None
+    report = image_metadata.inspect(path.read_bytes())
+    tags = [t for t in report['tags'] if t['tag'] in ('DateTimeOriginal', 'DateTimeDigitized')]
+    if not tags:
+        return result('Inconclusive', 'tools/image_metadata.py',
+                      'No EXIF original/digitized timestamp exists. Modification/download dates are not creation evidence.')
+    minute = 'round down to the nearest minute' in plain
+    values = [datetime.strptime(t['value'], '%Y:%m:%d %H:%M:%S') for t in tags]
+    values = [v.replace(second=0, microsecond=0) if minute else v for v in values]
+    if len(set(values)) != 1:
+        return result('Inconclusive', 'tools/image_metadata.py',
+                      'EXIF original and digitized timestamps conflict; the intended creation field is ambiguous.')
+    expected = values[0].strftime('%Y-%m-%d %H:%M' if minute else '%Y-%m-%d %H:%M:%S')
+    try:
+        datetime.strptime(answer, '%Y-%m-%d %H:%M' if minute else '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        return result('Inconclusive', 'tools/image_metadata.py',
+                      'Use YYYY-MM-DD HH:MM' + ('.' if minute else ':SS.') +
+                      ' The EXIF value has no requested timezone conversion; answer whitespace is preserved.')
+    basis = ', '.join(f"{t['tag']} at byte {t['offset']}" for t in tags)
+    return compare(expected, answer, 'tools/image_metadata.py',
+                   f'Read {basis} from the original file' + (' and rounded down to the minute' if minute else '') +
+                   '. Compared the recorded local camera time without assuming a timezone; metadata is not proof of clock accuracy.')
+
+
+def validate_files(data):
+    root = Path(data['root']).resolve()
+    for f in data['files']:
+        p = Path(f['path'])
+        if p.is_symlink() or not p.resolve().is_relative_to(root) or not p.is_file() or p.stat().st_size > LIMIT:
+            raise ValueError('Evidence file unavailable or outside the verification limit')
+        if artifact_inventory.sha256_file(p) != f['sha256']:
+            raise ValueError('Evidence file changed')
+
+
+def inspect_evidence(data):
+    """Allowlisted, read-only operations. AI never supplies paths, commands or an answer."""
+    validate_files(data)
+    request = data['inspect']
+    if not isinstance(request, dict) or set(request) != {'file_id', 'operation'}:
+        raise ValueError('Invalid tool arguments')
+    index = request['file_id']
+    if type(index) is not int or not 0 <= index < len(data['files']):
+        raise ValueError('Unknown evidence file')
+    item = data['files'][index]
+    path = Path(item['path'])
+    operation = request['operation']
+    if operation == 'verify':
+        # Preserve the actual question and exact proposed answer. Restrict the
+        # evidence file only when the prompt explicitly names it or it is unique.
+        selected = choose_file(data['files'], data['question'] + '\n' + data['instructions'])
+        if selected != item:
+            return dict(error='The original question does not unambiguously select this file.')
+        return check({**data, 'files': [item]})
+    if operation == 'metadata':
+        return image_metadata.inspect(path.read_bytes())
+    if operation == 'file_facts':
+        return dict(size=path.stat().st_size, sha256=item['sha256'], kind=artifact_inventory.identify(path))
+    if operation in ('text', 'strings'):
+        with path.open('rb') as source:
+            raw = source.read(8193)
+        if operation == 'text':
+            return dict(text=raw[:8192].decode('utf-8', errors='replace'),
+                        truncated=len(raw)>8192, offset=0, bytes_read=min(len(raw),8192))
+        report = strings_extract.extract(raw[:8192], minimum=4, limit=40)
+        report['truncated'] = report['truncated'] or len(raw)>8192
+        return report
+    if operation == 'pcap_summary':
+        return pcap_summary.summarize(path.read_bytes())
+    if operation == 'http_response':
+        report = http_response_inspect.inspect(path.read_bytes())
+        # Never forward cookies or authentication headers to the AI.
+        return {k:v for k,v in report.items() if k not in ('headers','body','raw')}
+    raise ValueError('Unsupported evidence operation')
+
+
 def check(data):
     question,instructions,answer = data['question'],data['instructions'],data['answer']
     evidence_text = question + '\n' + instructions
     q = question.casefold()
     files = data['files']
-    root = Path(data['root']).resolve()
-    for f in files:
-        p = Path(f['path'])
-        if p.is_symlink() or not p.resolve().is_relative_to(root) or not p.is_file() or p.stat().st_size > LIMIT:
-            return result('Verification error','evidence files','A required file is unavailable or exceeds the verification limit.')
-        if artifact_inventory.sha256_file(p) != f['sha256']:
-            return result('Verification error','evidence files','A cached file changed; refresh the source before verifying.')
+    try:
+        validate_files(data)
+    except (OSError, ValueError):
+        return result('Verification error','evidence files','A cached file changed or is unavailable; refresh the source before verifying.')
     selected = choose_file(files,question)
     path = Path(selected['path']) if selected else None
     # These adapters deliberately recognize narrow question shapes. A keyword alone
     # cannot prove that a whole-file measurement answers a filtered/derived question.
     plain = re.sub(r'^\s*\**q\d+\s*[-–:]\s*\d+\s*points?\**\s*', '', q)
     plain = re.sub(r'\s+', ' ', plain).strip().rstrip('?.')
+    if path:
+        metadata = metadata_check(path, plain, answer)
+        if metadata:
+            return metadata
     supplied = r'(?:(?:the|this|supplied|provided|original|attached) )?(?:file|capture|archive|packet capture)'
     if selected:
         supplied += r'|`?' + re.escape(selected['name'].casefold()) + r'`?'
@@ -162,7 +244,8 @@ def main():
         raw=sys.stdin.buffer.read(1024*1024+1)
         if len(raw)>1024*1024:
             raise ValueError('input too large')
-        output=check(json.loads(raw))
+        data = json.loads(raw)
+        output = inspect_evidence(data) if 'inspect' in data else check(data)
     except Exception as exc:
         output=result('Verification error','evidence adapter',f'The tool could not complete ({type(exc).__name__}); no correctness conclusion was drawn.')
     print(json.dumps(output,ensure_ascii=False))

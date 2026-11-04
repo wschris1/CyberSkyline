@@ -115,6 +115,22 @@ settings precedence, file limits, recovery and verification methods.
 
 ## Updates and checks
 
+### Enable OpenAI assistance after upgrading
+
+The release includes the OpenAI connector and EXIF creation-date adapter. No new
+Python package is required. Keep the existing private database and artifacts.
+Add `OPENAI_API_KEY=<your private key>` and `OPENAI_MODEL=gpt-5.4-mini` to
+`/home/container/private/skyline.env`, then restart. In Discord, open
+`/skyline settings` and select **Toggle OpenAI assistance**. Verify a question in
+its existing thread. The key is never entered in a Discord command.
+
+The switch is off by default. Saved preferences take precedence over
+`AI_VERIFY_ENABLED`. Local checks, scans and survey watches continue to work
+without a key. See [data sharing, request limits and supported evidence tools](../../bots/skyline_archive/README.md#optional-openai-answer-assistance).
+Changing the model or private key requires a restart; toggling AI does not.
+
+### Loader behavior
+
 `bot.py` pins the application revision and its file hashes. It refuses to replace
 modified application files. To upgrade, preserve your existing files and deploy a
 new verified application revision; keep the private directory and browser cache.

@@ -22,6 +22,7 @@ from .attachments import Attachments
 from .discord_archive import DiscordArchive
 from .progress import Progress, ProgressMessage
 from .verification import Verifier, select_answer
+from .ai_verification import OpenAIAssistant
 from .ui import Picker, SettingsView, SearchView, AnswerPicker
 
 LOG=logging.getLogger(__name__)
@@ -216,7 +217,9 @@ class SkylineBot(discord.Client):
         self.preferences=Preferences(self.store,settings)
         self.attachments=Attachments(self.store)
         self.archive=DiscordArchive(self,self.store,self.attachments,self.preferences)
-        self.verifier=Verifier(self.store,self.attachments)
+        self.ai=OpenAIAssistant(self.store,settings)
+        self.verifier=Verifier(self.store,self.attachments,ai=self.ai,
+                               ai_enabled=lambda:self.preferences.effective()['ai_enabled'])
         self.tree=app_commands.CommandTree(self)
         self.tree.add_command(SkylineCommands(self),guild=discord.Object(id=settings.guild_id))
         self.archive_status='No scan run yet.'
@@ -466,8 +469,20 @@ class SkylineBot(discord.Client):
             outcome='Verification error',evidence='No completed result was recorded. The job may have been interrupted; retry verification.'))
         result=await self.verifier.check(question,answer)
         self.store.finish_verification(record,result)
-        await message.edit(content=(f'**{result["outcome"]} — Q{question["number"]}**\n{display}\n'
-                                   f'**Method:** {result["method"]}\n{result["evidence"]}\nNo answer was submitted to Cyber Skyline.')[:2000])
+        content=(f'**{result["outcome"]} — Q{question["number"]}**\n{display}\n'
+                 f'**Method:** {discord.utils.escape_markdown(result["method"])}\n'
+                 f'{discord.utils.escape_markdown(result["evidence"])}\nNo answer was submitted to Cyber Skyline.')
+        if len(content)>1950:
+            report=discord.File(io.BytesIO(content.encode('utf-8')),filename='verification-report.txt')
+            try:
+                await message.edit(content=f'**{result["outcome"]} — Q{question["number"]}**\n'
+                    'The exact proposed answer, method and full evidence are in the attached report.\n'
+                    'AI assessments are suggestions, not independent proof. No answer was submitted to Cyber Skyline.',
+                    attachments=[*message.attachments,report])
+            finally:
+                report.close()
+        else:
+            await message.edit(content=content)
         try:
             await self.archive.update_verification(question)
         except discord.HTTPException:

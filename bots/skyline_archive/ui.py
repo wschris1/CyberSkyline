@@ -168,7 +168,8 @@ class SettingsView(OwnerView):
         super().__init__(client,owner)
         actions=[('Toggle scheduled scans','enabled'),('Set frequency','frequency'),('Toggle Discord archive','archive_enabled'),
                  ('Toggle default preview','default_preview'),('Toggle login alerts','notify_login'),
-                 ('Toggle completion alerts','notify_results'),('Set category name prefix','category_prefix'),('Category/channel mapping','mapping')]
+                 ('Toggle completion alerts','notify_results'),('Toggle OpenAI assistance','ai_enabled'),
+                 ('Set category name prefix','category_prefix'),('Category/channel mapping','mapping')]
         select=discord.ui.Select(placeholder='Change a setting',options=[discord.SelectOption(label=a,value=b) for a,b in actions],row=0)
         async def select_action(i):
             if self.client.busy():
@@ -200,7 +201,8 @@ class SettingsView(OwnerView):
         rows=[f'**{k.replace("_"," ")}:** {v}' for k,v in prefs.items()]
         mappings=self.client.store.rows('SELECT kind,scope,discord_id FROM mappings ORDER BY kind,scope')
         mapped='\n'.join(f"{m['scope']} → <#{m['discord_id']}>" for m in mappings[:8]) or 'Created from source categories when archiving is enabled.'
-        return ('**NCL TRACKER settings**\n'+notice+'\n'+'\n'.join(rows)+'\n**Mappings:**\n'+mapped+
+        ai = 'OpenAI: ' + self.client.ai.status() if hasattr(self.client,'ai') else ''
+        return ('**NCL TRACKER settings**\n'+notice+'\n'+'\n'.join(rows)+'\n'+ai+'\n**Mappings:**\n'+mapped+
                 f'\n{len(mappings)} saved mappings. Private saved settings override environment defaults. Changes apply to the next scan.')[:1950]
 
 

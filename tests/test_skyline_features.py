@@ -424,12 +424,14 @@ class FakeMessage:
         self.created_at=datetime.now(timezone.utc)
         self.jump_url=f'https://discord.com/channels/123/{channel.id}/{ident}'
         self.edits=0
+        self.attachments=[]
 
     async def edit(self,**kwargs):
         # discord.py returns a new Message; it does not mutate the original instance.
         message=FakeMessage(self.channel,self.id,kwargs.get('embed',self.embeds[0] if self.embeds else None),
                             kwargs.get('content',self.content))
         message.edits=self.edits+1
+        message.attachments=kwargs.get('attachments',self.attachments)
         self.channel.messages[self.id]=message
         return message
 
@@ -732,6 +734,24 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('Verified correct',[f.value for f in parent.embeds[0].fields if f.name=='Latest verification'][0])
         await self.bot.archive.publish([c])
         self.assertEqual(self.bot.store.latest_verification(q['key'])['id'],record['id'])
+
+    async def test_long_ai_report_is_saved_and_attached_without_silent_truncation(self):
+        guild=FakeGuild()
+        client=SimpleNamespace(settings=self.bot.settings,user=Identity(999),get_guild=lambda _:guild,
+                               get_channel=guild.get_channel,fetch_channel=guild.fetch_channel)
+        self.bot.archive=DiscordArchive(client,self.bot.store,self.bot.attachments,self.bot.preferences)
+        await self.bot.archive.publish([challenge()])
+        q=self.bot.store.question(key=self.bot.store.rows('SELECT key FROM questions')[0]['key'])
+        thread=guild.channels[q['thread_id']]
+        interaction=SimpleNamespace(channel=thread,channel_id=thread.id,guild_id=123,user=Identity(456),
+            response=SimpleNamespace(defer=AsyncMock(),is_done=lambda:False),followup=SimpleNamespace(send=AsyncMock()))
+        details='Synthetic evidence. '*250
+        self.bot.verifier.check=AsyncMock(return_value=dict(outcome='Inconclusive',method='OpenAI assisted',evidence=details))
+        await self.bot.verify_answer(interaction,q,' Candidate\n')
+        self.assertEqual(self.bot.store.latest_verification(q['key'])['evidence'],details)
+        message=list(thread.messages.values())[-1]
+        self.assertLess(len(message.content),2000)
+        self.assertEqual(message.attachments[-1].filename,'verification-report.txt')
 
     async def test_scheduler_uses_saved_preferences_and_respects_auth_block(self):
         self.bot.store.save_settings(dict(enabled=True,frequency=120,notification_channel=42,default_preview=True))
