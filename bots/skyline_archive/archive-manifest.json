@@ -283,6 +283,85 @@
       "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/6aa1c357daaab5f6def3b8de",
       "title": "OWASP (Hard)"
     },
+    "6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a1ad4ea5fef1fce6f8": {
+      "category": "Password Cracking",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rockyou-q1.md",
+          "sha": "6bbae7bcd23cef7cf3397ce96c7e612cdb5190c2"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rockyou-q2.md",
+          "sha": "44b264b67110ca63c1a41799f23ba8b8d4f4248c"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rockyou-q3.md",
+          "sha": "22c8fe5fc259dff0149cb3b25b4388e2e440363e"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rockyou-q4.md",
+          "sha": "ec7f79c9c9a5e0e26f2960ae6c67c1c32cee0968"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rockyou-q5.md",
+          "sha": "e4c2cc8c88cb1d4df19ed9e3801e8a18858d3cab"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a1ad4ea5fef1fce6f8",
+      "title": "Rockyou (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/67b75426b86f6054e0df28bb": {
+      "category": "Password Cracking",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rainbow-tables-q1.md",
+          "sha": "3a947c65d17be6e9e03a98d22b5b8cb34322ccd8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rainbow-tables-q2.md",
+          "sha": "cdd1a6d73ed2a7ab1848286885da20f3e11f97a9"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rainbow-tables-q3.md",
+          "sha": "5005f0e8c603e94b2ecb0b34ee7b0c7efbad8d74"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rainbow-tables-q4.md",
+          "sha": "b7959dec3e505ed13363eb56b28d16c48e1dabc2"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rainbow-tables-q5.md",
+          "sha": "ceb64017c5c771e389c95abd17997ca6fcbab896"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/password-cracking/easy/rainbow-tables-q6.md",
+          "sha": "4a6b8ac4d969d3b9f35866d44df81a296cc222ff"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/67b75426b86f6054e0df28bb",
+      "title": "Rainbow Tables (Easy)"
+    },
     "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2151": {
       "category": "Forensics",
       "competition": "gym",
