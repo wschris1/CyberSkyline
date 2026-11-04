@@ -70,7 +70,7 @@ The full library includes both completed methods and open investigations. Read e
 
 ### Discord automation
 
-The [Cyber Skyline Discord bot](bots/skyline_archive/README.md) saves each question under `challenges/<season-year>/<competition>/<category>/<level>/` and pings you when a competition survey's actual form is ready. It supports manual or timed scans, repeat-scan deduplication, and survey watches that survive restarts. See its Windows setup guide or the [imported question index](docs/skyline-questions.md).
+The [NCL TRACKER Discord bot](bots/skyline_archive/README.md) saves each question under `challenges/<season-year>/<competition>/<category>/<level>/` and pings you when a competition survey's actual form is ready. It also supports live progress, interactive scope selection, searchable Discord questions and threads, challenge files, persistent settings and independent answer verification. Manual/timed scans, preview and duplicate prevention share the same workflow. See the [archive workflow guide](docs/skyline-tracker.md), [PebbleHost upgrade instructions](deploy/pebblehost/README.md#upgrading-an-existing-ncl-tracker-installation), or [imported question index](docs/skyline-questions.md).
 
 ```text
 challenges/   Authored guides and season/type/category/level question imports

@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock, patch
 
-from bots.skyline_archive.core import ArchiveError
+from bots.skyline_archive.core import ArchiveError, Challenge
 from bots.skyline_archive.scanner import ScanResult
 
 try:
@@ -33,7 +33,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
         self.release_cleanup = asyncio.Event()
         self.release_cleanup.set()
 
-        async def collect(*args):
+        async def collect(*args, **kwargs):
             self.entered.set()
             try:
                 await asyncio.Event().wait()
@@ -74,7 +74,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
         self.publish.assert_not_awaited()
         self.assertIn("Scan stopped. Nothing uploaded", self.client.archive_status)
         self.client.start_sync(all_events=True, preview=True)
-        await self.entered.wait()
+        await asyncio.wait_for(self.entered.wait(), 3)
         self.client.stop_sync()
         await self.finished()
         self.assertTrue(self.cleanup.is_set())
@@ -85,7 +85,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
                 self.entered.clear()
                 self.cleanup.clear()
                 self.client.start_sync(all_events=True, preview=preview)
-                await self.entered.wait()
+                await asyncio.wait_for(self.entered.wait(), 3)
                 self.client.stop_sync()
                 await self.finished()
                 self.assertTrue(self.cleanup.is_set())
@@ -97,7 +97,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
     async def test_repeated_stop_does_not_interrupt_browser_cleanup(self):
         self.release_cleanup.clear()
         self.client.start_sync(all_events=True)
-        await self.entered.wait()
+        await asyncio.wait_for(self.entered.wait(), 3)
         self.client.stop_sync()
         await self.cleanup.wait()
         self.assertIn("already stopping", self.client.stop_sync())
@@ -119,10 +119,10 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
             return SimpleNamespace(changed=3, commit_url="https://github.com/example/archive/commit/example")
 
         self.collect.side_effect = None
-        self.collect.return_value = ScanResult(challenges=[SimpleNamespace(questions=("Example question?",))])
+        self.collect.return_value = ScanResult(challenges=[Challenge("https://cyberskyline.com/module/"+"1"*24+"/"+"2"*24+"/"+"3"*24, "NCL Fall 2026 Gymnasium", "Forensics", "Example (Easy)", "Instructions", ("Example question?",))])
         self.publish.side_effect = publish
         self.client.start_sync(all_events=True)
-        await publishing.wait()
+        await asyncio.wait_for(publishing.wait(), 3)
         self.assertIn("already started and cannot be cancelled", self.client.stop_sync())
         self.assertFalse(self.client.scan_task.done())
         finish_publication.set()
@@ -133,7 +133,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_completed_preview_cannot_be_stopped_or_published(self):
         self.collect.side_effect = None
-        self.collect.return_value = ScanResult(challenges=[SimpleNamespace(questions=("Example question?",))])
+        self.collect.return_value = ScanResult(challenges=[Challenge("https://cyberskyline.com/module/"+"1"*24+"/"+"2"*24+"/"+"3"*24, "NCL Fall 2026 Gymnasium", "Forensics", "Example (Easy)", "Instructions", ("Example question?",))])
         self.client.start_sync(all_events=True, preview=True)
         await self.finished()
         previous = self.client.archive_status
@@ -144,7 +144,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_cancelling_real_scanner_closes_browser_and_leaves_other_tasks_running(self):
         self.scanner_patch.stop()
-        self.settings.auth_file.write_text("{}", encoding="utf-8")
+        self.settings.auth_file.write_text('{"cookies": [], "origins": []}', encoding="utf-8")
         visit_started = asyncio.Event()
 
         async def visit(*args):
@@ -161,7 +161,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
         with (patch("playwright.async_api.async_playwright", return_value=manager),
               patch("bots.skyline_archive.scanner.Scanner.visit", side_effect=visit)):
             self.client.start_sync(all_events=True)
-            await visit_started.wait()
+            await asyncio.wait_for(visit_started.wait(), 3)
             self.client.stop_sync()
             await self.finished()
         browser.close.assert_awaited_once()
@@ -183,7 +183,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
         commands = SkylineCommands(self.client)
         interaction = SimpleNamespace(response=SimpleNamespace(send_message=AsyncMock()))
         self.client.start_sync(all_events=True, preview=True)
-        await self.entered.wait()
+        await asyncio.wait_for(self.entered.wait(), 3)
         await commands.get_command("status").callback(commands, interaction)
         self.assertIn("Preview (no uploads)", interaction.response.send_message.call_args.args[0])
 

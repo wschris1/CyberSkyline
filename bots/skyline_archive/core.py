@@ -25,6 +25,16 @@ class ArchiveError(Exception):
     """An actionable error safe to show in a private Discord reply."""
 
 
+class SessionExpired(ArchiveError):
+    """Authentication needs an explicit refresh; do not retry on a timer."""
+
+
+@dataclass(frozen=True)
+class AttachmentRef:
+    name: str
+    url: str
+
+
 def skyline_url(value: str, kind: str = "event") -> str:
     """Limit crawler destinations to the observed Cyber Skyline page routes."""
     try:
@@ -117,6 +127,8 @@ class Challenge:
     prompt: str
     questions: tuple[str, ...]
     attachments: tuple[str, ...] = ()
+    question_ids: tuple[str, ...] = ()
+    attachment_refs: tuple[AttachmentRef, ...] = ()
 
     @property
     def ids(self):

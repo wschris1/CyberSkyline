@@ -40,8 +40,78 @@ Do not copy your regular browser profile.
 
 The application is in `/home/container/skyline-app`, while credentials, browser
 session, and survey watches remain in the separate `/home/container/private` tree.
-Automatic archive scans remain off until an event URL and interval are configured.
+Automatic archive scans remain off until enabled through `/skyline settings` or
+the existing environment interval. Configure a progress destination before enabling them.
 Survey watches are added with the Discord slash command after startup.
+
+## Upgrading an existing NCL TRACKER installation
+
+Use the server's private panel file manager/SFTP connection. These steps keep the
+existing login, survey watches, mappings, questions and discussion intact.
+
+1. In Discord, use `/skyline stop` if collection is running. If publication has
+   started, wait for `/skyline status` to finish. Then press **Stop** in PebbleHost
+   and wait until the process is offline.
+2. Back up the root `bot.py`, `requirements.txt`, and the **entire**
+   `/home/container/private` directory to a private location. Include
+   `archive.sqlite3`, any `-wal`/`-shm` sidecars, `survey-watches.json`,
+   `browser-state.json`, evidence files and `skyline.env` if present. Keep this
+   backup private; it contains credentials and proposed answers.
+3. Rename `/home/container/skyline-app` to an unused backup name such as
+   `skyline-app-before-tracker-update`. Preserve it rather than overwriting
+   modified source. Keep `private`, `browser-cache`, `browser-libs` and
+   `browser-apt` where they are.
+4. Download the new [bot.py](https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/main/deploy/pebblehost/bot.py)
+   and [requirements.txt](https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/main/deploy/pebblehost/requirements.txt).
+   Upload those two files to `/home/container`, replacing the root copies.
+   The loader pins an immutable application revision and SHA-256 hashes,
+   including the repository tools used for verification.
+5. In Bot Settings, keep **Python 3.12** and startup file **bot.py**. Preserve the
+   existing private environment. To select normally typed answers, enable
+   **Message Content Intent** for the bot in the Discord Developer Portal and
+   add `DISCORD_MESSAGE_CONTENT=true` to `/home/container/private/skyline.env`.
+   Without it, explicit `answer:` and the answer modal still work. Keep
+   `DEFAULT_PREVIEW=true` as an optional initial environment default; an
+   existing saved preview setting takes precedence.
+6. Grant the bot **View Channel**, **Send Messages**, **Read Message History**,
+   **Embed Links**, **Attach Files**, **Manage Channels**, **Manage Threads**,
+   **Create Public Threads**, and **Send Messages in Threads** in the server
+   and intended destinations. Administrator is unnecessary. Existing channel
+   overwrites can still deny permissions.
+7. Press **Start**. The loader downloads the pinned application/helpers, verifies
+   hashes, installs/checks Chromium, and starts the bot. New SQLite migrations
+   run automatically. Check the console, `setup-status.txt` and
+   `chromium-check.txt`; do not share the private environment or session file.
+8. In Discord run `/skyline settings`: choose an archive hub and notification
+   channel, enable the Discord archive, and turn **default preview** on for
+   the first check. Keep scheduling off until the checks below succeed.
+   Existing category/channel IDs remain mapped; new installs create only
+   missing categories and difficulty channels.
+9. Run `/skyline reindex` for older GitHub imports, `/skyline session recheck`,
+   and `/skyline pick`. Choose one small scope and **Preview**. Confirm the
+   scope, permissions and extraction results before pressing **Start scan**.
+   If login is invalid, use your existing desktop login workflow, replace
+   `/home/container/private/skyline-archive/browser-state.json`, and recheck.
+
+For a live deployment check, scan one challenge, inspect its instructions,
+question parent, thread and file links, then scan it again to confirm reuse.
+Test search as an owner with the intended channel access. Run a supported
+verification in its question thread, confirm the exact answer/result and parent
+status, then restart and repeat search to check persistence. Verify survey
+readiness separately when an actual form is available. Finally set default
+preview and scheduled scanning as desired. These live checks are not performed
+by the mocked test suite or the Chromium preflight.
+
+If an upgrade fails, stop the bot before recovery. Keep the current private
+directory as a second backup. Restore matching application/loader files and a
+compatible private-state backup; never point an older SQLite-aware release at a
+newer unsupported database. Restoring an older database after newer Discord
+posts were sent loses their mappings and can create duplicates—reconcile those
+IDs before scanning. Do not delete existing Discord questions or threads to
+troubleshoot a code update.
+
+See the [workflow guide](../../docs/skyline-tracker.md) for command examples,
+settings precedence, file limits, recovery and verification methods.
 
 ## Updates and checks
 

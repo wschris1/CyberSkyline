@@ -56,6 +56,8 @@
   if (menus.length < 2) return result;
   const category = text(menus[0].querySelector('[role="alert"]'));
   const title = text(menus[1].querySelector('[role="alert"]'));
+  result.category = category;
+  result.title = title;
   const descriptions = Array.from(document.querySelectorAll(".ui.basic.segment.body:not(.fat)"));
   const tables = Array.from(document.querySelectorAll(".ui.basic.segment.fat.tall.body > table"));
   if (descriptions.length !== 1 || tables.length !== 1) {
@@ -97,6 +99,8 @@
   result.challenge = {
     title, category, prompt: tidy(render(promptNodes[0])), questions, question_ids: questionIds,
     attachments: Array.from(description.querySelectorAll('a[href^="/artifact/"]')).map(text),
+    attachment_refs: Array.from(description.querySelectorAll('a[href^="/artifact/"]'))
+      .map(a => ({name: text(a), url: new URL(a.getAttribute('href'), 'https://cyberskyline.com').href})),
   };
   return result;
 }

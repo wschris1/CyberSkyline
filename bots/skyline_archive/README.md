@@ -1,8 +1,8 @@
-# Cyber Skyline Discord bot
+# NCL TRACKER — Cyber Skyline Discord bot
 
 Scan Cyber Skyline questions into season/competition/category/level folders on GitHub and get a Discord ping when a competition survey's website actually becomes usable.
 
-The bot runs on your Windows PC or an always-on host. Discord controls it; GitHub stores the question archive. No AI subscription or model API key is required.
+The bot runs on your Windows PC or an always-on host. Discord controls it; GitHub stores the public question archive, while a private database records Discord posts, question threads, files, settings and verification evidence. No AI subscription or model API key is required.
 
 ## What it does
 
@@ -12,7 +12,13 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline sync preview:true event_url:<event overview URL>` | Check extraction and counts without uploading. |
 | `/skyline sync-all` | Discover events on your Competition dashboard and scan those still accessible. |
 | `/skyline stop` | Cancel the current scan or preview before GitHub publication starts. |
-| `/skyline status` | Show progress, completion, upload link, or the reason a scan failed. |
+| `/skyline status` | Show current scan progress, authentication state and schedule. |
+| `/skyline pick` | Discover accessible competitions; choose season, competition, category and difficulty, then Preview or Start scan. |
+| `/skyline search keyword:<words>` | Search archived titles/question text; optional season, competition, category and difficulty filters. |
+| `/skyline reindex` | Index older manifest-managed GitHub questions locally without reposting them. |
+| `/skyline settings` | Change schedule, destinations, mappings, notifications and default preview in Discord. |
+| `/skyline session recheck` | Validate a refreshed session and unblock scans. |
+| `/skyline verify answer:<exact text>` | In a question thread, check a proposed answer using supported evidence adapters. Omit `answer` to select a normal message. |
 | `/skyline watch-survey challenge_url:<survey challenge URL>` | Watch for its survey link, then check the actual website and ping you in this channel. |
 | `/skyline survey-status` | Show your saved survey watches and what each is waiting for. |
 | `/skyline unwatch-survey watch_id:<ID>` | Remove a watch. Remove it before intentionally rearming a finished watch. |
@@ -21,7 +27,7 @@ Commands work only in the configured server and only for the Discord user IDs in
 
 `/skyline stop` cancels the current scan and closes its browser without taking the
 Discord bot offline. Wait until `/skyline status` says **Scan stopped** before
-starting another scan. Collected questions from that run are discarded; an upload
+starting another scan. No archive posts are published by a stopped collection run; private, unsynced snapshots may remain for recovery. An upload
 that has already started cannot be cancelled or undone by this command. Survey
 watches keep running, and any configured automatic scans still run on their next
 scheduled interval. Start and status messages show whether the run is a preview.
@@ -52,15 +58,18 @@ Fill in these settings locally:
 | `GITHUB_BRANCH` | Already set to `main`; this branch must exist and allow your token to commit. |
 | `SKYLINE_EVENT_URL` | Optional event overview URL copied from Cyber Skyline. It has the form `https://cyberskyline.com/world/<event-id>`. |
 
-Invite the Discord application to your server using the `bot` and `applications.commands` scopes. Give it **View Channels** and **Send Messages** in the channel where you want survey pings. It does not need Administrator, Server Members Intent, or Message Content Intent. If you use a thread, also allow **Send Messages in Threads**. Your own Discord notification preferences still determine whether a mention produces a push/sound.
+Invite the Discord application using the `bot` and `applications.commands` scopes. For progress, search and notifications, allow **View Channel**, **Send Messages**, **Read Message History**, and **Embed Links**. For the Discord question archive, also allow **Manage Channels**, **Manage Threads**, **Create Public Threads**, **Send Messages in Threads**, and **Attach Files**. Administrator is unnecessary. Existing destination overwrites can still deny these permissions; settings validate them before saving.
 
+Normal-message answer selection additionally requires **Message Content Intent** in the Developer Portal and `DISCORD_MESSAGE_CONTENT=true` in the private environment, followed by a restart. Explicit `/skyline verify answer:` and the answer modal work without that intent. Server Members Intent is unnecessary. Newly created archive categories are private to the bot and configured owners (server administrators can still see them); you can deliberately grant other roles access in Discord.
+
+Read the [archive, settings and verification guide](../../docs/skyline-tracker.md) for the integrated workflow and limitations.
 Save your Cyber Skyline login once:
 
 ```powershell
 .\.venv\Scripts\python.exe -m bots.skyline_archive login
 ```
 
-A separate Chromium window opens. Sign in yourself, open the Competition dashboard so the event cards are visible, then return to PowerShell and press Enter. This creates a private browser session on your machine. Your normal Chrome session is not copied. If it expires, stop the bot, run `login` again, and restart it.
+A separate Chromium window opens. Sign in yourself, open the Competition dashboard so the event cards are visible, then return to PowerShell and press Enter. This creates a private browser session on your machine. Your normal Chrome session is not copied. If it expires, refresh the login with this command on your desktop, replace the host’s private `browser-state.json`, then run `/skyline session recheck`. If login and bot share one local state directory, stop that bot while running `login`. Known-invalid sessions pause scheduled source scans until recheck succeeds.
 
 Check configuration and start:
 
@@ -113,7 +122,7 @@ challenges/spring-2026/team-game/web/hard/example-challenge-q1.md
 
 If two challenge titles would produce the same path, the bot adds the platform challenge ID to resolve the collision. The [generated question index](../../docs/skyline-questions.md) links every question. `archive-manifest.json` records managed files and content hashes. File paths remain stable if a challenge title changes. Events without a season/year or a recognized competition type are reported rather than filed under a guessed season.
 
-Regular Q1/Q2 question tables and username/ciphertext tables are supported. Each question file includes the description, that question's text and point label, source challenge link, and referenced attachment names. Attachments, screenshots, training articles, solution guides, response cells, submission history, and personal scores are not uploaded. Existing authored guides under `challenges/<name>/` are retained alongside the season folders.
+Regular Q1/Q2 question tables and username/ciphertext tables are supported. Each question file includes the description, that question's text and point label, source challenge link, and referenced attachment names. Binary attachments, screenshots, training articles, solution guides, response cells, submission history, proposed answers and personal scores are not uploaded to GitHub. The optional private Discord archive downloads supported challenge attachments and links them from the challenge and question threads. Existing authored guides under `challenges/<name>/` are retained alongside the season folders.
 
 The public repository's existing policy is applied: common flag-like text, hash-like values, temporary instance URLs, and URL query values are removed. These redactions can remove part of a supplied example; use the original source challenge for the full input. Review a preview and export only content you have permission to archive or share. The importer cannot recognize every possible response-bearing string embedded in a prompt.
 
@@ -121,33 +130,26 @@ One successful batch produces one commit. Unchanged scans produce no commits. Cl
 
 ## Automatic archive scans
 
-Set an event and a timer in `.env`, then restart the bot:
+Use `/skyline settings` to choose a progress hub or notification channel, set a frequency (60–10080 minutes), and enable scheduled scans. A nonempty `SKYLINE_EVENT_URL` scopes them to that event; otherwise they discover all accessible events. The saved default preview applies to both manual and scheduled scans. Explicit `preview:true` / `preview:false` and picker buttons override it for one run.
 
-```dotenv
-SKYLINE_EVENT_URL=https://cyberskyline.com/world/<your-event-id>
-SYNC_INTERVAL_MINUTES=60
-```
-
-This scans the configured event on startup and every 60 minutes while running. `0` disables automatic archive scans. Survey watches have their own approximately one-minute polling cycle, independent of this timer. `/skyline sync-all` is manual so old, closed events are not continually retried.
+Existing `SYNC_INTERVAL_MINUTES` and `SKYLINE_EVENT_URL` are still environment defaults. A positive environment interval requires an event URL; `0` defaults scheduling off. Saved settings override the corresponding environment defaults, survive restarts, and apply to the next run. The timer checks every 15 seconds and preserves its last scheduled start time. It waits while any scan, discovery, reindex or session check is active, and while login is known invalid. Existing installs need a progress destination selected before scheduled scans resume. Survey watches keep their separate polling cycle.
 
 ## Private state and hosting
 
-By default, browser login and watches are saved under `%LOCALAPPDATA%\skyline-archive` on Windows or `$XDG_DATA_HOME/skyline-archive` / `~/.local/share/skyline-archive` on Linux. `SKYLINE_STATE_DIR` can change that directory but cannot point into this repository. Do not upload `.env` or browser-state files. Run one bot instance per state directory; a process lock prevents accidental duplicates on the same host.
+By default, browser login, survey watches, the SQLite archive database and downloaded evidence are saved under `%LOCALAPPDATA%\skyline-archive` on Windows or `$XDG_DATA_HOME/skyline-archive` / `~/.local/share/skyline-archive` on Linux. `SKYLINE_STATE_DIR` can change that directory but cannot point into this repository. Do not upload `.env` or browser-state files. Run one bot instance per state directory; a process lock prevents accidental duplicates on the same host.
 
 On a Linux host, install the same requirements and follow the [Playwright browser dependencies instructions](https://playwright.dev/python/docs/browsers#install-system-dependencies). The login command needs a graphical session. A service manager can keep `python -m bots.skyline_archive run` alive after setup. Automatic uptime/hosting is not provided by the repository itself.
 
 ## Validation and limits
 
-Development checked the extractor against signed-in Cyber Skyline pages for both regular questions and ciphertext tables on November 3, 2026. Six regular questions and four ciphertext rows were found in the respective live checks. No questions were submitted and no challenge batch was published during development.
-
-Automated standard-library tests cover URL restrictions, deterministic output, repeat scans, manifest conflicts, concurrent GitHub commits, survey readiness, restarts, and notification delivery ambiguity:
+The feature release is tested with synthetic files and mocked Discord, Skyline and HTTP fixtures. Tests exercise publication conflicts, deduplication, preview isolation, source IDs, category/channel/thread reuse, interrupted-send recovery, search permissions, migrations, settings, attachments, authentication, answer selection, verification outcomes and worker limits. They do not post to live Discord or submit competition answers.
 
 ```powershell
-py -3 -m unittest tests.test_skyline_archive -v
+py -3 -m pip install -r bots/skyline_archive/requirements.txt
 py -3 .github/scripts/check_challenges.py
 py -3 -m unittest discover -s tests -v
 ```
 
-Full Discord/GitHub runtime testing needs your configured bot and token. The development host could not install Chromium because its browser download was invalid; live DOM checks used the connected browser. Site layout changes, unavailable events, expired sessions, and unfamiliar survey forms are reported rather than treated as a complete scan.
+The original extractor had live checks for regular and ciphertext question tables on November 3, 2026. That does not validate every competition page: unfamiliar layouts, missing access and page failures stop publication rather than silently claiming a complete archive. This release still needs a deployment check of your host permissions, refreshed login, current page layouts, actual attachment delivery and live Discord interactions. Follow the [PebbleHost update instructions](../../deploy/pebblehost/README.md#upgrading-an-existing-ncl-tracker-installation).
 
-API references: [Discord application commands](https://discordpy.readthedocs.io/en/stable/interactions/api.html), [Playwright authentication](https://playwright.dev/python/docs/auth), [GitHub Git trees](https://docs.github.com/en/rest/git/trees), and [GitHub references](https://docs.github.com/en/rest/git/refs).
+API references: [discord.py interactions](https://discordpy.readthedocs.io/en/stable/interactions/api.html), [Playwright authentication](https://playwright.dev/python/docs/auth), [GitHub Git trees](https://docs.github.com/en/rest/git/trees), and [GitHub references](https://docs.github.com/en/rest/git/refs).

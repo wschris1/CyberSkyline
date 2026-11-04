@@ -6,6 +6,10 @@ import io
 import os
 from pathlib import Path
 import tempfile
+import shutil
+import json
+import subprocess
+import sys
 from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock, Mock, patch
@@ -62,6 +66,20 @@ class PebbleHostTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), expected, relative)
         self.assertEqual((ROOT / "deploy/pebblehost/requirements.txt").read_bytes(),
                          (ROOT / "bots/skyline_archive/requirements.txt").read_bytes())
+
+    def test_pinned_package_contains_verification_runtime_dependencies(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in ENTRY.SOURCE_FILES:
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, destination)
+            payload = dict(question='What is the decoded hex value?', instructions='Input: `412042`',
+                           files=[], root=str(root), answer='A B')
+            result = subprocess.run([sys.executable, '-I', str(root / 'bots/skyline_archive/verify_worker.py')],
+                                    input=json.dumps(payload),capture_output=True,text=True,timeout=10,cwd=directory)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertEqual(json.loads(result.stdout)['outcome'],'Verified correct')
 
     def test_rejects_changed_existing_source_and_download(self):
         original = b"verified source\n"

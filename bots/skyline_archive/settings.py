@@ -21,6 +21,13 @@ def number(env, name, default, minimum, maximum):
     return value
 
 
+def boolean(env, name, default=False):
+    value = env.get(name, str(default)).strip().lower()
+    if value not in ('true','false'):
+        raise ArchiveError(f'{name} must be true or false.')
+    return value == 'true'
+
+
 @dataclass(frozen=True)
 class Settings:
     discord_token: str = field(repr=False)
@@ -35,6 +42,10 @@ class Settings:
     max_challenges: int
     state_dir: Path
     headless: bool
+    archive_hub: int = 0
+    notification_channel: int = 0
+    default_preview: bool = False
+    message_content: bool = False
 
     @property
     def auth_file(self):
@@ -79,7 +90,11 @@ class Settings:
             raise ArchiveError("HEADLESS must be true or false.")
         return cls(token, git_token, guild, owner_ids, repository, branch, event_url, interval,
                    number(env, "REQUEST_DELAY_SECONDS", 2, 1, 60),
-                   number(env, "MAX_CHALLENGES", 2000, 1, 10000), state, headless == "true")
+                   number(env, "MAX_CHALLENGES", 2000, 1, 10000), state, headless == "true",
+                   number(env, "DISCORD_ARCHIVE_HUB_ID", 0, 0, 2**64 - 1),
+                   number(env, "DISCORD_NOTIFICATION_CHANNEL_ID", 0, 0, 2**64 - 1),
+                   boolean(env, "DEFAULT_PREVIEW"),
+                   boolean(env, "DISCORD_MESSAGE_CONTENT"))
 
 
 def load_settings(**kwargs):

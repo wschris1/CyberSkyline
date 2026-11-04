@@ -11,7 +11,8 @@ import re
 import socket
 from urllib.parse import urlsplit
 
-from .core import ArchiveError, skyline_url
+from .core import ArchiveError, SessionExpired, skyline_url
+from .scanner import validate_saved_session
 
 
 def now():
@@ -104,15 +105,27 @@ class SurveyProbe:
             try:
                 target = watch.get("survey_url", "")
                 if not target:
-                    if not self.settings.auth_file.is_file():
-                        raise ArchiveError("Run the local login command to check this challenge.")
-                    source = await browser.new_context(storage_state=str(self.settings.auth_file), accept_downloads=False)
+                    validate_saved_session(self.settings)
+                    from playwright.async_api import Error
+                    try:
+                        source = await browser.new_context(storage_state=str(self.settings.auth_file), accept_downloads=False)
+                    except Error as exc:
+                        if 'storageState' in str(exc) or 'storage state' in str(exc):
+                            raise SessionExpired('The saved login is invalid; refresh it and recheck the session.') from None
+                        raise
                     page = await source.new_page()
                     response = await page.goto(watch["challenge_url"], wait_until="domcontentloaded", timeout=30000)
+                    if response and response.status == 401:
+                        raise SessionExpired("Cyber Skyline login expired; refresh it and recheck the session.")
                     if not response or response.status >= 400:
                         return False, "The challenge page is not available yet.", ""
+                    if any(word in urlsplit(page.url).path.lower() for word in ("login", "signin", "sign-in")):
+                        raise SessionExpired("Cyber Skyline needs login again; refresh it and recheck the session.")
+                    if (await page.locator('input[type="password"]').count() and
+                            await page.get_by_role('heading',name=re.compile(r'^(sign in|log in|login)\b',re.I)).count()):
+                        raise SessionExpired("Cyber Skyline needs sign-in; refresh it and recheck the session.")
                     if "/module/" not in urlsplit(page.url).path:
-                        raise ArchiveError("Cyber Skyline needs login again, or this challenge is unavailable.")
+                        raise ArchiveError("This challenge is unavailable.")
                     # Allow asynchronous prompt rendering without requiring an answer table.
                     for _ in range(12):
                         links = await page.evaluate(SURVEY_LINKS)

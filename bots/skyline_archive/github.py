@@ -2,7 +2,7 @@
 
 import asyncio
 import base64
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib.parse import quote
 
 from .core import ArchiveError, MANIFEST, INDEX, archive_files, git_blob_sha, parse_manifest
@@ -26,6 +26,7 @@ class ApiError(ArchiveError):
 class PublishResult:
     changed: int
     commit_url: str | None
+    manifest: dict = field(default_factory=dict)
 
 
 class GitHub:
@@ -67,6 +68,24 @@ class GitHub:
         except (ValueError, KeyError, UnicodeError) as exc:
             raise ArchiveError("Cannot read the existing archive manifest; nothing was uploaded.") from exc
 
+    async def index_into(self, store):
+        """Read one immutable commit so concurrent GitHub writes cannot mix versions."""
+        branch = quote(self.settings.branch, safe="")
+        ref = await self.request("GET", f"/git/ref/heads/{branch}")
+        head = ref["object"]["sha"]
+        async def read(path):
+            response = await self.request("GET", f"/contents/{quote(path, safe='/')}?ref={head}")
+            if response.get("encoding") != "base64":
+                raise ArchiveError("GitHub file encoding is unsupported.")
+            return base64.b64decode(response["content"]).decode("utf-8")
+        try:
+            raw = await read(MANIFEST)
+        except ApiError as exc:
+            if exc.status == 404:
+                return 0
+            raise
+        return await store.import_manifest(raw, read)
+
     async def publish(self, challenges):
         if not challenges:
             raise ArchiveError("No questions were collected. No GitHub files were changed.")
@@ -93,14 +112,15 @@ class GitHub:
             changes = [{"path": path, "mode": "100644", "type": "blob", "content": content}
                        for path, content in files.items() if existing.get(path) != git_blob_sha(content)]
             if not changes:
-                return PublishResult(0, None)
+                return PublishResult(0, None, parse_manifest(files[MANIFEST]))
             new_tree = await self.request("POST", "/git/trees", {"base_tree": commit["tree"]["sha"], "tree": changes})
             new_commit = await self.request("POST", "/git/commits", {
                 "message": f"Archive {len(challenges)} Cyber Skyline challenge prompts",
                 "tree": new_tree["sha"], "parents": [head]})
             try:
                 await self.request("PATCH", f"/git/refs/heads/{branch}", {"sha": new_commit["sha"], "force": False})
-                return PublishResult(len(changes), f"https://github.com/{self.settings.repository}/commit/{new_commit['sha']}")
+                return PublishResult(len(changes), f"https://github.com/{self.settings.repository}/commit/{new_commit['sha']}",
+                                     parse_manifest(files[MANIFEST]))
             except ApiError as exc:
                 if exc.status not in (409, 422) or attempt == 2:
                     raise

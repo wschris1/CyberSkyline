@@ -1,200 +1,487 @@
-"""Owner-only Discord slash commands; no message-content intent required."""
+"""Owner-managed archive workflow: scans, persistent Discord archive and evidence checks."""
 
 import asyncio
+from datetime import datetime, timezone
+import io
+import json
 import logging
+import re
 import time
 
 import aiohttp
 import discord
 from discord import app_commands
 
-from .core import ArchiveError, skyline_url
-from .github import GitHub
+from .core import ArchiveError, SessionExpired, skyline_url, level_and_title
+from .github import GitHub, ApiError
 from .scanner import Scanner
 from .survey import SurveyManager, SurveyProbe
+from .storage import Store, now, fingerprint
+from .preferences import Preferences
+from .attachments import Attachments
+from .discord_archive import DiscordArchive
+from .progress import Progress, ProgressMessage
+from .verification import Verifier, select_answer
+from .ui import Picker, SettingsView, SearchView, AnswerPicker
+
+LOG=logging.getLogger(__name__)
 
 
-LOG = logging.getLogger(__name__)
+async def owner_check(client,interaction):
+    if interaction.guild_id!=client.settings.guild_id or interaction.user.id not in client.settings.owners:
+        await interaction.response.send_message('This bot is restricted to its configured owners and server.',ephemeral=True)
+        return False
+    return True
+
+
+class SessionCommands(app_commands.Group):
+    def __init__(self,client):
+        super().__init__(name='session',description='Check the saved Cyber Skyline login.')
+        self.client=client
+
+    async def interaction_check(self,interaction):
+        return await owner_check(self.client,interaction)
+
+    @app_commands.command(name='recheck',description='Validate a refreshed login and unblock scheduled scans.')
+    async def recheck(self,interaction:discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        if self.client.busy():
+            await interaction.followup.send('A scan or discovery is running. Stop it before rechecking the session.',ephemeral=True)
+            return
+        async def check():
+            try:
+                await Scanner(self.client.settings).validate_session()
+            except SessionExpired as exc:
+                await self.client.session_expired(str(exc),interaction.channel_id)
+                return str(exc)
+            except Exception:
+                return 'Session check hit a network or page error. Existing authentication state was retained; try again.'
+            self.client.store.put('auth_invalid',False)
+            self.client.store.put('auth_alert_sent',False)
+            return 'Cyber Skyline login validated. Manual and scheduled scans can run again.'
+        self.client.scan_task=asyncio.create_task(check())
+        self.client.scan_phase='checking login'
+        message=await self.client.scan_task
+        self.client.scan_phase='idle'
+        await interaction.followup.send(message,ephemeral=True)
 
 
 class SkylineCommands(app_commands.Group):
-    def __init__(self, client):
-        super().__init__(name="skyline", description="Archive challenge questions and watch for surveys.", guild_only=True)
-        self.client = client
+    def __init__(self,client):
+        super().__init__(name='skyline',description='Archive challenge questions and watch for surveys.',guild_only=True)
+        self.client=client
+        self.add_command(SessionCommands(client))
 
-    async def interaction_check(self, interaction):
-        if (interaction.guild_id != self.client.settings.guild_id
-                or interaction.user.id not in self.client.settings.owners):
-            await interaction.response.send_message("This bot is restricted to its configured owners and server.", ephemeral=True)
-            return False
-        return True
+    async def interaction_check(self,interaction):
+        return await owner_check(self.client,interaction)
 
-    async def on_error(self, interaction, error):
-        original = getattr(error, "original", error)
-        message = str(original) if isinstance(original, ArchiveError) else "Command failed. Check the bot host and configuration."
+    async def on_error(self,interaction,error):
+        original=getattr(error,'original',error)
+        message=str(original) if isinstance(original,ArchiveError) else 'Command failed. Check the bot host and configuration.'
         if interaction.response.is_done():
-            await interaction.followup.send(message[:1900], ephemeral=True)
+            await interaction.followup.send(message[:1900],ephemeral=True)
         else:
-            await interaction.response.send_message(message[:1900], ephemeral=True)
+            await interaction.response.send_message(message[:1900],ephemeral=True)
 
-    @app_commands.command(name="sync", description="Scan one Cyber Skyline event and upload its questions.")
-    @app_commands.describe(event_url="The event overview URL (/world/...).", preview="Count and validate only; do not upload.")
-    async def sync(self, interaction: discord.Interaction, event_url: str | None = None, preview: bool = False):
-        target = skyline_url(event_url or self.client.settings.event_url)
-        self.client.start_sync(target, preview=preview)
-        mode = "Preview started; nothing will be uploaded." if preview else "Scan started; questions will be uploaded after it finishes."
-        await interaction.response.send_message(mode + " Use `/skyline status` for progress or `/skyline stop` to cancel.", ephemeral=True)
+    @app_commands.command(name='sync',description='Scan one Cyber Skyline event and archive its questions.')
+    @app_commands.describe(event_url='The event overview URL (/world/...).',preview='Override the saved default; no archive writes when true.')
+    async def sync(self,interaction:discord.Interaction,event_url:str|None=None,preview:bool|None=None):
+        target=skyline_url(event_url or self.client.settings.event_url)
+        await self.client.launch_interaction(interaction,event_url=target,preview=preview)
 
-    @app_commands.command(name="sync-all", description="Scan every event still accessible on your Competition dashboard.")
-    @app_commands.describe(preview="Count and validate only; do not upload.")
-    async def sync_all(self, interaction: discord.Interaction, preview: bool = False):
-        self.client.start_sync(all_events=True, preview=preview)
-        mode = "Preview started; nothing will be uploaded." if preview else "Scan started; questions will be uploaded after it finishes."
-        await interaction.response.send_message(
-            mode + " Scanning accessible events; closed events will be listed as skipped. "
-            "Use `/skyline status` for progress or `/skyline stop` to cancel.", ephemeral=True)
+    @app_commands.command(name='sync-all',description='Scan every event still accessible on your Competition dashboard.')
+    @app_commands.describe(preview='Override the saved default; no archive writes when true.')
+    async def sync_all(self,interaction:discord.Interaction,preview:bool|None=None):
+        await self.client.launch_interaction(interaction,all_events=True,preview=preview)
 
-    @app_commands.command(name="stop", description="Cancel the current scan or preview before GitHub publication starts.")
-    async def stop(self, interaction: discord.Interaction):
-        await interaction.response.send_message(self.client.stop_sync(), ephemeral=True)
+    @app_commands.command(name='stop',description='Cancel the current scan or preview before GitHub publication starts.')
+    async def stop(self,interaction:discord.Interaction):
+        await interaction.response.send_message(self.client.stop_sync(),ephemeral=True)
 
-    @app_commands.command(name="status", description="Show scan progress, result, and automatic-sync settings.")
-    async def status(self, interaction: discord.Interaction):
-        interval = self.client.settings.interval
-        schedule = f"Every {interval} minutes" if interval else "Off"
-        mode = ""
-        if self.client.scan_task and not self.client.scan_task.done():
-            mode = "**Mode:** " + ("Preview (no uploads)" if self.client.scan_preview else "Scan and upload") + "\n"
-        await interaction.response.send_message(
-            (f"{mode}**Archive:** {self.client.archive_status}\n**Automatic sync:** {schedule}\n"
-             f"**Repository:** https://github.com/{self.client.settings.repository}")[:1950], ephemeral=True)
+    @app_commands.command(name='status',description='Show scan progress, result, and automatic-sync settings.')
+    async def status(self,interaction:discord.Interaction):
+        prefs=self.client.preferences.effective()
+        schedule=f"Every {prefs['frequency']} minutes" if prefs['enabled'] else 'Off'
+        mode=('**Mode:** '+('Preview (no uploads)' if self.client.scan_preview else 'Scan and upload')+'\n') if self.client.busy() else ''
+        if self.client.progress:
+            archive=self.client.progress.render(self.client.scan_preview)
+        else:
+            archive=self.client.archive_status
+        auth='Waiting for login refresh; run `/skyline session recheck`.' if self.client.store.get('auth_invalid',False) else 'No known login failure.'
+        await interaction.response.send_message((f'{mode}**Archive:** {archive}\n**Automatic sync:** {schedule}\n**Session:** {auth}\n'
+            f'**Repository:** https://github.com/{self.client.settings.repository}')[:1950],ephemeral=True)
 
-    @app_commands.command(name="watch-survey", description="Ping you here when a survey website actually loads a usable form.")
-    @app_commands.describe(challenge_url="The Survey challenge URL (/module/.../.../...).",
-                           survey_url="Optional actual survey link, useful while the challenge link is blank.",
-                           ready_text="Optional text that must appear on the usable form, such as its title.")
-    async def watch_survey(self, interaction: discord.Interaction, challenge_url: str,
-                           survey_url: str = "", ready_text: str = ""):
+    @app_commands.command(name='pick',description='Discover accessible competitions and choose a scope interactively.')
+    async def pick(self,interaction:discord.Interaction):
+        if self.client.busy():
+            raise ArchiveError('A scan or discovery is already running.')
+        if self.client.store.get('auth_invalid',False):
+            raise ArchiveError('Refresh the saved login and run /skyline session recheck first.')
+        await interaction.response.defer(ephemeral=True)
+        self.client.start_sync(all_events=True,preview=True,channel=interaction.channel,catalog_only=True,owner=interaction.user.id)
+        await interaction.followup.send('Discovering accessible competitions. The progress message will contain your picker when ready.',ephemeral=True)
+
+    @app_commands.command(name='search',description='Search locally archived questions you can access.')
+    async def search(self,interaction:discord.Interaction,keyword:str,season:str|None=None,competition:str|None=None,
+                     category:str|None=None,difficulty:str|None=None):
+        await interaction.response.defer(ephemeral=True)
+        view=SearchView(self.client,interaction.user.id,keyword,dict(season=season,competition=competition,category=category,level=difficulty))
+        await interaction.followup.send(await view.render(interaction.user),view=view,ephemeral=True)
+
+    @app_commands.command(name='reindex',description='Index older GitHub imports locally without reposting or creating threads.')
+    async def reindex(self,interaction:discord.Interaction):
+        if self.client.busy():
+            raise ArchiveError('Wait for the current scan before rebuilding the index.')
+        await interaction.response.defer(ephemeral=True)
+        async def work():
+            return await GitHub(self.client.settings,self.client.http_session).index_into(self.client.store)
+        self.client.scan_phase='indexing'
+        self.client.scan_task=asyncio.create_task(work())
+        try:
+            count=await self.client.scan_task
+        finally:
+            self.client.scan_phase='idle'
+        await interaction.followup.send(f'Indexed {count} older questions. No Discord archive content was posted.',ephemeral=True)
+
+    @app_commands.command(name='settings',description='Manage scan defaults, archive destinations, notifications and mappings.')
+    async def settings(self,interaction:discord.Interaction):
+        view=SettingsView(self.client,interaction.user.id)
+        await interaction.response.send_message(view.summary(),view=view,ephemeral=True)
+
+    @app_commands.command(name='verify',description='Check an answer against evidence in this question thread; never submit it.')
+    async def verify(self,interaction:discord.Interaction,answer:str|None=None):
+        question=self.client.store.question(thread_id=interaction.channel_id)
+        if not question:
+            raise ArchiveError('Run /skyline verify inside a mapped question thread.')
+        if answer is not None:
+            await self.client.verify_answer(interaction,question,answer)
+            return
+        await interaction.response.defer(ephemeral=True)
+        latest=self.client.store.one('SELECT created FROM verifications WHERE question_key=? AND user_id=? ORDER BY id DESC LIMIT 1',
+                                     (question['key'],interaction.user.id))
+        since=datetime.fromisoformat(latest['created']) if latest else None
+        messages=[m async for m in interaction.channel.history(limit=100)]
+        selected,candidates=select_answer(messages,interaction.user.id,since)
+        if selected is not None and getattr(self.client.settings,'message_content',False):
+            await self.client.verify_answer(interaction,question,selected)
+        else:
+            view=AnswerPicker(self.client,interaction.user.id,question,candidates)
+            await interaction.followup.send('Choose your answer message or provide its exact text. If message content access is disabled, use the answer field.',view=view,ephemeral=True)
+
+    @app_commands.command(name='watch-survey',description='Ping you here when a survey website actually loads a usable form.')
+    @app_commands.describe(challenge_url='The Survey challenge URL (/module/.../.../...).',
+        survey_url='Optional actual survey link, useful while the challenge link is blank.',ready_text='Optional text required on the usable form.')
+    async def watch_survey(self,interaction:discord.Interaction,challenge_url:str,survey_url:str='',ready_text:str=''):
         if interaction.channel_id is None:
-            raise ArchiveError("Run this command in the channel where you want the ping.")
-        key = self.client.surveys.add(challenge_url, survey_url, ready_text, interaction.user.id,
-                                      interaction.channel_id, interaction.guild_id)
-        await interaction.response.send_message(
-            f"Watch `{key}` saved. I will check about once a minute while the bot is running and ping you here after the form is ready on two checks. "
-            "Use `/skyline survey-status` to see what is loading.", ephemeral=True)
+            raise ArchiveError('Run this command in the channel where you want the ping.')
+        key=self.client.surveys.add(challenge_url,survey_url,ready_text,interaction.user.id,interaction.channel_id,interaction.guild_id)
+        await interaction.response.send_message(f'Watch `{key}` saved. I will ping you here after the form is ready on two checks. Use `/skyline survey-status` for progress.',ephemeral=True)
 
-    @app_commands.command(name="survey-status", description="Show your saved survey watches and last readiness checks.")
-    async def survey_status(self, interaction: discord.Interaction):
-        rows = [f"`{key}` — **{item['delivery']}**: {item['status']}"
-                for key, item in self.client.surveys.watches.items() if item["owner_id"] == interaction.user.id]
-        await interaction.response.send_message("\n".join(rows)[:1950] or "You have no saved survey watches.", ephemeral=True)
+    @app_commands.command(name='survey-status',description='Show your saved survey watches and last readiness checks.')
+    async def survey_status(self,interaction:discord.Interaction):
+        rows=[f"`{key}` — **{item['delivery']}**: {item['status']}" for key,item in self.client.surveys.watches.items() if item['owner_id']==interaction.user.id]
+        await interaction.response.send_message('\n'.join(rows)[:1950] or 'You have no saved survey watches.',ephemeral=True)
 
-    @app_commands.command(name="unwatch-survey", description="Remove one of your survey watches, including a finished watch.")
-    async def unwatch_survey(self, interaction: discord.Interaction, watch_id: str):
-        watch = self.client.surveys.watches.get(watch_id)
-        if not watch or watch["owner_id"] != interaction.user.id:
-            raise ArchiveError("That watch was not found for your account.")
+    @app_commands.command(name='unwatch-survey',description='Remove one of your survey watches, including a finished watch.')
+    async def unwatch_survey(self,interaction:discord.Interaction,watch_id:str):
+        watch=self.client.surveys.watches.get(watch_id)
+        if not watch or watch['owner_id']!=interaction.user.id:
+            raise ArchiveError('That watch was not found for your account.')
         del self.client.surveys.watches[watch_id]
         self.client.surveys.save()
-        await interaction.response.send_message(f"Removed watch `{watch_id}`.", ephemeral=True)
+        await interaction.response.send_message(f'Removed watch `{watch_id}`.',ephemeral=True)
+
+
+class GuardedSurveyProbe:
+    def __init__(self,client):
+        self.client=client
+        self.probe=SurveyProbe(client.settings)
+
+    async def check(self,watch):
+        if not watch.get('survey_url') and self.client.store.get('auth_invalid',False):
+            raise SessionExpired('Waiting for the saved login to be refreshed and rechecked.')
+        try:
+            return await self.probe.check(watch)
+        except SessionExpired as exc:
+            await self.client.session_expired(str(exc),watch['channel_id'])
+            raise
 
 
 class SkylineBot(discord.Client):
-    def __init__(self, settings):
-        super().__init__(intents=discord.Intents(guilds=True), allowed_mentions=discord.AllowedMentions.none())
-        self.settings = settings
-        self.tree = app_commands.CommandTree(self)
-        self.tree.add_command(SkylineCommands(self), guild=discord.Object(id=settings.guild_id))
-        self.archive_status = "No scan run yet."
-        self.scan_task = None
-        self.scan_phase = "idle"
-        self.scan_preview = False
-        self.background = []
-        self.http_session = None
-        self.surveys = SurveyManager(settings.state_dir / "survey-watches.json", SurveyProbe(settings), self.send_survey_ping)
+    def __init__(self,settings):
+        super().__init__(intents=discord.Intents(guilds=True,message_content=getattr(settings,'message_content',False)),
+                         allowed_mentions=discord.AllowedMentions.none())
+        self.settings=settings
+        self.store=Store(settings.state_dir)
+        self.preferences=Preferences(self.store,settings)
+        self.attachments=Attachments(self.store)
+        self.archive=DiscordArchive(self,self.store,self.attachments,self.preferences)
+        self.verifier=Verifier(self.store,self.attachments)
+        self.tree=app_commands.CommandTree(self)
+        self.tree.add_command(SkylineCommands(self),guild=discord.Object(id=settings.guild_id))
+        self.archive_status='No scan run yet.'
+        self.scan_task=None
+        self.scan_phase='idle'
+        self.scan_preview=False
+        self.progress=None
+        self.recovered=asyncio.Event()
+        self.background=[]
+        self.http_session=None
+        self.surveys=SurveyManager(settings.state_dir/'survey-watches.json',GuardedSurveyProbe(self),self.send_survey_ping)
+        self.scan_options={}
+
+    def busy(self):
+        return self.scan_task is not None and not self.scan_task.done()
 
     async def setup_hook(self):
-        self.http_session = aiohttp.ClientSession()
+        self.http_session=aiohttp.ClientSession()
         await self.tree.sync(guild=discord.Object(id=self.settings.guild_id))
+        self.background.append(asyncio.create_task(self.recover()))
         self.background.append(asyncio.create_task(self.survey_loop()))
-        if self.settings.interval:
-            self.background.append(asyncio.create_task(self.schedule_loop()))
+        self.background.append(asyncio.create_task(self.schedule_loop()))
 
-    def start_sync(self, event_url=None, all_events=False, preview=False):
-        if self.scan_task and not self.scan_task.done():
-            raise ArchiveError("A scan is already running. Use /skyline status to check it or /skyline stop to cancel.")
-        self.scan_phase = "scanning"
-        self.scan_preview = preview
-        self.archive_status = "Starting preview…" if preview else "Starting scan…"
-        self.scan_task = asyncio.create_task(self.run_sync(event_url, all_events, preview))
+    async def recover(self):
+        await self.wait_until_ready()
+        for scan in self.store.interrupted_scans():
+            if scan['message_id'] and scan['channel_id']:
+                try:
+                    channel=await self.archive.channel(scan['channel_id'])
+                    message=await channel.fetch_message(scan['message_id']) if channel else None
+                    if message:
+                        await message.edit(content='**NCL TRACKER — interrupted by restart**\nExisting archive content and discussion were preserved. Start the scope again to resume; saved IDs prevent duplicates.')
+                except (discord.HTTPException,ArchiveError):
+                    pass
+        self.recovered.set()
+
+    async def launch_interaction(self,interaction,**options):
+        if self.busy():
+            raise ArchiveError('A scan is already running. Use /skyline status or /skyline stop.')
+        await interaction.response.defer(ephemeral=True)
+        self.store.put('last_command_channel',interaction.channel_id)
+        self.start_sync(channel=interaction.channel,owner=interaction.user.id,**options)
+        await interaction.followup.send('Started. One progress message will update in the archive hub or this channel. Use `/skyline stop` to cancel before publishing.',ephemeral=True)
+
+    def start_sync(self,event_url=None,all_events=False,preview=None,**options):
+        if self.busy():
+            raise ArchiveError('A scan is already running. Use /skyline status to check it or /skyline stop to cancel.')
+        if self.store.get('auth_invalid',False):
+            raise ArchiveError('Waiting for login. Refresh the session, then run /skyline session recheck.')
+        prefs=self.preferences.effective()
+        preview=prefs['default_preview'] if preview is None else preview
+        self.scan_options={**options,'preferences':prefs}
+        self.scan_phase='scanning'
+        self.scan_preview=preview
+        self.archive_status='Starting preview…' if preview else 'Starting scan…'
+        self.progress=Progress()
+        self.scan_task=asyncio.create_task(self.run_sync(event_url,all_events,preview))
         self.scan_task.add_done_callback(self.scan_finished)
 
     def stop_sync(self):
-        if not self.scan_task or self.scan_task.done():
-            return "No scan is running. Use `/skyline sync` or `/skyline sync-all` to start one."
-        if self.scan_phase == "publishing":
-            # Cancelling an HTTP request cannot undo a GitHub ref update that
-            # may already have reached the server. Let publication report its result.
-            return "GitHub publication has already started and cannot be cancelled. Use `/skyline status` for its result."
-        if self.scan_phase == "stopping":
-            return "The scan is already stopping. Use `/skyline status` to check when cleanup finishes."
-        self.scan_phase = "stopping"
-        self.archive_status = "Stopping scan; closing its browser. Nothing will be uploaded."
+        if not self.busy():
+            return 'No scan is running. Use `/skyline sync` or `/skyline sync-all` to start one.'
+        if self.scan_phase=='publishing':
+            return 'GitHub publication has already started and cannot be cancelled. Use `/skyline status` for its result.'
+        if self.scan_phase in ('checking login','indexing'):
+            return 'The login check or index migration is in progress; wait for its result.'
+        if self.scan_phase=='stopping':
+            return 'The scan is already stopping. Use `/skyline status` to check when cleanup finishes.'
+        self.scan_phase='stopping'
+        self.archive_status='Stopping scan; closing its browser. Nothing will be uploaded.'
+        if self.progress:
+            self.progress.update(state='stopping',detail=self.archive_status)
         self.scan_task.cancel()
-        return "Stop requested. Nothing from this scan will be uploaded. Use `/skyline status` to check when it has stopped."
+        return 'Stop requested. Nothing from this scan will be uploaded. Use `/skyline status` to check when it has stopped.'
 
-    def scan_finished(self, task):
-        # Also handles cancellation before run_sync executes its first line.
-        # A second stop must not interrupt the scanner's browser cleanup.
+    def scan_finished(self,task):
         if task is self.scan_task:
-            if task.cancelled() and self.scan_phase == "stopping":
-                self.archive_status = "Scan stopped. Nothing uploaded. You can start another scan."
-            self.scan_phase = "idle"
+            if task.cancelled() and self.scan_phase=='stopping':
+                self.archive_status='Scan stopped. Nothing uploaded. You can start another scan.'
+                if self.progress:
+                    self.progress.update(state='stopped',detail=self.archive_status)
+            self.scan_phase='idle'
 
-    async def run_sync(self, event_url, all_events, preview):
-        started = time.monotonic()
+    async def session_expired(self,message,fallback=0):
+        self.store.put('auth_invalid',True)
+        prefs=self.preferences.effective()
+        channel_id=prefs['notification_channel'] or prefs['archive_hub'] or fallback
+        if not prefs['notify_login'] or not channel_id or self.store.get('auth_alert_sent',False):
+            return
+        # Persist before send: an ambiguous delivery must not repeat on restart.
+        self.store.put('auth_alert_sent',True)
         try:
-            scanner = Scanner(self.settings, lambda text: setattr(self, "archive_status", text))
-            result = await scanner.collect(event_url, all_events)
-            count = len(result.challenges)
-            question_count = sum(len(c.questions) for c in result.challenges)
-            skipped = len(result.skipped_events)
-            if result.errors:
-                detail = " ".join(result.errors[:3])
-                raise ArchiveError(f"Collected {count} challenges but {len(result.errors)} page(s) failed. Nothing uploaded. {detail}")
-            if not count:
-                raise ArchiveError(f"No accessible questions found. {skipped} unavailable event(s) skipped. Nothing uploaded.")
-            summary = f"{count} challenges / {question_count} questions; {skipped} event(s) skipped."
-            if preview:
-                self.archive_status = "Preview complete: " + summary + " Nothing uploaded."
-            else:
-                self.scan_phase = "publishing"
-                self.archive_status = "Publishing " + summary
-                publication = await GitHub(self.settings, self.http_session).publish(result.challenges)
-                self.archive_status = "Complete: " + summary
-                self.archive_status += f" {publication.changed} files changed. {publication.commit_url}" if publication.changed else " GitHub is already up to date."
-            self.archive_status += f" Took {round(time.monotonic() - started)} seconds."
-            if result.skipped_events:
-                self.archive_status += " Skipped: " + ", ".join(result.skipped_events)
-        except ArchiveError as exc:
-            self.archive_status = str(exc)
-        except Exception as exc:
-            # Do not echo page contents, tokens, auth paths, or raw HTTP bodies to Discord/logs.
-            self.archive_status = f"Scan failed ({type(exc).__name__}). Check the host, browser installation, and saved login."
-            LOG.error("Archive scan failed (%s)", type(exc).__name__)
+            channel=await self.archive.channel(channel_id)
+            if channel:
+                await channel.send('**Cyber Skyline login needs refreshing.**\nRun the existing local `python -m bots.skyline_archive login` workflow, replace the private session file on PebbleHost, then run `/skyline session recheck`. Scheduled archive attempts are paused until validation succeeds. Existing content is preserved.')
+        except discord.HTTPException:
+            LOG.warning('Login alert could not be delivered; see /skyline status.')
 
-    async def send_survey_ping(self, watch, url):
-        if watch["owner_id"] not in self.settings.owners or watch["guild_id"] != self.settings.guild_id:
-            raise ArchiveError("Survey watch owner/server is no longer allowed.")
-        channel = self.get_channel(watch["channel_id"]) or await self.fetch_channel(watch["channel_id"])
-        if not getattr(channel, "guild", None) or channel.guild.id != self.settings.guild_id:
-            raise ArchiveError("The survey channel is outside the configured server.")
-        # Mention exactly the user who requested this watch, never a role or everyone.
-        message = await channel.send(
-            f"<@{watch['owner_id']}> The survey form is ready to fill out.\n<{url}>\n"
-            f"Challenge: <{watch['challenge_url']}>",
-            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False,
-                                                     users=[discord.Object(id=watch["owner_id"])], replied_user=False))
+    async def run_sync(self,event_url,all_events,preview):
+        options=dict(self.scan_options)
+        prefs=options.get('preferences',self.preferences.effective())
+        scope=options.get('scope',{})
+        self.progress=self.progress or Progress()
+        progress=self.progress
+        live=None
+        scan_id=None
+        message=None
+        source_channel=options.get('channel')
+        try:
+            destination=await self.archive.channel(prefs['archive_hub']) if prefs['archive_hub'] else source_channel
+            with self.store.db:
+                cur=self.store.db.execute('INSERT INTO scans(state,preview,scope,progress,started) VALUES(?,?,?,?,?)',
+                    ('discovering',int(preview),json.dumps(scope),json.dumps({}),now()))
+                scan_id=cur.lastrowid
+            if destination:
+                message=await destination.send(progress.render(preview))
+                with self.store.db:
+                    self.store.db.execute('UPDATE scans SET channel_id=?,message_id=? WHERE id=?',(destination.id,message.id,scan_id))
+                def checkpoint():
+                    with self.store.db:
+                        self.store.db.execute('UPDATE scans SET state=?,progress=? WHERE id=?',
+                            (progress.state,json.dumps(dict(processed=progress.processed,total=progress.total,
+                            new=progress.new,skipped=progress.skipped,failed=progress.failed)),scan_id))
+                live=ProgressMessage(message,progress,preview,checkpoint=checkpoint)
+                live.start()
+            scanner=Scanner(self.settings,lambda text:setattr(self,'archive_status',text),progress=progress)
+            if options.get('catalog_only'):
+                catalog=await scanner.discover()
+                if scanner.discovery_errors:
+                    progress.failed=len(scanner.discovery_errors)
+                    progress.detail='Some pages were unavailable; the picker includes only discovered accessible content.'
+                progress.update(state='discovery complete',total=len(catalog))
+                self.store.put('catalog',catalog)
+                if live:
+                    await live.finish()
+                    live=None
+                if message:
+                    view=Picker(self,options['owner'],catalog,warning=progress.detail if scanner.discovery_errors else '')
+                    await message.edit(content=view.summary(),view=view)
+                return
+            async def capture(c,context):
+                old=self.store.one('SELECT fingerprint,synced_fingerprint FROM challenges WHERE key=?',(c.key,))
+                if old and old['synced_fingerprint']==fingerprint(c):
+                    progress.skipped+=1
+                else:
+                    progress.new+=1
+                progress.attachment_total+=len(c.attachment_refs)
+                if preview:
+                    return
+                self.store.upsert_challenge(c)
+                for ref in c.attachment_refs:
+                    progress.detail='Downloading '+ref.name[:120]
+                    row=await self.attachments.fetch(c,ref,context)
+                    progress.attachments+=1
+                    if row['status'] not in ('ready','uploaded'):
+                        progress.attachment_failed+=1
+            result=await scanner.collect(event_url,all_events,scope=scope,on_challenge=capture)
+            count=len(result.challenges)
+            questions=sum(len(c.questions) for c in result.challenges)
+            skipped=len(result.skipped_events)
+            if result.errors:
+                raise ArchiveError(f'Collected {count} challenges but {len(result.errors)} page(s) failed. Nothing published. '+' '.join(result.errors[:2]))
+            if not count:
+                raise ArchiveError(f'No accessible questions found. {skipped} unavailable event(s) skipped.')
+            summary=f'{count} challenges / {questions} questions; {skipped} event(s) skipped.'
+            if preview:
+                scopes={(c.category,level_and_title(c.title)[0]) for c in result.challenges}
+                missing_categories=sum(self.store.mapping('category',cat.casefold()) is None for cat in {x[0] for x in scopes})
+                missing_channels=sum(self.store.mapping('channel',cat.casefold()+'/'+level) is None for cat,level in scopes)
+                missing_threads=0
+                for c in result.challenges:
+                    current=self.store.rows('SELECT * FROM questions WHERE challenge_key=?',(c.key,))
+                    missing_threads+=max(0,len(c.questions)-sum(bool(q['thread_id']) for q in current))
+                enabled=prefs['archive_enabled']
+                plan=f'Saved mappings indicate {missing_categories} new categories, {missing_channels} channels and {missing_threads} question threads; deleted Discord objects may also need repair.' if enabled else 'Discord archive is disabled; no categories, posts or threads would be created.'
+                files=sum(len(c.attachment_refs) for c in result.challenges)
+                self.archive_status=f'Preview complete: {summary} {plan} {files} file links discovered; sizes/downloadability not checked. No archive writes or uploads.'
+            else:
+                # Store complete successful snapshots before publication; sync markers are written only after success.
+                for c in result.challenges:
+                    self.store.upsert_challenge(c)
+                self.scan_phase='publishing'
+                progress.update(state='publishing to GitHub',detail=summary)
+                publication=await GitHub(self.settings,self.http_session).publish(result.challenges)
+                with self.store.db:
+                    for key,entry in getattr(publication,'manifest',{}).items():
+                        for item in entry['files']:
+                            self.store.db.execute('UPDATE questions SET github_path=? WHERE challenge_key=? AND number=?',
+                                                  (item['path'],key,item['number']))
+                if prefs['archive_enabled']:
+                    await self.archive.publish(result.challenges,progress)
+                else:
+                    for c in result.challenges:
+                        self.store.synced(c.key)
+                self.archive_status='Complete: '+summary
+                self.archive_status+=(f' {publication.changed} files changed. {publication.commit_url}' if publication.changed else ' GitHub is already up to date.')
+            progress.update(state='completed',detail=self.archive_status)
+            if prefs['notify_results'] and prefs['notification_channel'] and destination and destination.id!=prefs['notification_channel']:
+                channel=await self.archive.channel(prefs['notification_channel'])
+                if channel:
+                    await channel.send('NCL TRACKER scan completed. '+(message.jump_url if message else self.archive_status[:1500]))
+        except asyncio.CancelledError:
+            self.archive_status='Scan stopped. Nothing uploaded. You can start another scan.' if self.scan_phase!='publishing' else 'Bot stopped during publication. Check the archive; rerunning reuses saved IDs.'
+            progress.update(state='stopped',detail=self.archive_status)
+            raise
+        except SessionExpired as exc:
+            self.archive_status=str(exc)
+            progress.update(state='waiting for login',detail=self.archive_status)
+            await self.session_expired(str(exc),source_channel.id if source_channel else 0)
+        except ArchiveError as exc:
+            self.archive_status=str(exc)
+            progress.update(state='failed',detail=self.archive_status)
+        except Exception as exc:
+            self.archive_status=f'Scan failed ({type(exc).__name__}). Check host permissions, browser installation and configuration. Existing content is preserved.'
+            progress.update(state='failed',detail=self.archive_status)
+            LOG.error('Archive scan failed (%s)',type(exc).__name__)
+        finally:
+            if scan_id:
+                with self.store.db:
+                    self.store.db.execute('UPDATE scans SET state=?,progress=?,finished=? WHERE id=?',
+                        (progress.state,json.dumps(dict(processed=progress.processed,new=progress.new,skipped=progress.skipped,failed=progress.failed)),now(),scan_id))
+            if live:
+                await live.finish()
+
+    async def verify_answer(self,interaction,question,answer):
+        # The view callbacks recheck ownership; keep this shared boundary explicit too.
+        if not await owner_check(self,interaction):
+            return
+        if interaction.channel_id!=question['thread_id']:
+            raise ArchiveError('Verification must run in its original question thread.')
+        if not interaction.response.is_done():
+            await interaction.response.defer(ephemeral=True)
+        shown=json.dumps(answer,ensure_ascii=False)
+        kwargs={}
+        if len(shown)>1400:
+            kwargs['file']=discord.File(io.BytesIO(answer.encode('utf-8')),filename='proposed-answer.txt')
+            display='Exact answer attached as UTF-8; no whitespace was trimmed.'
+        else:
+            fence='`'*max(3,max((len(x) for x in re.findall(r'`+',shown)),default=0)+1)
+            display=f'{fence}json\n{shown}\n{fence}'
+        try:
+            message=await interaction.channel.send(f'**Checking Q{question["number"]} — proposed answer**\n{display}',**kwargs)
+        finally:
+            if kwargs.get('file'):
+                kwargs['file'].close()
+        record=self.store.verification(question['key'],answer,interaction.user.id,dict(method='pending',
+            outcome='Verification error',evidence='No completed result was recorded. The job may have been interrupted; retry verification.'))
+        result=await self.verifier.check(question,answer)
+        self.store.finish_verification(record,result)
+        await message.edit(content=(f'**{result["outcome"]} — Q{question["number"]}**\n{display}\n'
+                                   f'**Method:** {result["method"]}\n{result["evidence"]}\nNo answer was submitted to Cyber Skyline.')[:2000])
+        try:
+            await self.archive.update_verification(question)
+        except discord.HTTPException:
+            LOG.warning('Verification saved; parent post update failed.')
+        await interaction.followup.send('Verification recorded in this thread.',ephemeral=True)
+
+    async def send_survey_ping(self,watch,url):
+        if watch['owner_id'] not in self.settings.owners or watch['guild_id']!=self.settings.guild_id:
+            raise ArchiveError('Survey watch owner/server is no longer allowed.')
+        channel=self.get_channel(watch['channel_id']) or await self.fetch_channel(watch['channel_id'])
+        if not getattr(channel,'guild',None) or channel.guild.id!=self.settings.guild_id:
+            raise ArchiveError('The survey channel is outside the configured server.')
+        message=await channel.send(f"<@{watch['owner_id']}> The survey form is ready to fill out.\n<{url}>\nChallenge: <{watch['challenge_url']}>",
+            allowed_mentions=discord.AllowedMentions(everyone=False,roles=False,users=[discord.Object(id=watch['owner_id'])],replied_user=False))
         return message.id
 
     async def survey_loop(self):
@@ -203,22 +490,37 @@ class SkylineBot(discord.Client):
             try:
                 await self.surveys.tick()
             except Exception as exc:
-                LOG.error("Survey state could not be updated (%s)", type(exc).__name__)
+                LOG.error('Survey state could not be updated (%s)',type(exc).__name__)
             await asyncio.sleep(60)
 
     async def schedule_loop(self):
         await self.wait_until_ready()
+        await self.recovered.wait()
         while not self.is_closed():
-            if not self.scan_task or self.scan_task.done():
-                self.start_sync(self.settings.event_url)
-            await asyncio.sleep(self.settings.interval * 60)
+            prefs=self.preferences.effective()
+            last=self.store.get('last_scheduled',0)
+            if prefs['enabled'] and not self.busy() and not self.store.get('auth_invalid',False) and time.time()-last>=prefs['frequency']*60:
+                try:
+                    channel_id=prefs['archive_hub'] or prefs['notification_channel'] or self.store.get('last_command_channel',0)
+                    channel=await self.archive.channel(channel_id) if channel_id else None
+                    if channel is None:
+                        self.archive_status='Scheduled scan waiting for an archive hub or notification destination in /skyline settings.'
+                        await asyncio.sleep(15)
+                        continue
+                    self.start_sync(self.settings.event_url or None,all_events=not bool(self.settings.event_url),channel=channel)
+                    self.store.put('last_scheduled',time.time())
+                except (ArchiveError,discord.HTTPException):
+                    self.archive_status='Scheduled scan could not start. Check destination permissions and /skyline settings.'
+            await asyncio.sleep(15)
 
     async def close(self):
-        tasks = self.background + ([self.scan_task] if self.scan_task else [])
+        tasks=self.background+([self.scan_task] if self.scan_task else [])
         for task in tasks:
-            task.cancel()
+            if not task.done():
+                task.cancel()
         if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
+            await asyncio.gather(*tasks,return_exceptions=True)
         if self.http_session:
             await self.http_session.close()
+        self.store.close()
         await super().close()
