@@ -88,3 +88,15 @@ class RecoveryTests(unittest.TestCase):
         a = self.message(author=99, content='**Verified correct — Q1**\n```json\n"example"\n```\n**Method:** fixture\nProof.\nNo answer was submitted to Cyber Skyline.')
         b = self.message(content=a.content.replace('"example"', 'invalid'))
         self.assertEqual(recovery.restore_verifications(self.store, self.question['key'], [a,b], 10), 0)
+
+    def test_discord_image_transform_keeps_original_evidence_separate(self):
+        row = dict(name='fixture.jpg', size=2048)
+        self.assertIsNone(recovery.upload_note(row, NS(attachments=[NS(filename='fixture.jpg', size=2048)])))
+        note = recovery.upload_note(row, NS(attachments=[NS(filename='fixture.jpg', size=1024)]))
+        self.assertIn('cached original', note)
+
+    def test_missing_or_unrelated_upload_fails_closed(self):
+        row = dict(name='fixture.jpg', size=2048)
+        for attachments in ([], [NS(filename='other.jpg', size=2048)]):
+            with self.assertRaises(recovery.RecoveryError):
+                recovery.upload_note(row, NS(attachments=attachments))

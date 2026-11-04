@@ -138,6 +138,9 @@ watches cannot be inferred. Short verification results can be recovered with
 their exact answers and timestamps, but their original submitter is stored as
 unknown (`user_id=0`). Long reports remain accessible in the original threads.
 Existing discussions, archived threads, and uploaded Discord files are preserved.
+The bot's file markers bind uploads to their original source hashes. If Discord
+stored an image with a different byte size, recovery records that difference and
+keeps the existing upload; verification reads the newly cached source original.
 
 ### Enable OpenAI assistance after upgrading
 

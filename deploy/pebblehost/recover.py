@@ -15,6 +15,10 @@ import subprocess
 import sys
 
 
+class RecoveryError(ValueError):
+    """Only static, credential-free recovery diagnostics belong in this type."""
+
+
 def unique_messages(messages, bot_id):
     """Reject ambiguous delivery rather than choosing one of duplicate posts."""
     found = {}
@@ -26,7 +30,7 @@ def unique_messages(messages, bot_id):
             if not re.fullmatch(r'NCL archive [0-9a-f]{32}', tag):
                 continue
             if tag in found and found[tag].id != message.id:
-                raise ValueError('Duplicate archive markers require manual reconciliation.')
+                raise RecoveryError('Duplicate archive markers require manual reconciliation.')
             found[tag] = message
     return found
 
@@ -35,7 +39,7 @@ def record_post(store, key, message, file_path=None, filename=None):
     from bots.skyline_archive.storage import digest
     old = store.one('SELECT * FROM posts WHERE key=?', (key,))
     if old and (old['channel_id'], old['message_id']) != (message.channel.id, message.id):
-        raise ValueError('Existing post mapping conflicts with recovered message.')
+        raise RecoveryError('Existing post mapping conflicts with recovered message.')
     description = message.embeds[0].description or ''
     with store.db:
         store.db.execute('''INSERT OR REPLACE INTO posts VALUES(?,?,?,?,?,?)''',
@@ -51,20 +55,20 @@ def recover_parts(store, key, markers, required=True, source_key=None):
         live = markers.get(marker(source_key + '/part0'))
         legacy = markers.get(marker(key + '/part0'))
         if live and legacy and live.id != legacy.id:
-            raise ValueError('Both positional and source-ID posts exist; reconcile before recovery.')
+            raise RecoveryError('Both positional and source-ID posts exist; reconcile before recovery.')
         if legacy and not live:
             source_key = key
     found = [markers[marker(f'{source_key}/part{i}')] for i in range(100)
              if marker(f'{source_key}/part{i}') in markers]
     if required and not found:
-        raise ValueError('An expected archive message was not found; recovery stopped.')
+        raise RecoveryError('An expected archive message was not found; recovery stopped.')
     # Never silently discard a gap or a long continuation chain.
     for i, message in enumerate(found):
         if markers.get(marker(f'{source_key}/part{i}')) is not message:
-            raise ValueError('Archive continuation sequence is incomplete.')
+            raise RecoveryError('Archive continuation sequence is incomplete.')
         record_post(store, f'{key}/part{i}', message)
     if marker(f'{source_key}/part100') in markers:
-        raise ValueError('Archive continuation limit reached.')
+        raise RecoveryError('Archive continuation limit reached.')
     return found
 
 
@@ -105,8 +109,21 @@ def restore_verifications(store, question_key, messages, bot_id):
 async def history(channel, limit=2000):
     rows = [message async for message in channel.history(limit=limit + 1, oldest_first=True)]
     if len(rows) > limit:
-        raise ValueError('History limit reached; recovery stopped without posting.')
+        raise RecoveryError('History limit reached; recovery stopped without posting.')
     return rows
+
+
+def upload_note(row, message):
+    """A matching bot footer already binds this upload to the source SHA-256.
+
+    Discord may transform an image, including its byte size. Preserve that upload
+    while keeping the freshly downloaded original as the verification evidence.
+    """
+    if len(message.attachments) != 1 or message.attachments[0].filename != row['name']:
+        raise RecoveryError('Recovered file post is missing its expected attachment.')
+    if message.attachments[0].size != row['size']:
+        return 'Discord upload byte size differs from the source; verification uses the cached original.'
+    return None
 
 
 async def recover(settings):
@@ -124,7 +141,7 @@ async def recover(settings):
             print('Recovery already completed; switch the startup file back to bot.py.', flush=True)
             return
         if store.one('SELECT key FROM questions WHERE message_id IS NOT NULL LIMIT 1') and not store.get('host-recovery-in-progress'):
-            raise ValueError('A linked archive database already exists. Restore its backup, not this tool.')
+            raise RecoveryError('A linked archive database already exists. Restore its backup, not this tool.')
         store.put('host-recovery-in-progress', True)
         store.save_settings(dict(enabled=False, archive_enabled=False, default_preview=True, ai_enabled=False))
         attachments = Attachments(store)
@@ -135,7 +152,7 @@ async def recover(settings):
                         season=row['season'], competition=row['competition'], level=row['level'])
                    for row in store.rows('SELECT * FROM challenges ORDER BY key')]
         if not entries:
-            raise ValueError('No archived challenge identities are available for recovery.')
+            raise RecoveryError('No archived challenge identities are available for recovery.')
 
         async def cache(challenge, context):
             store.upsert_challenge(challenge)
@@ -144,7 +161,7 @@ async def recover(settings):
 
         result = await Scanner(settings, print).collect(catalog=entries, on_challenge=cache)
         if result.errors or len(result.challenges) != len(entries):
-            raise ValueError('Source recovery was incomplete. Refresh login or review source access before retrying.')
+            raise RecoveryError('Source recovery was incomplete. Refresh login or review source access before retrying.')
         print(f'Read {len(result.challenges)} source challenges and cached available files.', flush=True)
         async with discord.Client(intents=discord.Intents(guilds=True, message_content=settings.message_content)) as client:
             await client.login(settings.discord_token)
@@ -157,19 +174,20 @@ async def recover(settings):
             for channel in candidates:
                 messages.extend(await history(channel))
             markers = unique_messages(messages, client.user.id)
-            linked, files, verifications = 0, 0, 0
-            for challenge in result.challenges:
+            linked, files, verifications, transformed = 0, 0, 0, 0
+            for index, challenge in enumerate(result.challenges, 1):
+                print(f'Relinking challenge {index}/{len(result.challenges)}.', flush=True)
                 parents = recover_parts(store, 'challenge/' + challenge.key, markers)
                 channel = parents[0].channel
                 if channel.guild.id != settings.guild_id or channel.category_id is None:
-                    raise ValueError('Archive category identity could not be recovered.')
+                    raise RecoveryError('Archive category identity could not be recovered.')
                 row = store.one('SELECT level FROM challenges WHERE key=?', (challenge.key,))
                 scope = challenge.category.casefold()
                 for kind, name, ident in [('category', scope, channel.category_id),
                                           ('channel', scope + '/' + row['level'], channel.id)]:
                     existing = store.mapping(kind, name)
                     if existing is not None and existing != ident:
-                        raise ValueError('Conflicting archive destinations require manual reconciliation.')
+                        raise RecoveryError('Conflicting archive destinations require manual reconciliation.')
                     store.map(kind, name, ident)
                 for question in store.rows('SELECT * FROM questions WHERE challenge_key=? ORDER BY number', (challenge.key,)):
                     # GitHub imports have positional row keys. Original Discord
@@ -185,10 +203,10 @@ async def recover(settings):
                                 if match and int(match[1]) == settings.guild_id:
                                     thread_ids.append(int(match[2]))
                     if len(set(thread_ids)) > 1:
-                        raise ValueError('Ambiguous question discussion link.')
+                        raise RecoveryError('Ambiguous question discussion link.')
                     thread = await client.fetch_channel(thread_ids[0] if thread_ids else parent.id)
                     if not isinstance(thread, discord.Thread) or thread.guild.id != settings.guild_id or thread.parent_id != parent.channel.id:
-                        raise ValueError('Question thread belongs to an unexpected destination.')
+                        raise RecoveryError('Question thread belongs to an unexpected destination.')
                     thread_messages = await history(thread)
                     recover_parts(store, 'thread/' + question['key'], unique_messages(thread_messages, client.user.id),
                                   source_key='thread/' + source_key)
@@ -202,18 +220,20 @@ async def recover(settings):
                     key = 'file/' + row['key'] + '/' + row['sha256']
                     message = markers.get(marker(key))
                     if message:
-                        if not any(a.filename == row['name'] and a.size == row['size'] for a in message.attachments):
-                            raise ValueError('Recovered attachment metadata does not match the cached source file.')
+                        note = upload_note(row, message)
+                        if note:
+                            transformed += 1
+                            print(note, flush=True)
                         record_post(store, key, message, row['path'], row['name'])
                         store.attachment(row['key'], status='uploaded', message_id=message.id,
-                                         channel_id=message.channel.id, error=None)
+                                         channel_id=message.channel.id, error=note)
                         files += 1
                 store.synced(challenge.key)
 
         if linked != count:
-            raise ValueError('Question count differs from the GitHub archive; recovery needs review.')
+            raise RecoveryError('Question count differs from the GitHub archive; recovery needs review.')
         if store.db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or store.rows('PRAGMA foreign_key_check'):
-            raise ValueError('Recovered database did not pass integrity checks.')
+            raise RecoveryError('Recovered database did not pass integrity checks.')
         store.put('auth_invalid', False)
         store.put('host-recovery-complete', True)
         store.put('host-recovery-in-progress', False)
@@ -221,6 +241,7 @@ async def recover(settings):
                       posts=store.one('SELECT count(*) AS n FROM posts')['n'],
                       mappings=store.one('SELECT count(*) AS n FROM mappings')['n'],
                       recovered_uploads=files, recovered_verifications=verifications,
+                      discord_upload_size_differences=transformed,
                       scheduled_scans=False, default_preview=True,
                       limitations='Original scan history and missing settings/watches cannot be reconstructed. '
                                    'Recovered verification submitters are unknown (user_id=0). '
@@ -257,6 +278,8 @@ if __name__ == '__main__':
     try:
         main()
     except Exception as exc:
+        if isinstance(exc, RecoveryError):
+            print(str(exc), flush=True)
         # HTTP exception messages can contain request details; emit types only.
         print(f'RECOVERY STOPPED ({type(exc).__name__}). No remote archive content was changed. '
               'Review access, source availability, and existing archive markers before retrying.', flush=True)
