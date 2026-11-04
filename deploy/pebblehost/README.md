@@ -7,7 +7,10 @@ PebbleHost installs the requirements at startup.
 
 Start once to download the pinned, SHA-256-verified application files and Chromium
 headless shell. The startup script launches Chromium and tests a synthetic form.
-It stops with `SETUP NEEDED` until credentials and the saved login are provided.
+It stops with `SETUP NEEDED` until the required credentials and Discord IDs are provided.
+Once those are present, it connects to Discord even if the Cyber Skyline login is
+still missing. Upload the saved login before scanning challenges; a missing login
+is reported without taking the Discord commands offline.
 It does not make GitHub commits, send Discord messages, or access a competition
 during this preflight.
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +18,44 @@ SPEC.loader.exec_module(ENTRY)
 
 
 class PebbleHostTests(unittest.TestCase):
+    def test_discord_startup_does_not_require_skyline_login(self):
+        for has_session in (False, True):
+            with self.subTest(has_session=has_session), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                state = root / "private/skyline-archive"
+                state.mkdir(parents=True)
+                session = state / "browser-state.json"
+                if has_session:
+                    session.write_text('{"cookies": [], "origins": []}', encoding="utf-8")
+                runner = Mock()
+                modules = {
+                    "dotenv": SimpleNamespace(load_dotenv=Mock()),
+                    "discord": SimpleNamespace(), "aiohttp": SimpleNamespace(),
+                    "playwright": SimpleNamespace(),
+                    "bots.skyline_archive.settings": SimpleNamespace(
+                        load_settings=lambda: SimpleNamespace(auth_file=session)),
+                    "bots.skyline_archive.__main__": SimpleNamespace(main=runner),
+                }
+                environment = {name: "test-value" for name in
+                               ("DISCORD_BOT_TOKEN", "DISCORD_GUILD_ID", "DISCORD_OWNER_IDS", "GITHUB_TOKEN")}
+                with (patch.object(ENTRY, "__file__", str(root / "bot.py")),
+                      patch.object(ENTRY, "install_source", return_value=root / "skyline-app"),
+                      patch.object(ENTRY, "prepare_private", return_value=(root / "private/skyline.env", state)),
+                      patch.object(ENTRY, "prepare_browser_libraries"),
+                      patch.object(ENTRY, "browser_check", new_callable=AsyncMock),
+                      patch.object(ENTRY.subprocess, "run", return_value=SimpleNamespace(returncode=0)),
+                      patch.dict(ENTRY.os.environ, environment),
+                      patch.dict(ENTRY.sys.modules, modules),
+                      patch.object(ENTRY.sys, "path", ENTRY.sys.path.copy()),
+                      patch.object(ENTRY.sys, "argv", ["bot.py"]),
+                      patch.object(ENTRY.os, "umask"),
+                      patch("sys.stdout", new_callable=io.StringIO)):
+                    self.assertEqual(ENTRY.main(), 0)
+                runner.assert_called_once_with()
+                status = (root / "setup-status.txt").read_text()
+                self.assertIn("Starting the Discord connection", status)
+                self.assertEqual("CYBER SKYLINE LOGIN NEEDED" in status, not has_session)
+
     def test_release_hashes_match_application(self):
         self.assertGreater(len(ENTRY.SOURCE_FILES), 5)
         for relative, expected in ENTRY.SOURCE_FILES.items():

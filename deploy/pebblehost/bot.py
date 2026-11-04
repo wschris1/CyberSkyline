@@ -259,10 +259,13 @@ def main():
         print("SETUP NEEDED: " + str(exc).replace("bots/skyline_archive/.env", "private/skyline.env"), flush=True)
         print(f"Edit {config}. Tokens are never printed by this setup script.", flush=True)
         return 0
+    message = "HOST READY: Python and Chromium passed. Starting the Discord connection.\n"
     if not settings.auth_file.is_file():
-        print(f"SETUP NEEDED: upload your saved Cyber Skyline login to {settings.auth_file}.", flush=True)
-        return 0
-    print("Starting the Discord bot. Service credentials are checked by the bot when used.", flush=True)
+        message += f"CYBER SKYLINE LOGIN NEEDED: upload your saved login to {settings.auth_file}.\n"
+        message += "Discord commands can connect; challenge scans wait for the saved login.\n"
+    message += "Service credentials are checked by the bot when used; check the console for connection results.\n"
+    (root / "setup-status.txt").write_text(message, encoding="utf-8")
+    print(message, flush=True)
     from bots.skyline_archive.__main__ import main as run_bot
     sys.argv = ["skyline-archive", "run"]
     run_bot()
