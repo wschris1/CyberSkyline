@@ -1,0 +1,47 @@
+{
+  "challenges": {
+    "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2151": {
+      "category": "Forensics",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/forensics/hard/the-book-q1.md",
+          "sha": "af61c7110fc6f54fb2a07ea0e9b9c3a6c271886e"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/forensics/hard/the-book-q2.md",
+          "sha": "b16c941c1ed7383eca54e966177fdcb93c01d021"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/forensics/hard/the-book-q3.md",
+          "sha": "c90ef32c244fc75580d66a07dd41eaa03b24cb0b"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/forensics/hard/the-book-q4.md",
+          "sha": "44d0ff401c4673a584b5bfbca0fa5b8141e81f80"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/forensics/hard/the-book-q5.md",
+          "sha": "071455b907f89a04b909a1438839c8b6047731e3"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/forensics/hard/the-book-q6.md",
+          "sha": "58063d009e132f02dcd01594ff27add80d250ced"
+        }
+      ],
+      "level": "hard",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2151",
+      "title": "The Book (Hard)"
+    }
+  },
+  "version": 2
+}

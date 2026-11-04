@@ -1,9 +1,7 @@
 # Cyber Skyline question archive
 
-The [Discord bot](../bots/skyline_archive/README.md) creates one file per question:
+One file per question, grouped by season, competition, category, and level.
 
-`challenges/<season-year>/<competition>/<category>/<level>/<challenge-name>-qN.md`
-
-For example: `challenges/spring-2026/practice-game/forensics/easy/metadata-q1.md`.
-
-No bot imports have run yet. This page becomes a linked question index after the first successful sync. Existing authored guides remain in the [challenge library](challenges.md).
+| Season | Competition | Category | Level | Challenge | Questions |
+| --- | --- | --- | --- | --- | --- |
+| fall-2026 | gym | Forensics | hard | The Book \(Hard\) | [Q1](../challenges/fall-2026/gym/forensics/hard/the-book-q1.md) · [Q2](../challenges/fall-2026/gym/forensics/hard/the-book-q2.md) · [Q3](../challenges/fall-2026/gym/forensics/hard/the-book-q3.md) · [Q4](../challenges/fall-2026/gym/forensics/hard/the-book-q4.md) · [Q5](../challenges/fall-2026/gym/forensics/hard/the-book-q5.md) · [Q6](../challenges/fall-2026/gym/forensics/hard/the-book-q6.md) |
