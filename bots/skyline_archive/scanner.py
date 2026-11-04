@@ -100,8 +100,13 @@ class Scanner:
                 snapshot = await self.page.evaluate(EXTRACTOR)
                 if kind == 'challenge' and snapshot.get('challenge'):
                     return snapshot
-                if kind == 'module' and links_for(snapshot, CHALLENGE):
-                    return snapshot
+                if kind == 'module':
+                    candidates = links_for(snapshot, CHALLENGE)
+                    # The SPA can render hrefs before dropdown labels. Returning
+                    # then silently classifies challenges as unrated and causes
+                    # a selected difficulty to disappear on the next scan.
+                    if snapshot.get('category') and candidates and all(name.strip() for name in candidates.values()):
+                        return snapshot
                 if kind == 'event' and snapshot.get('event'):
                     if links_for(snapshot, MODULE):
                         return snapshot
@@ -111,7 +116,7 @@ class Scanner:
                         return snapshot
                 if kind == 'events' and links_for(snapshot, WORLD):
                     return snapshot
-                if await self.page.locator('input[type="password"]').count():
+                if not snapshot.get('category') and await self.page.locator('input[type="password"]').count():
                     raise SessionExpired('Cyber Skyline needs sign-in. Refresh the login, then recheck the session.')
                 await asyncio.sleep(0.5)
         except PlaywrightTimeout as exc:

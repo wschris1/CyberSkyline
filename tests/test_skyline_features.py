@@ -338,6 +338,31 @@ class VerificationTests(unittest.IsolatedAsyncioTestCase):
 
 @unittest.skipIf(discord is None,'Install bot requirements for browser boundary fixtures')
 class ScannerBoundaryTests(unittest.IsolatedAsyncioTestCase):
+    async def test_module_waits_for_labels_before_difficulty_filtering(self):
+        with tempfile.TemporaryDirectory() as directory:
+            scanner=Scanner(settings(directory))
+            url=challenge().url
+            href=url.removeprefix('https://cyberskyline.com')
+            early=dict(category='Password Cracking',links=[dict(href=href,title='')])
+            ready=dict(category='Password Cracking',links=[dict(href=href,title='Synthetic example (Hard)')])
+            scanner.page=SimpleNamespace(goto=AsyncMock(return_value=SimpleNamespace(status=200)),
+                url=url,evaluate=AsyncMock(side_effect=[early,ready]),
+                locator=lambda _:SimpleNamespace(count=AsyncMock(return_value=1)))
+            with patch('bots.skyline_archive.scanner.asyncio.sleep',new_callable=AsyncMock):
+                self.assertEqual(await scanner.visit(url,'module'),ready)
+            self.assertEqual(scanner.page.evaluate.await_count,2)
+
+    async def test_module_waits_for_selected_category(self):
+        with tempfile.TemporaryDirectory() as directory:
+            scanner=Scanner(settings(directory)); url=challenge().url
+            early=dict(links=[dict(href=url.removeprefix('https://cyberskyline.com'),title='Synthetic example (Hard)')])
+            ready=dict(early,category='Password Cracking')
+            scanner.page=SimpleNamespace(goto=AsyncMock(return_value=SimpleNamespace(status=200)),
+                url=url,evaluate=AsyncMock(side_effect=[early,ready]),
+                locator=lambda _:SimpleNamespace(count=AsyncMock(return_value=0)))
+            with patch('bots.skyline_archive.scanner.asyncio.sleep',new_callable=AsyncMock):
+                self.assertEqual(await scanner.visit(url,'module'),ready)
+
     async def test_401_signin_and_network_failures_are_distinguished(self):
         from playwright.async_api import TimeoutError as BrowserTimeout
         with tempfile.TemporaryDirectory() as directory:

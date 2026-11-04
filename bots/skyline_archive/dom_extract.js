@@ -94,7 +94,9 @@
       return result;
     }
     const parts = cells.slice(0, -1).map((cell, index) => {
-      const content = tidy(render(cell));
+      // The outer question cell is not itself a Markdown table. Rendering its
+      // wrapper adds a synthetic pipe that breaks exact question recognition.
+      const content = tidy(Array.from(cell.childNodes).map(render).join(""));
       return cells.length === 3 && headers[index] ? `**${escape(headers[index])}:** ${content}` : content;
     });
     questions.push(parts.join("\n\n"));

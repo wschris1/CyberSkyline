@@ -28,10 +28,30 @@ const cards = fixture.cards.map(card => ({
   textContent: card.name + card.counters,
 }));
 const menus = fixture.menus.map(value => ({querySelector: () => node(value)}));
+const textNode = textContent => ({nodeType: 3, textContent});
+const element = (tagName, childNodes = []) => ({
+  tagName, childNodes, nodeType: 1, style: {},
+  children: childNodes.filter(n => n.nodeType === 1),
+  get textContent() { return childNodes.map(n => n.textContent).join(''); },
+  getAttribute: () => null,
+  querySelectorAll: () => [],
+});
+const prompt = element('DIV', [textNode('Input: '), element('CODE', [textNode('412042')])]);
+prompt.style.padding = '0px';
+const description = element('DIV', [prompt]);
+const question = element('TD', [element('DIV', [textNode('Q1 - 5 points')]),
+  textNode('What is the decoded hex value?')]);
+const response = element('TD', [textNode('PRIVATE SAVED ANSWER')]);
+response.classList = {contains: value => ['center', 'aligned'].includes(value)};
+const row = element('TR', [question, response]);
+row.getAttribute = () => 'synthetic-question-id';
+const table = {querySelectorAll: selector => selector === ':scope > tbody > tr[data-value]' ? [row] : []};
 const document = {
   querySelector: selector => selector === 'h1' ? node('NCL Fall 2026 Gymnasium', 'Guided Training') : null,
   querySelectorAll: selector => selector === 'a[href]' ? cards :
-    selector === '[role="listbox"].ui.inline.dropdown' ? menus : [],
+    selector === '[role="listbox"].ui.inline.dropdown' ? menus :
+    fixture.complete && selector === '.ui.basic.segment.body:not(.fat)' ? [description] :
+    fixture.complete && selector === '.ui.basic.segment.fat.tall.body > table' ? [table] : [],
 };
 const extract = vm.runInNewContext(fs.readFileSync(process.argv[1], 'utf8'), {document, URL});
 process.stdout.write(JSON.stringify(extract()));
@@ -40,8 +60,8 @@ process.stdout.write(JSON.stringify(extract()));
 
 @unittest.skipUnless(shutil.which('node'), 'Node is needed for DOM fixture tests')
 class ExtractorDiscoveryTests(unittest.TestCase):
-    def extract(self, menus, nested=False):
-        fixture = dict(menus=menus, nested=nested, cards=[dict(
+    def extract(self, menus, nested=False, complete=False):
+        fixture = dict(menus=menus, nested=nested, complete=complete, cards=[dict(
             href='/module/' + '1'*24 + '/' + '2'*24,
             name='Network Traffic Analysis', counters='11 Challenges66 Questions0% Completion')])
         result = subprocess.run(['node', '-e', HARNESS, str(EXTRACTOR), json.dumps(fixture)],
@@ -68,3 +88,13 @@ class ExtractorDiscoveryTests(unittest.TestCase):
         self.assertEqual(result['title'], 'Synthetic capture (Easy)')
         self.assertIsNone(result['challenge'])
         self.assertIsNotNone(result['issue'])
+
+    def test_extracted_question_reaches_verifier_without_table_delimiter(self):
+        from bots.skyline_archive.verify_worker import check
+        result = self.extract(['Cryptography', 'Synthetic decode (Easy)'], complete=True)
+        question = result['challenge']['questions'][0]
+        self.assertNotIn('|', question)
+        self.assertNotIn('PRIVATE SAVED ANSWER', json.dumps(result))
+        outcome = check(dict(question=question, instructions=result['challenge']['prompt'],
+                             files=[], answer='A B', root=str(EXTRACTOR.parent)))
+        self.assertEqual(outcome['outcome'], 'Verified correct')
