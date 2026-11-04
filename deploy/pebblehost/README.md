@@ -115,6 +115,30 @@ settings precedence, file limits, recovery and verification methods.
 
 ## Updates and checks
 
+### Recovering a missing database after a host transfer
+
+Restore the complete private directory from a recent backup whenever possible.
+If no database backup remains, `recover.py` can rebuild links from the GitHub
+manifest, currently accessible source questions, and this bot's existing Discord
+archive markers. Stop the regular bot, back up the new server, deploy the current
+`bot.py` and `requirements.txt`, and preserve/rename any outdated `skyline-app`.
+Put `recover.py` beside `bot.py`, then temporarily select it as the start file.
+It needs the same private configuration, saved login, and Message Content Intent.
+
+Recovery reads the source, downloads available evidence and rebuilds the local
+database; it never posts, edits, deletes or submits remote archive content.
+Duplicate markers, missing threads, source errors, and bounded history limits
+stop recovery for review. After `RECOVERY COMPLETE`, select `bot.py` again and
+restart. Review `/skyline settings` before enabling the archive or scheduled
+scans. Preview remains on and scheduling/AI remain off. A count-only report is
+saved as `private/skyline-archive/host-recovery-report.json`.
+
+This is not a full database restore: missing scan history, settings and survey
+watches cannot be inferred. Short verification results can be recovered with
+their exact answers and timestamps, but their original submitter is stored as
+unknown (`user_id=0`). Long reports remain accessible in the original threads.
+Existing discussions, archived threads, and uploaded Discord files are preserved.
+
 ### Enable OpenAI assistance after upgrading
 
 The release includes the OpenAI connector and EXIF creation-date adapter. No new
