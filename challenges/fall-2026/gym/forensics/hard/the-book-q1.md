@@ -16,7 +16,7 @@ We have obtained a live system memory dump from a hacker's computer before it fr
 
 Q1 - 5 points
 
-What operating system was this dump taken from? |
+What operating system was this dump taken from?
 
 ## Referenced files
 

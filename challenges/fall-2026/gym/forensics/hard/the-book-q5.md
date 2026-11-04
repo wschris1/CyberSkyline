@@ -16,7 +16,7 @@ We have obtained a live system memory dump from a hacker's computer before it fr
 
 Q5 - 30 points
 
-What is the real name of "cloud"? |
+What is the real name of "cloud"?
 
 ## Referenced files
 

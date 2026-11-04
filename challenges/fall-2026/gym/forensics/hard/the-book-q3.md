@@ -16,7 +16,7 @@ We have obtained a live system memory dump from a hacker's computer before it fr
 
 Q3 - 10 points
 
-What is the name of the user that was logged in? |
+What is the name of the user that was logged in?
 
 ## Referenced files
 

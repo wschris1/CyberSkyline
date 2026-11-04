@@ -16,7 +16,7 @@ We have obtained a live system memory dump from a hacker's computer before it fr
 
 Q4 - 10 points
 
-What is the full file path and file of the file in interest? |
+What is the full file path and file of the file in interest?
 
 ## Referenced files
 

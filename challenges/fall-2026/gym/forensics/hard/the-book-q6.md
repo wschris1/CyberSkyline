@@ -16,7 +16,7 @@ We have obtained a live system memory dump from a hacker's computer before it fr
 
 Q6 - 40 points
 
-What is the password of the currently logged in user? |
+What is the password of the currently logged in user?
 
 ## Referenced files
 
