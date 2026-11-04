@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "a4e49c6c0114749fa48833f3991aba1f2e5d9052"
+SOURCE_REVISION = "4415ff5729d196521d8c79f7c4ef42a46f4e740a"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
@@ -28,7 +28,7 @@ SOURCE_FILES = {
     'bots/skyline_archive/bot.py': 'b93d7a179d2fab5dc11d72c170d5945d22a4bd3c070af248d24bb2c77ea5cce4',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
     'bots/skyline_archive/discord_archive.py': 'a760e48f73ca8dcf400d71612654d4e38dfe87b563020ee7eda4179739d293f1',
-    'bots/skyline_archive/dom_extract.js': 'c3e1fdb2a321b1ff95262396951f64e4dc9ccb5088f2471127815c67a527da5b',
+    'bots/skyline_archive/dom_extract.js': 'b28f8a7f2e88be276b499f0e5860f3fcad08910a0c8367fa43335ad8c08319e9',
     'bots/skyline_archive/github.py': '3568e6a96df23e853bbb4af0cc9aa82cb8fdf6deb35538b961113d41b637bd0e',
     'bots/skyline_archive/preferences.py': '1e9c2e552b08bc5e914ea1c53716da50b3e574a0f04a00e62174500360c3dcb9',
     'bots/skyline_archive/progress.py': '02e78726bb4c1806a124eee2acbe0ab673dd8e1b255766014b4605b71d82b8a5',
