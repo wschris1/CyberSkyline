@@ -17,14 +17,14 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "4e70f8b63ac3012cb645eb7173f817fd5d0b4421"
+SOURCE_REVISION = "a3c730a8aca83aa43d745e0cb6262377feee5709"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
     'bots/skyline_archive/__main__.py': '74c93f4abc973b89e25f31a6c7ffc8ab612fd3baf1affc9bd981d9c729632fa9',
-    'bots/skyline_archive/bot.py': '8abbfc610c355d3b17dc40f0b64e3f5854928e73698b581d584376e6bd591e34',
+    'bots/skyline_archive/bot.py': '38eed5a291d372677d3e5cab7e0ef572bbb2b72acb903eafc1155eb75869091e',
     'bots/skyline_archive/core.py': '9d3c92fe3fd83c1a57fbd9de1ffc55f33fb3aae6db9da77bb703eea06ea0eb8c',
     'bots/skyline_archive/github.py': '1ec55c0893ac94378cc8e814404181b83e1552fcda1681d19f322f31abdc62fb',
     'bots/skyline_archive/scanner.py': 'fdfbb4a4f2b57390c8ab69f08a6c38e39369c7092233886062ae493ea8a21bd9',
