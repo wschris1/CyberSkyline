@@ -17,20 +17,35 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "a3c730a8aca83aa43d745e0cb6262377feee5709"
+SOURCE_REVISION = "a4e49c6c0114749fa48833f3991aba1f2e5d9052"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
     'bots/skyline_archive/__main__.py': '74c93f4abc973b89e25f31a6c7ffc8ab612fd3baf1affc9bd981d9c729632fa9',
-    'bots/skyline_archive/bot.py': '38eed5a291d372677d3e5cab7e0ef572bbb2b72acb903eafc1155eb75869091e',
-    'bots/skyline_archive/core.py': '9d3c92fe3fd83c1a57fbd9de1ffc55f33fb3aae6db9da77bb703eea06ea0eb8c',
-    'bots/skyline_archive/github.py': '1ec55c0893ac94378cc8e814404181b83e1552fcda1681d19f322f31abdc62fb',
-    'bots/skyline_archive/scanner.py': 'fdfbb4a4f2b57390c8ab69f08a6c38e39369c7092233886062ae493ea8a21bd9',
-    'bots/skyline_archive/settings.py': 'c40f5ae8a818b7d412c596e0275da2d02ee82510ec96d7092c747bf529a96e9d',
-    'bots/skyline_archive/survey.py': '22cfcb847dfcaa0878498b367c57772dbd413f93f2081b8da4a7146355ad9d0f',
-    'bots/skyline_archive/dom_extract.js': 'e1ff43bec932818265cb932a338ebf913e34162f9e3926767f7f3defa71ed5cc',
+    'bots/skyline_archive/attachments.py': '9ec25f809ffdad0eaed1dfcbbfe5d693d9943f5b009fd47f817b6cd2de5caedc',
+    'bots/skyline_archive/bot.py': 'b93d7a179d2fab5dc11d72c170d5945d22a4bd3c070af248d24bb2c77ea5cce4',
+    'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
+    'bots/skyline_archive/discord_archive.py': 'a760e48f73ca8dcf400d71612654d4e38dfe87b563020ee7eda4179739d293f1',
+    'bots/skyline_archive/dom_extract.js': 'c3e1fdb2a321b1ff95262396951f64e4dc9ccb5088f2471127815c67a527da5b',
+    'bots/skyline_archive/github.py': '3568e6a96df23e853bbb4af0cc9aa82cb8fdf6deb35538b961113d41b637bd0e',
+    'bots/skyline_archive/preferences.py': '1e9c2e552b08bc5e914ea1c53716da50b3e574a0f04a00e62174500360c3dcb9',
+    'bots/skyline_archive/progress.py': '02e78726bb4c1806a124eee2acbe0ab673dd8e1b255766014b4605b71d82b8a5',
+    'bots/skyline_archive/scanner.py': 'd3119c333eca360a2cbaa5597bbbf2052ecd04dff09bf19724587d5b485e28bd',
+    'bots/skyline_archive/settings.py': '318f4da540d26a4647e4acecae795d42d5d7fa9a25456a023e51f0e4d62284a7',
+    'bots/skyline_archive/storage.py': '94213608f429e69430d1f4457e4ff76c34d8fb2ccf0df794c7c8e91ac33bd7b3',
+    'bots/skyline_archive/survey.py': '86f2bef2980443f9e57439dc1e377b0de3a06b0d1ea3ed73fda949eaf037f4dc',
+    'bots/skyline_archive/ui.py': '7f5e4be6d6926d14d2f1a9a95c069e65d7e821c95f61e5d57fcf8982c200f3bf',
+    'bots/skyline_archive/verification.py': '6dd6631e814c13c8d61be353f59e9ffee2480040c0877588bd1951d9f67de727',
+    'bots/skyline_archive/verify_worker.py': '2467a671a05113fc47e488d2c9c32d6da7b6ef9d42c84f29498166a2571c26f4',
+    'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
+    'tools/_common.py': '33eda94911afe784e2fbc22731126ac8ca318db14f9eade5ae814f597a702a6f',
+    'tools/artifact_inventory.py': '76ce149815cfdff979c3f238eb9a6aecbb94b6cc0d72e2765865b8f7818a7dce',
+    'tools/decode_value.py': '1cdd1025c45ab3340bf4d87655bb7e9ae0c20e88d20f08fa11769a9127d6a02f',
+    'tools/http_response_inspect.py': '0dbaf8926a600f105f5ad3ebae15532cf48500ad521994035f9ad48864971a82',
+    'tools/pcap_summary.py': 'f24a1e78cc021c1327bca732613643ed1546f93eb39e25b3ff2d97668e422b96',
+    'tools/timestamp_convert.py': 'b63cbdc2f06bf6d9e020f3565c23b7d5066e05b3b79f7212db00c103fbd227f4',
 }
 
 CONFIG_TEMPLATE = """# Private configuration: enter secrets here, never in chat or GitHub.
@@ -45,6 +60,10 @@ SYNC_INTERVAL_MINUTES=0
 REQUEST_DELAY_SECONDS=2
 MAX_CHALLENGES=2000
 HEADLESS=true
+DISCORD_ARCHIVE_HUB_ID=0
+DISCORD_NOTIFICATION_CHANNEL_ID=0
+DEFAULT_PREVIEW=false
+DISCORD_MESSAGE_CONTENT=false
 """
 
 
