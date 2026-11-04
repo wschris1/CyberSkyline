@@ -3,8 +3,10 @@
 import hashlib
 import importlib.util
 import io
+import os
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -63,6 +65,26 @@ class PebbleHostTests(unittest.TestCase):
             self.assertEqual(config.read_text(), "DISCORD_GUILD_ID=123456\n")
             self.assertTrue(session.is_file())
             self.assertFalse(state.is_relative_to(root / "skyline-app"))
+
+    def test_missing_library_parser_ignores_resolved_paths(self):
+        output = "\tlibnspr4.so => not found\n\tlibc.so.6 => /lib/libc.so.6 (0x123)\n"
+        with patch.object(ENTRY.subprocess, "run", return_value=SimpleNamespace(stdout=output)):
+            self.assertEqual(ENTRY.missing_libraries(Path("/test/browser")), {"libnspr4.so"})
+
+    def test_unrecognized_library_stops_before_any_package_command(self):
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=False):
+            root = Path(directory)
+            binary = root / "browser-cache/chromium_headless_shell-1/chrome-linux/chrome-headless-shell"
+            binary.parent.mkdir(parents=True)
+            binary.touch()
+            with (patch.object(ENTRY, "missing_libraries", return_value={"libunknown.so.1"}),
+                  patch.object(ENTRY.platform, "freedesktop_os_release", return_value={"ID": "ubuntu", "VERSION_ID": "26.04"}),
+                  patch.object(ENTRY.platform, "machine", return_value="x86_64"),
+                  patch.object(ENTRY.shutil, "which", return_value="/usr/bin/exists"),
+                  patch.object(ENTRY.subprocess, "run") as command):
+                with self.assertRaisesRegex(ENTRY.SetupError, "Unmapped browser libraries"):
+                    ENTRY.prepare_browser_libraries(root)
+                command.assert_not_called()
 
 
 if __name__ == "__main__":

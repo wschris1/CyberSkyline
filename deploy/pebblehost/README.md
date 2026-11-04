@@ -9,7 +9,16 @@ Start once to download the pinned, SHA-256-verified application files and Chromi
 headless shell. The startup script launches Chromium and tests a synthetic form.
 It stops with `SETUP NEEDED` until credentials and the saved login are provided.
 It does not make GitHub commits, send Discord messages, or access a competition
-during this preflight. Missing Linux libraries must be supplied by the host.
+during this preflight.
+
+On Ubuntu 26.04 x86_64, missing supported libraries are downloaded from the host's
+configured, signed Ubuntu repositories and extracted into `browser-libs`.
+The bot uses these copies through `LD_LIBRARY_PATH`. This does not install system
+packages, run package-maintainer scripts, use sudo, or change repository trust.
+If package indexes are absent, an isolated `browser-apt` directory is used for
+the index refresh. Other operating systems or unrecognized dependencies need
+host support. Diagnostics are written to `chromium-check.txt` and
+`browser-libraries.log`; these reports do not include credentials.
 
 ## Private configuration
 
