@@ -250,6 +250,7 @@ class DiscordArchive:
                 await self.text(thread,f'layout3/{thread.id}/thread/'+q['key'],intro+'\n'+history)
             self.store.synced(c.key)
             self.store.mark_delivered(c,'discord')
+            self.store.allow_discord_recreation([c.key])
 
     async def update_verification(self, question):
         status = self.store.latest_verification(question['key'])

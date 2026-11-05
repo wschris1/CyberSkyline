@@ -29,6 +29,24 @@ class PublishResult:
     manifest: dict = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class ArchiveProof:
+    head: str
+    manifest: dict
+    blobs: dict
+
+    def check(self, challenge):
+        """Require every current rendered prompt at this exact immutable commit."""
+        entry = self.manifest.get(challenge.key)
+        if not entry or len(entry['files']) != len(challenge.questions):
+            return 'GitHub does not contain every question in this challenge.'
+        for item in entry['files']:
+            expected = git_blob_sha(challenge.markdown(item['number']))
+            if item['sha'] != expected or self.blobs.get(item['path']) != expected:
+                return 'A GitHub question is missing, changed, or older than the saved source prompt.'
+        return None
+
+
 class GitHub:
     def __init__(self, settings, session):
         self.settings = settings
@@ -69,6 +87,21 @@ class GitHub:
             return parse_manifest(base64.b64decode(result["content"]).decode("utf-8"))
         except (ValueError, KeyError, UnicodeError) as exc:
             raise ArchiveError("Cannot read the existing archive manifest; nothing was uploaded.") from exc
+
+    async def head(self):
+        result = await self.request('GET','/git/ref/heads/'+quote(self.settings.branch,safe=''))
+        return result['object']['sha']
+
+    async def archive_proof(self):
+        head = await self.head()
+        commit = await self.request('GET',f'/git/commits/{head}')
+        tree = await self.request('GET',f"/git/trees/{commit['tree']['sha']}?recursive=1")
+        if tree.get('truncated'):
+            raise ArchiveError('GitHub returned an incomplete tree. Cleanup is blocked; nothing was deleted.')
+        # A symlink blob with matching text is not an archived Markdown file.
+        blobs = {e['path']:e['sha'] for e in tree['tree']
+                 if e['type']=='blob' and e.get('mode') in ('100644','100755')}
+        return ArchiveProof(head,await self._read_manifest(head),blobs)
 
     async def index_into(self, store):
         """Read one immutable commit so concurrent GitHub writes cannot mix versions."""

@@ -11,6 +11,8 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline scan-discord event_url:<event overview URL> preview:false` | Fast competition workflow: stream collected challenges into Discord channels, question threads and files; no GitHub requests. |
 | `/skyline export-github` | Export saved source prompts from mapped Discord posts; optional channel/season/competition/category/difficulty filters. Works without a current Skyline login. |
 | `/skyline scan-both event_url:<event overview URL> preview:false` | Stream to Discord first, then export the prompt batch to GitHub. |
+| `/skyline-cleanup preview` | Owner-only paginated cleanup plan. Verify every saved question against current GitHub files, then explicitly confirm Discord deletion. Optional season/competition/category/difficulty filters. |
+| `/skyline-cleanup allow-recreate` | Allow matching retired archives to be built on future scans again. Does not recover deleted Discord discussions. |
 | `/skyline sync event_url:<event overview URL>` | Scan one event and upload all accessible question prompts. |
 | `/skyline sync preview:true event_url:<event overview URL>` | Check extraction and counts without uploading. |
 | `/skyline sync-all` | Discover events on your Competition dashboard and scan those still accessible. |
@@ -33,6 +35,8 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline watch-survey challenge_url:<survey challenge URL>` | Watch for its survey link, then check the actual website and ping you in this channel. |
 | `/skyline survey-status` | Show your saved survey watches and what each is waiting for. |
 | `/skyline unwatch-survey watch_id:<ID>` | Remove a watch. Remove it before intentionally rearming a finished watch. |
+
+Cleanup always starts with a preview, followed by a separate typed confirmation. Every question must match the configured GitHub branch; only verified archive channels and categories left empty qualify. **Deleting a channel also deletes its answers, discussions, threads and uploads, which are not backed up on GitHub.** Private cached files and verification records remain on the host. Scheduled scans do not immediately recreate retired archives. See [cleanup checks and recovery](../../docs/skyline-tracker.md#delete-discord-archives-already-exported-to-github).
 
 Commands work only in the configured server and only for the Discord user IDs in `DISCORD_OWNER_IDS`.
 

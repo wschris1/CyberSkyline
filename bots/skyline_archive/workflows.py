@@ -51,6 +51,9 @@ class DiscordPipeline:
                 continue
             c = self.client.store.decode_challenge(row['payload'])
             try:
+                if self.client.scan_options.get('scheduled') and self.client.store.discord_retired(c.key):
+                    self.client.jobs.state(self.scan_id,url,'published')
+                    continue
                 if self.enabled:
                     await self.client.archive.publish([c],self.progress)
                     self.progress.discord_completed += 1

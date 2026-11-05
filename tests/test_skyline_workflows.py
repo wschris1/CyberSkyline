@@ -241,7 +241,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.bot.store.close(); self.bot.store=Store(self.tmp.name)
         self.assertEqual(before,self.bot.store.rows('SELECT * FROM questions'))
         self.assertEqual(self.bot.store.rows('SELECT * FROM deliveries'),[])
-        self.assertTrue((Path(self.tmp.name)/'archive.before-v4.sqlite3').exists())
+        self.assertTrue((Path(self.tmp.name)/f'archive.before-v{Store.VERSION}.sqlite3').exists())
         self.assertIsNotNone(self.bot.store.snapshot(c.key))
 
     async def test_new_parent_avoids_extra_edit_but_repaired_parent_links_surviving_thread(self):

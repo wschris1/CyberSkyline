@@ -20,6 +20,8 @@ from .survey import SurveyManager, SurveyProbe
 from .storage import Store, now
 from .jobs import Jobs
 from . import operations
+from . import cleanup_ui
+from .cleanup import Cleanup
 from .preferences import Preferences
 from .attachments import Attachments
 from .discord_archive import DiscordArchive
@@ -265,6 +267,28 @@ class SkylineCommands(app_commands.Group):
         await interaction.response.send_message(f'Removed watch `{watch_id}`.',ephemeral=True)
 
 
+class CleanupCommands(app_commands.Group):
+    # The existing /skyline group already uses Discord's 25-child limit.
+    def __init__(self,client):
+        super().__init__(name='skyline-cleanup',description='Remove Discord archives only after verifying their GitHub question copies.',guild_only=True)
+        self.client=client
+
+    interaction_check=SkylineCommands.interaction_check
+    on_error=SkylineCommands.on_error
+
+    @app_commands.command(name='preview',description='List eligible Discord archives; deletion requires a separate typed confirmation.')
+    async def preview(self,interaction:discord.Interaction,season:str|None=None,competition:str|None=None,
+                      category:str|None=None,difficulty:str|None=None):
+        scope={k:v for k,v in dict(season=season,competition=competition,category=category,level=difficulty).items() if v}
+        await cleanup_ui.preview(self.client,interaction,scope)
+
+    @app_commands.command(name='allow-recreate',description='Allow matching retired archives to be rebuilt on future scans; deleted discussions stay deleted.')
+    async def allow_recreate(self,interaction:discord.Interaction,season:str|None=None,competition:str|None=None,
+                            category:str|None=None,difficulty:str|None=None):
+        scope={k:v for k,v in dict(season=season,competition=competition,category=category,level=difficulty).items() if v}
+        await cleanup_ui.allow_recreation(self.client,interaction,scope)
+
+
 class GuardedSurveyProbe:
     def __init__(self,client):
         self.client=client
@@ -295,6 +319,7 @@ class SkylineBot(discord.Client):
                                ai_enabled=lambda:self.preferences.effective()['ai_enabled'])
         self.tree=app_commands.CommandTree(self)
         self.tree.add_command(SkylineCommands(self),guild=discord.Object(id=settings.guild_id))
+        self.tree.add_command(CleanupCommands(self),guild=discord.Object(id=settings.guild_id))
         self.archive_status='No scan run yet.'
         self.scan_task=None
         self.scan_phase='idle'
@@ -319,6 +344,10 @@ class SkylineBot(discord.Client):
 
     async def recover(self):
         await self.wait_until_ready()
+        try:
+            await Cleanup(self).recover()
+        except (ArchiveError,discord.HTTPException):
+            LOG.warning('Cleanup reconciliation unavailable; retired archives remain held until checked.')
         for scan in self.store.interrupted_scans():
             if self.jobs.get(scan['id']):
                 self.store.put('schedule_hold',True)
@@ -336,6 +365,8 @@ class SkylineBot(discord.Client):
         self.store.put('schedule_hold',True)
         if not self.busy():
             return 'Scheduled checks are paused. Use /skyline resume to continue.'
+        if self.scan_phase.startswith('cleanup'):
+            return 'Scheduled checks are paused. Use /skyline stop to stop remaining cleanup; completed deletions cannot be undone.'
         if self.scan_phase in ('checking login','indexing'):
             return 'Scheduled checks are paused. The current health/login/index check will finish normally.'
         self.pause_requested=True
@@ -393,6 +424,9 @@ class SkylineBot(discord.Client):
     def stop_sync(self):
         if not self.busy():
             return 'No scan is running. Use `/skyline sync` or `/skyline sync-all` to start one.'
+        if self.scan_phase.startswith('cleanup'):
+            self.scan_task.cancel()
+            return 'Cleanup stop requested. Completed deletions cannot be undone; run /skyline-cleanup preview before any retry.'
         if self.scan_phase=='publishing':
             return 'GitHub publication has already started and cannot be cancelled. Use `/skyline status` for its result.'
         if self.scan_phase in ('checking login','indexing'):

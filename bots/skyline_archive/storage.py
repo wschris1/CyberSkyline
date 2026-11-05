@@ -31,7 +31,7 @@ def fingerprint(challenge):
 
 
 class Store:
-    VERSION = 4
+    VERSION = 5
 
     def __init__(self, directory):
         self.directory = Path(directory)
@@ -135,6 +135,18 @@ class Store:
                     fingerprint TEXT NOT NULL, updated TEXT NOT NULL,
                     PRIMARY KEY(challenge_key,target));
                 PRAGMA user_version=4;
+                COMMIT;''')
+
+        if version < 5:
+            self.db.executescript('''BEGIN IMMEDIATE;
+                CREATE TABLE IF NOT EXISTS discord_cleanup(
+                    channel_id INTEGER PRIMARY KEY, kind TEXT NOT NULL, state TEXT NOT NULL,
+                    payload TEXT NOT NULL, github_commit TEXT NOT NULL, owner_id INTEGER NOT NULL,
+                    updated TEXT NOT NULL, error TEXT);
+                CREATE TABLE IF NOT EXISTS discord_retirements(
+                    challenge_key TEXT PRIMARY KEY REFERENCES challenges(key),
+                    channel_id INTEGER NOT NULL, created TEXT NOT NULL);
+                PRAGMA user_version=5;
                 COMMIT;''')
 
     @contextmanager
@@ -241,6 +253,50 @@ class Store:
             self.db.execute('INSERT INTO deliveries VALUES(?,?,?,?) ON CONFLICT(challenge_key,target) '
                             'DO UPDATE SET fingerprint=excluded.fingerprint,updated=excluded.updated',
                             (challenge.key,target,fingerprint(challenge),now()))
+
+    def discord_retired(self, key):
+        return self.one('SELECT challenge_key FROM discord_retirements WHERE challenge_key=?',(key,)) is not None
+
+    def allow_discord_recreation(self, keys):
+        with self.db:
+            self.db.executemany('DELETE FROM discord_retirements WHERE challenge_key=?',[(key,) for key in keys])
+
+    def begin_discord_cleanup(self, item, head, owner):
+        """Commit deletion intent and schedule suppression BEFORE the Discord request."""
+        with self.db:
+            self.db.execute('INSERT OR REPLACE INTO discord_cleanup VALUES(?,?,?,?,?,?,?,NULL)',
+                (item['id'],item['kind'],'pending',json.dumps(item),head,owner,now()))
+            for key in item.get('retire',[]):
+                self.db.execute('INSERT OR REPLACE INTO discord_retirements VALUES(?,?,?)',(key,item['id'],now()))
+
+    def finish_discord_cleanup(self, ident):
+        row = self.one('SELECT payload FROM discord_cleanup WHERE channel_id=?',(ident,))
+        if not row:
+            return
+        item = json.loads(row['payload'])
+        ids = [ident,*item.get('threads',[])]
+        placeholders = ','.join('?' for _ in ids)
+        with self.db:
+            self.db.execute('DELETE FROM mappings WHERE discord_id=?',(ident,))
+            self.db.execute(f"UPDATE posts SET state='deleted',message_id=NULL WHERE channel_id IN ({placeholders})",ids)
+            self.db.execute('UPDATE questions SET channel_id=NULL,message_id=NULL,thread_id=NULL WHERE channel_id=?',(ident,))
+            self.db.execute('DELETE FROM question_locations WHERE channel_id=?',(ident,))
+            self.db.execute(f'UPDATE attachments SET channel_id=NULL,message_id=NULL WHERE channel_id IN ({placeholders})',ids)
+            for key in item.get('retire',[]):
+                # A manual rebuild may have completed after an uncertain old delete.
+                active = self.db.execute('SELECT 1 FROM questions WHERE challenge_key=? AND channel_id IS NOT NULL LIMIT 1',(key,)).fetchone()
+                if not active:
+                    self.db.execute('UPDATE challenges SET synced_fingerprint=NULL WHERE key=?',(key,))
+                    self.db.execute("DELETE FROM deliveries WHERE challenge_key=? AND target='discord'",(key,))
+            for key, files in item.get('files',{}).items():
+                for file in files:
+                    self.db.execute('UPDATE questions SET github_path=? WHERE challenge_key=? AND number=?',
+                                    (file['path'],key,file['number']))
+            self.db.execute("UPDATE discord_cleanup SET state='deleted',error=NULL,updated=? WHERE channel_id=?",(now(),ident))
+
+    def fail_discord_cleanup(self, ident, error):
+        with self.db:
+            self.db.execute("UPDATE discord_cleanup SET state='failed',error=?,updated=? WHERE channel_id=?",(error,now(),ident))
 
     def question(self, key=None, thread_id=None):
         if key is None:
