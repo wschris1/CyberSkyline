@@ -17,31 +17,32 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "279f3bb423d163f26b9e3dffdc05d087b5709ebf"
+SOURCE_REVISION = "3ba67580778eb1d4ffa010938d9218beeb60c802"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
-    'bots/skyline_archive/__main__.py': '74c93f4abc973b89e25f31a6c7ffc8ab612fd3baf1affc9bd981d9c729632fa9',
+    'bots/skyline_archive/__main__.py': 'd4ab8d8d2dbcc4d2d47926d02f8d12fdd638bcb2868dc9e291ff17f8e34db67d',
     'bots/skyline_archive/ai_verification.py': '3e6fc5cd4f50caaa9e00458e00e73d3dd7fd6f797a80bd92c68a072d59994b6c',
     'bots/skyline_archive/attachments.py': 'a1db2a781c891327a56d954b512c87024ddf74876d6f44e5166b574e94e01387',
-    'bots/skyline_archive/bot.py': '2e916bb2bbcec68de70659b2137d951b54da840979014fd2f72408fb6eb70c6b',
+    'bots/skyline_archive/bot.py': '65e2c37ada634e6eea478c39f723950ae4efea05bbd6aa14772e78e24b43fa22',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
-    'bots/skyline_archive/discord_archive.py': '3bcb02a2ad20ba4d7b22df871319513361f5d4d563d9bd0c581a682c523af9b3',
+    'bots/skyline_archive/discord_archive.py': '7c47cafecfdedf5efc97d370d8924c6818e69f625f8297657ab63f581e2cd884',
     'bots/skyline_archive/dom_extract.js': '050835ec858d9f64964d81b5e545e627e16ea6f109f5549960e1b6d51c558842',
-    'bots/skyline_archive/github.py': '3568e6a96df23e853bbb4af0cc9aa82cb8fdf6deb35538b961113d41b637bd0e',
+    'bots/skyline_archive/github.py': '2e77a25482c8d7631d36ad2a391c01852cfb4af89c9b3444a00df98ac2e32c1d',
     'bots/skyline_archive/jobs.py': '73cd8b0e1be423f26bd05fee5c01d15302cd872d6c69fcd16927433d0ae916cb',
     'bots/skyline_archive/operations.py': '97031a5d07fbcdccc9b6740fbe27daba92a918916be4fb7bf185fe6747e1d8ee',
     'bots/skyline_archive/preferences.py': '25bfc3481289d8f2d809618b3fbde7414046839b066ab001c3bcbfa24f489dc3',
-    'bots/skyline_archive/progress.py': 'cc33be10254093ae2bfc5a7de12b39d9c707e7caad565aa73eb606607c08e13a',
+    'bots/skyline_archive/progress.py': '9c9336cbdc14fe2eb00a5a4e4b60c47240e9482b24b21c66a8fb007dea7ed9d8',
     'bots/skyline_archive/scanner.py': '891d3dd91fb4eea1d97b1628876ab14136f645ea758d86e30bd21be5ebe92cd8',
     'bots/skyline_archive/settings.py': 'fbce643ac606980e289c65cdb8773a6325a6ced6f1d5c66e86059e769e2dbe75',
-    'bots/skyline_archive/storage.py': '5da7da4716b737d1c437ffa58a3004bcd92c0974a1fc4568a5fca2782a9393e5',
+    'bots/skyline_archive/storage.py': '1bc402e682c96a88026e91a85c1777b41b3d2d98e24759e554762d20333f4be9',
     'bots/skyline_archive/survey.py': '86f2bef2980443f9e57439dc1e377b0de3a06b0d1ea3ed73fda949eaf037f4dc',
-    'bots/skyline_archive/ui.py': 'ce502c213239a2cd967c90b71b556b180360454f1dec41332498de5069f50aa9',
+    'bots/skyline_archive/ui.py': '3f185d45e485e1579859051355574d1355af0a2ec39cc7c426bedf7048971a52',
     'bots/skyline_archive/verification.py': '44905dc6efaf6b776069c3d9127482e38763481ce0456daa26aa30c5febafc17',
     'bots/skyline_archive/verify_worker.py': '7b7c6a89d566e402706cde37030c46d2a597f062da0f39f0a659d6357d9bd9cb',
+    'bots/skyline_archive/workflows.py': '34783fda0a42225abea619921d0e1c12c8b5a855d022ce1777467f403c09b8bb',
     'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
     'tools/_common.py': '33eda94911afe784e2fbc22731126ac8ca318db14f9eade5ae814f597a702a6f',
     'tools/artifact_inventory.py': '76ce149815cfdff979c3f238eb9a6aecbb94b6cc0d72e2765865b8f7818a7dce',
@@ -275,7 +276,7 @@ def main():
         raise SetupError("Chromium preflight failed. The host may need additional Linux libraries.") from exc
     from bots.skyline_archive.core import ArchiveError
     from bots.skyline_archive.settings import load_settings
-    required = ("DISCORD_BOT_TOKEN", "DISCORD_GUILD_ID", "DISCORD_OWNER_IDS", "GITHUB_TOKEN")
+    required = ("DISCORD_BOT_TOKEN", "DISCORD_GUILD_ID", "DISCORD_OWNER_IDS")
     missing = [name for name in required if not os.environ.get(name, "").strip()]
     if missing:
         message = "HOST READY: Python and Chromium passed. The Discord bot is not connected yet.\n"
@@ -284,7 +285,7 @@ def main():
         print(message, flush=True)
         return 0
     try:
-        settings = load_settings()
+        settings = load_settings(require_github=False)
     except ArchiveError as exc:
         print("SETUP NEEDED: " + str(exc).replace("bots/skyline_archive/.env", "private/skyline.env"), flush=True)
         print(f"Edit {config}. Tokens are never printed by this setup script.", flush=True)
