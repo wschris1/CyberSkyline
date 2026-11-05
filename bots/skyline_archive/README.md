@@ -15,6 +15,7 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline pause` | Save progress, close collection safely and hold scheduled checks. |
 | `/skyline resume` | Continue the latest paused/interrupted/stopped scan; release the schedule hold. |
 | `/skyline retry-failed` | Retry failed pages/publications using saved complete snapshots. |
+| `/skyline failures` | Privately browse saved failed challenges, reasons, source links and suggested fixes, including during an active scan. Optional `scan_id` selects an older run. |
 | `/skyline health test_ai:true` | Check source login, GitHub access, Discord permissions, cache and an optional small AI connection request. |
 | `/skyline evidence file:<upload>` | Associate supplemental evidence with this question; omit file to import your latest thread upload, or specify message_id. |
 | `/skyline hint` / `/skyline explain` | Ask for an investigative hint or solving approach without a proposed answer. |

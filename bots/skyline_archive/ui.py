@@ -1,11 +1,14 @@
 """Owner-bound Discord components, staged menus and permission-aware result pages."""
 
 import json
+import re
+from collections import Counter
+from datetime import datetime
 from urllib.parse import quote
 
 import discord
 
-from .core import ArchiveError
+from .core import ArchiveError, skyline_url
 from .scanner import matches
 from .discord_archive import jump
 
@@ -33,6 +36,112 @@ class OwnerView(discord.ui.View):
         b=discord.ui.Button(label=label,row=row,disabled=disabled,style=style)
         b.callback=callback
         self.add_item(b)
+
+
+def diagnostic_text(value, settings, limit=600):
+    """Keep logs, signed URLs, and credentials out of Discord diagnostics."""
+    text = str(value or '')
+    for name in ('discord_token','github_token','openai_api_key'):
+        secret = getattr(settings,name,'')
+        if secret:
+            text = text.replace(secret,'[redacted]')
+    text = re.sub(r'https?://[^\s<>]+','[URL omitted]',text,flags=re.I)
+    text = re.sub(r'(?im)\b(?:authorization|proxy-authorization|cookie|set-cookie)\s*[:=][^\r\n]*',
+                  '[header redacted]',text)
+    text = re.sub(r'(?i)\b(?:[\w-]*(?:token|secret|password)|api[_-]?key)\b\s*[:=]\s*[^\s,;]+',
+                  '[credential redacted]',text)
+    text = re.sub(r'(?i)\bBearer\s+\S+','[credential redacted]',text)
+    text = ''.join(c for c in text if c in '\n\t' or ord(c)>=32)
+    return discord.utils.escape_mentions(discord.utils.escape_markdown(text))[:limit]
+
+
+def failure_help(error):
+    text = str(error or '').casefold()
+    if 'interactive conversation' in text:
+        return ('Interactive challenge', 'Later questions require replies on Cyber Skyline. Automatic retries cannot reveal them; no answers were submitted.')
+    if any(s in text for s in ('timed out','navigation or page evaluation','network failure')):
+        return ('Page/network error', 'Open the source page to check availability, then retry failed items.')
+    if any(s in text for s in ('expected content','page layout','incomplete rows','missing title')):
+        return ('Unsupported or incomplete page', 'Open the source page. If it loads normally, its question layout needs an extractor update.')
+    if 'cache' in text or 'download limit' in text:
+        return ('File/cache limit', 'Check file size, free disk space and the file/cache budgets in /skyline settings.')
+    if 'upload' in text or 'files need retry' in text:
+        return ('Attachment problem', 'Check the file statuses below and /skyline health before retrying. Existing question posts are preserved.')
+    if any(s in text for s in ('forbidden','permission','category is full')):
+        return ('Discord destination', 'Check destination permissions and category capacity in /skyline settings, then retry.')
+    if 'login' in text or 'session' in text:
+        return ('Source access/session', 'Check /skyline health. If login expired, refresh the saved login and run /skyline session recheck.')
+    return ('Scan error', 'Check the saved reason and /skyline health before retrying; a retry cannot fix every cause.')
+
+
+class FailuresView(OwnerView):
+    def __init__(self,client,owner,scan_id=None):
+        super().__init__(client,owner)
+        self.scan_id,self.page=scan_id,0
+        async def previous(i):
+            self.page=max(0,self.page-1)
+            await i.response.edit_message(content=self.render(),view=self)
+        async def following(i):
+            self.page+=1
+            await i.response.edit_message(content=self.render(),view=self)
+        async def refresh(i):
+            await i.response.edit_message(content=self.render(),view=self)
+        self.button('Previous',previous)
+        self.button('Next',following)
+        self.button('Refresh',refresh)
+
+    def render(self):
+        scan,rows=self.client.jobs.failures(self.scan_id)
+        self.children[0].disabled=self.page<=0
+        self.children[1].disabled=not rows or self.page>=len(rows)-1
+        if not scan:
+            return 'No saved failed scan was found.'
+        self.scan_id=scan['id'] # Keep pagination on this scan if a newer run starts.
+        self.page=min(self.page,max(0,len(rows)-1))
+        self.children[0].disabled=self.page==0
+        clean=lambda value,limit=600:diagnostic_text(value,self.client.settings,limit)
+        lines=[f'**NCL TRACKER failures — scan {scan["id"]}**',
+               f'**State:** {clean(scan["state"],80)} · **Failed challenges:** {len(rows)}']
+        try:
+            stamp=int(datetime.fromisoformat(scan['started']).timestamp())
+            lines.append(f'**Scan started:** <t:{stamp}:f>')
+        except (ValueError,TypeError):
+            pass
+        if scan['channel_id'] and scan['message_id']:
+            lines.append(f'[Scan progress]({jump(self.client.settings.guild_id,scan["channel_id"],scan["message_id"])})')
+        if not rows:
+            lines.append('No failed challenge records remain. A run-level/discovery error may not have an item record; see its progress message. Retried items may already be resolved.')
+        else:
+            counts=Counter(failure_help(r['error'])[0] for r in rows)
+            lines.append('**Reasons:** '+', '.join(f'{name}: {count}' for name,count in counts.items()))
+            item=rows[self.page]
+            try:
+                entry=json.loads(item['entry'])
+                if not isinstance(entry,dict):
+                    entry={}
+            except (ValueError,TypeError):
+                entry={}
+            kind,help_text=failure_help(item['error'])
+            lines.extend([f'**Item {self.page+1}/{len(rows)}: {clean(entry.get("title") or "Unnamed challenge",120)}**',
+                          clean(entry.get('event',''),100)+' · '+clean(entry.get('category',''),80),
+                          f'**Type:** {kind}',f'**Saved reason:** {clean(item["error"] or "No detailed reason was saved.")}',
+                          f'**Next step:** {help_text}'])
+            try:
+                source=skyline_url(item['url'],'challenge')
+            except (ArchiveError,ValueError):
+                source=None
+            if source:
+                lines.append(f'[Open challenge](<{source}>)')
+                files=self.client.store.rows("SELECT name,status,error,updated FROM attachments WHERE challenge_key=? AND status NOT IN ('ready','uploaded') AND key NOT IN (SELECT attachment_key FROM evidence) ORDER BY name",
+                    (source.split('/module/',1)[1],))
+                if files:
+                    lines.append('**Current file statuses** (may have changed since this scan):')
+                    for f in files[:3]:
+                        lines.append(f'{clean(f["name"],60)} — {clean(f["status"],30)}: {clean(f["error"],120)}')
+                    if len(files)>3:
+                        lines.append(f'Plus {len(files)-3} more files; see the challenge archive for their statuses.')
+        lines.append('Refresh to see changes. `/skyline retry-failed` retries the latest failed scan after its cause is fixed.')
+        return '\n'.join(lines)[:1950]
 
 
 class Picker(OwnerView):

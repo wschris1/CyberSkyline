@@ -39,6 +39,15 @@ class Jobs:
             sql += ' AND state IN ('+','.join('?' for _ in states)+')'
         return self.store.rows(sql+' ORDER BY rowid',(ident,*states))
 
+    def failures(self, ident=None):
+        """Read only diagnostic metadata, never question payloads or answers."""
+        scan = self.get(ident) if ident is not None else self.latest(failed=True)
+        if not scan:
+            return None, []
+        rows = self.store.rows("SELECT url,entry,error FROM scan_items WHERE scan_id=? AND state='failed' ORDER BY rowid",
+                               (scan['id'],))
+        return scan, rows
+
     def capture(self, ident, c):
         with self.store.db:
             self.store.db.execute("UPDATE scan_items SET payload=?,state='collected',error=NULL WHERE scan_id=? AND url=?",

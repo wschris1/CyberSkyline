@@ -25,7 +25,7 @@ from .discord_archive import DiscordArchive
 from .progress import Progress, ProgressMessage
 from .verification import Verifier, select_answer
 from .ai_verification import OpenAIAssistant
-from .ui import Picker, SettingsView, SearchView, AnswerPicker
+from .ui import Picker, SettingsView, SearchView, AnswerPicker, FailuresView
 
 LOG=logging.getLogger(__name__)
 
@@ -112,6 +112,12 @@ class SkylineCommands(app_commands.Group):
     @app_commands.command(name='retry-failed',description='Retry failed pages or publications from the latest saved scan.')
     async def retry_failed(self,interaction:discord.Interaction):
         await self.client.resume_interaction(interaction,retry=True)
+
+    @app_commands.command(name='failures',description='Show saved failed challenges, reasons and suggested fixes; works during scans.')
+    @app_commands.describe(scan_id='Optional saved scan number; defaults to the latest scan with failures.')
+    async def failures(self,interaction:discord.Interaction,scan_id:app_commands.Range[int,1]|None=None):
+        view=FailuresView(self.client,interaction.user.id,scan_id)
+        await interaction.response.send_message(view.render(),view=view,ephemeral=True)
 
     @app_commands.command(name='health',description='Check source login, GitHub, Discord permissions, storage and optionally AI.')
     async def health(self,interaction:discord.Interaction,test_ai:bool=False):
