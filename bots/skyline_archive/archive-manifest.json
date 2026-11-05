@@ -1,5 +1,144 @@
 {
   "challenges": {
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01563ad4ea5fef1fce4b0": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/easy/number-bases-q1.md",
+          "sha": "0b1dcb257101ef8e449828a80fab254a50411ef1"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/cryptography/easy/number-bases-q2.md",
+          "sha": "f79d427f976d81c2019ee0518d4d0bdd9a82c7c0"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/cryptography/easy/number-bases-q3.md",
+          "sha": "980e50ea22a141d68480444c60676658c504a0d0"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/cryptography/easy/number-bases-q4.md",
+          "sha": "d4aaf538b321ea7a119a57b3bd339d1eaf7139c1"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01563ad4ea5fef1fce4b0",
+      "title": "Number Bases (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01564ad4ea5fef1fce508": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/easy/shift-q1.md",
+          "sha": "613ec93bdba818fa873498f5b382600600471500"
+        }
+      ],
+      "level": "easy",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01564ad4ea5fef1fce508",
+      "title": "Shift (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01564ad4ea5fef1fce52b": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/easy/bash-q1.md",
+          "sha": "c2539e8a230cbba3d724b722e5525a264f2cca4f"
+        }
+      ],
+      "level": "easy",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01564ad4ea5fef1fce52b",
+      "title": "@bash (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01564ad4ea5fef1fce54e": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/easy/beep-q1.md",
+          "sha": "3b694d3d8a42e800ac9cce9f6a7655888699e559"
+        }
+      ],
+      "level": "easy",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01564ad4ea5fef1fce54e",
+      "title": "Beep (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01565ad4ea5fef1fce56c": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/medium/fencing-q1.md",
+          "sha": "088579add5bb7e49e6f6e5c242f80c393e81bb86"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/cryptography/medium/fencing-q2.md",
+          "sha": "8be8f52faf68930b6db21f249ea7a92f27dc85a4"
+        }
+      ],
+      "level": "medium",
+      "questions": 2,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01565ad4ea5fef1fce56c",
+      "title": "Fencing (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01565ad4ea5fef1fce5a6": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/medium/french-q1.md",
+          "sha": "67bf41aa678a1fd356fa954907a692058e1672cf"
+        }
+      ],
+      "level": "medium",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/65b01565ad4ea5fef1fce5a6",
+      "title": "French (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/687e3bc9e9f7cbbfba23c6f6": {
+      "category": "Cryptography",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/cryptography/medium/xor-q1.md",
+          "sha": "9b0aed640181b69ecd0817fdac4f94b25341298c"
+        }
+      ],
+      "level": "medium",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca908bdc5c96fd7c3ce6a/687e3bc9e9f7cbbfba23c6f6",
+      "title": "XOR (Medium)"
+    },
     "6a1729e7d4551af5a8772a52/698ca918bdc5c96fd7c3ce95/65b01526ad4ea5fef1fce1d6": {
       "category": "Open Source Intelligence",
       "competition": "gym",
@@ -320,6 +459,117 @@
       "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a1ad4ea5fef1fce6f8",
       "title": "Rockyou (Easy)"
     },
+    "6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a2ad4ea5fef1fce75f": {
+      "category": "Password Cracking",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/mask-q1.md",
+          "sha": "aee581f645a4452da585509ec545ad6cff020aa3"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/mask-q2.md",
+          "sha": "82ca542335cfe27cbcf5f7ac8477d274b70d61a5"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/mask-q3.md",
+          "sha": "0af5dba758c4dc11f3800a06a2c1fb9ce67d406f"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/mask-q4.md",
+          "sha": "7ceb69294a36d9801912ef1a0c398d2b1f0d9a44"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/mask-q5.md",
+          "sha": "cb2d618db608449ffdd88766df9555ca0abd2732"
+        }
+      ],
+      "level": "medium",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a2ad4ea5fef1fce75f",
+      "title": "Mask (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a3ad4ea5fef1fce7c6": {
+      "category": "Password Cracking",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/pokemon-q1.md",
+          "sha": "6a7966b4d852623ce785aa5cf19a6ee0d959697c"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/pokemon-q2.md",
+          "sha": "bfa026461f13ed1ee00a679c79e7028a98196f70"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/pokemon-q3.md",
+          "sha": "20f9cc5e74b00a317b214e8e95d43b0c8449cbf7"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/pokemon-q4.md",
+          "sha": "0d71e08fcfa3ee8694e9f4b40e2746b39f2025dc"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/password-cracking/medium/pokemon-q5.md",
+          "sha": "0c6de940a8ddc62a8d2a210dec6797fecb2ed87c"
+        }
+      ],
+      "level": "medium",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a3ad4ea5fef1fce7c6",
+      "title": "Pokemon (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a7ad4ea5fef1fce8e3": {
+      "category": "Password Cracking",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/password-cracking/hard/law-order-q1.md",
+          "sha": "27ee31d361dca4ee24d4b507d7740c506bf94a57"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/password-cracking/hard/law-order-q2.md",
+          "sha": "51a19c8f8d92282d724fee21aedb678cbc30ae56"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/password-cracking/hard/law-order-q3.md",
+          "sha": "0e75534a3680096d649b3d815b86f34fc399ae97"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/password-cracking/hard/law-order-q4.md",
+          "sha": "7e2d628eb2a80d5cb878ab11c9ae9d9a9b74addb"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/password-cracking/hard/law-order-q5.md",
+          "sha": "c961933e69fe233befc86adb1ed93d5d9ef6c9c6"
+        }
+      ],
+      "level": "hard",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/65b015a7ad4ea5fef1fce8e3",
+      "title": "Law & Order (Hard)"
+    },
     "6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/67b75426b86f6054e0df28bb": {
       "category": "Password Cracking",
       "competition": "gym",
@@ -362,6 +612,1137 @@
       "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca927bdc5c96fd7c3ceb1/67b75426b86f6054e0df28bb",
       "title": "Rainbow Tables (Easy)"
     },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015dbad4ea5fef1fceaaa": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/ssh-q1.md",
+          "sha": "9cc69c3ca57c46dc149a83e0c4d0fe29770cb2e5"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/ssh-q2.md",
+          "sha": "2907191e10afcb31cef1c26ef38105588bbd085d"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/ssh-q3.md",
+          "sha": "a23158dff1e0385ad98a8edc9ff0c2eaf52a51e7"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/ssh-q4.md",
+          "sha": "fecd8aec4f1ed8ccdec1d7bb82bb4610850c5051"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/ssh-q5.md",
+          "sha": "a6b31007aac61292c0136d8900d257cfc04a2222"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/ssh-q6.md",
+          "sha": "ecbee81f2ad5365f7b99a2b6aae1fed0771b33db"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015dbad4ea5fef1fceaaa",
+      "title": "SSH (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015dcad4ea5fef1fceb20": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q1.md",
+          "sha": "637a9ca98c3f8dce28b101f6c7db1de298d1092c"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q2.md",
+          "sha": "5977c7443e2ea4b5f24ed8add60b34f8e1c771a2"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q3.md",
+          "sha": "393515444a0018a94127024b0e39ef03d579de30"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q4.md",
+          "sha": "dabbdba411116a5efb5160171639a6b9e35d9d15"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q5.md",
+          "sha": "faff12cac511028a0f7a9c47ff9280a88784148f"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q6.md",
+          "sha": "e728c5fed02fd7cd8c676799e46f25eb76506348"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q7.md",
+          "sha": "fa793e754fd14bcc89d7d12072436ca6c0a09e89"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q8.md",
+          "sha": "8c7c9f6babc325e944bb8c5623989a7ecc4f40be"
+        },
+        {
+          "number": 9,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q9.md",
+          "sha": "b82680298720c620a84d82442850e044a46c3879"
+        },
+        {
+          "number": 10,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/nginx-q10.md",
+          "sha": "e24464e9fd7663bcec3f14e02cce5e0d51534f59"
+        }
+      ],
+      "level": "medium",
+      "questions": 10,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015dcad4ea5fef1fceb20",
+      "title": "Nginx (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015dfad4ea5fef1fcebfc": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q1.md",
+          "sha": "a3cc8acc0a6f70cb4a84c7e8e5150e82f4cd9245"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q2.md",
+          "sha": "9533506c03051d83973e23a135efdef7c57198f9"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q3.md",
+          "sha": "981d3669d1c94deb8228a0ac16c32d5aab191ff7"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q4.md",
+          "sha": "1914bf73172c00d9d7b8f4b5d2d78b89d9315c1e"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q5.md",
+          "sha": "2731b44163d619acc87017840d157c6f26a60e50"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q6.md",
+          "sha": "af3e21510333dcd6816d6422ac7068c455120738"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/log-analysis/medium/history-q7.md",
+          "sha": "969fa96a198e13b3325efc743724c861863a9c39"
+        }
+      ],
+      "level": "medium",
+      "questions": 7,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015dfad4ea5fef1fcebfc",
+      "title": "History (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015e1ad4ea5fef1fcecb7": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q1.md",
+          "sha": "ebeee67eb1e83a1b2d9b047284e12f6b1656ab0f"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q2.md",
+          "sha": "63f060bc3d5fae09f156335aa78ed51f4b8a8228"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q3.md",
+          "sha": "15d5861fdf1a2bef229cafbddaf7ee3a49f5e4c5"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q4.md",
+          "sha": "a8bc896ea5614f61f1f23ed304be1c1982781946"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q5.md",
+          "sha": "15526854a7f488158c72df38c6ebb43d95362cc3"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q6.md",
+          "sha": "68be77cd8048a3a7a5618d0688d414b056eb16b0"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q7.md",
+          "sha": "01e570d0d3e2a505db1f16963d5483093191fded"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/squid-q8.md",
+          "sha": "d8af0ce454fab504fa7fd1a847df5db12a5e1462"
+        }
+      ],
+      "level": "hard",
+      "questions": 8,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b015e1ad4ea5fef1fcecb7",
+      "title": "Squid (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02dffad4ea5fef1fd1d63": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/payments-q1.md",
+          "sha": "05d3f99bdb2f3920389c8996b291b7ac8b9930bb"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/payments-q2.md",
+          "sha": "7f6028ef3df87c2889b45a6e5b366b062f548fa7"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/payments-q3.md",
+          "sha": "557e2433ef7c87fc5fd27fa1a9e439d841ce2d4d"
+        }
+      ],
+      "level": "hard",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02dffad4ea5fef1fd1d63",
+      "title": "Payments (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02e00ad4ea5fef1fd1da0": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q1.md",
+          "sha": "6f16fae1f740da61fb19f073720db3d1120764c5"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q2.md",
+          "sha": "5a7e91163379fd2dc95f0914bbeb1c90120e72f0"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q3.md",
+          "sha": "e115531134df0d369042329bd73ef5d79894d0c0"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q4.md",
+          "sha": "229f681487d1de10a8db6a43a5f6d31793db944f"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q5.md",
+          "sha": "b7a553953c67df1ff74e0619b98e20fb664c0e80"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q6.md",
+          "sha": "4c3fc40c4c2331a980291b3e092ac2cfa64183bb"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q7.md",
+          "sha": "7d50812de8ae27e9fd33e7157def67ed1d54a8f2"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q8.md",
+          "sha": "e63edff356e6d038497e5d6a6dbf91f83fa2e90a"
+        },
+        {
+          "number": 9,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q9.md",
+          "sha": "8ee6753b7a365283ad86bca6dfa7e4f8da1794b8"
+        },
+        {
+          "number": 10,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/vsftpd-q10.md",
+          "sha": "1df25be7515f6b2ad493717d27eaa75e04e841bf"
+        }
+      ],
+      "level": "easy",
+      "questions": 10,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02e00ad4ea5fef1fd1da0",
+      "title": "VSFTPD (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02e01ad4ea5fef1fd1e29": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q1.md",
+          "sha": "a10a21aa39e15189063cc8f4dfae3142e8ab84d9"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q2.md",
+          "sha": "c252c4466a440f450723b70cc0f9eaac027a344b"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q3.md",
+          "sha": "261b4421e9124b4167860484de368d900315138a"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q4.md",
+          "sha": "4440d9ede83c6483bef70d6608f4438ba94d2fc2"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q5.md",
+          "sha": "210be6509f20726691d4a26bae64b56861ce402e"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q6.md",
+          "sha": "a2d9830493b3d6ead05a338f88bd43f32c956553"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q7.md",
+          "sha": "acbffa8c6290fc1ca7411f9b23bbb7e37bba1d75"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q8.md",
+          "sha": "8a022e607755feaf1860138b3dbfda864b2c2528"
+        },
+        {
+          "number": 9,
+          "path": "challenges/fall-2026/gym/log-analysis/hard/custom-file-format-q9.md",
+          "sha": "4c5e5cc4e57ea33a31b5179fab581b28ecfd7b79"
+        }
+      ],
+      "level": "hard",
+      "questions": 9,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02e01ad4ea5fef1fd1e29",
+      "title": "Custom File Format (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02e02ad4ea5fef1fd1ea1": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/login-q1.md",
+          "sha": "31c258b1ce8da50755f288c601105c7679400856"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/login-q2.md",
+          "sha": "4db44247e6e03ebba2655d4bf0101804a25ad9a3"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/login-q3.md",
+          "sha": "369491be1058178f8fa0aba762fe70687c74ff23"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/login-q4.md",
+          "sha": "c9e2b2835f8dc0ec367556d4580729d9d18f2703"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/login-q5.md",
+          "sha": "b05c8103e503e0fbba4108f4031d2c50237126d2"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/login-q6.md",
+          "sha": "7112671d2e4bf25b0c2d2d9a3fe83a7185132c35"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/65b02e02ad4ea5fef1fd1ea1",
+      "title": "Login (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/68644196da2c5622553d7003": {
+      "category": "Log Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/sysmon-q1.md",
+          "sha": "becf470179423495f0505a20c91572f573c632fd"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/sysmon-q2.md",
+          "sha": "c7fe8b4ba0c7b1fd77319b1887b08e4cf4ea92ed"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/sysmon-q3.md",
+          "sha": "8fd86c41af7339a7a38e338629a4abf5637741c8"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/sysmon-q4.md",
+          "sha": "670c92c7bc784c991b6184dab9dfba935bbb057b"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/sysmon-q5.md",
+          "sha": "a31915702e35227246f107f82e594371ba088241"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/log-analysis/easy/sysmon-q6.md",
+          "sha": "35fe7bd09bafc3f01b6e5e5e0cc55ef44c274bec"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca932bdc5c96fd7c3cece/68644196da2c5622553d7003",
+      "title": "Sysmon (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f0ad4ea5fef1fced6b": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/dns-q1.md",
+          "sha": "08ebf2e15e979b69e29bbea1a82203235e40e311"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/dns-q2.md",
+          "sha": "f276797fff7473eef8eb04c1d1a083ad726f50ad"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/dns-q3.md",
+          "sha": "02e07327607b60816d1eb9638f6021bfe75a542d"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/dns-q4.md",
+          "sha": "7132d87587fa31e7d19c0f7fac09792fc6ac9526"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/dns-q5.md",
+          "sha": "82033c4bf57e9d1ed49299abcab51be68d4c0000"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f0ad4ea5fef1fced6b",
+      "title": "DNS (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f1ad4ea5fef1fcedd5": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q1.md",
+          "sha": "155e400e71cef09449d6fa95503f99f5dfec210e"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q2.md",
+          "sha": "a2c70a813640ff94090e44bbe2214a40f5beb848"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q3.md",
+          "sha": "105803dd679a448dbf74f119efd5cde0558cf7dc"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q4.md",
+          "sha": "819fdf15f319ffb28f6e1be0873ec90eb7c5a174"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q5.md",
+          "sha": "20ed725ed5a9de8c8ecfc5bc6c47559eb85c52d0"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q6.md",
+          "sha": "b8708f2ae8dcc47362d9a5932d74c0230562e45e"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q7.md",
+          "sha": "d3e07437d0a84dd56b3890712e66d3a9da947e4c"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/ftp-traffic-q8.md",
+          "sha": "f26109d39036993b34ee666b0c9dfb0b213aea1d"
+        }
+      ],
+      "level": "easy",
+      "questions": 8,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f1ad4ea5fef1fcedd5",
+      "title": "FTP Traffic (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f3ad4ea5fef1fcee83": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/http-q1.md",
+          "sha": "bfabcc21152726ebe504dedc3ce5af4b3a4e424b"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/http-q2.md",
+          "sha": "d9ca7336d426cb6efc031cde23007b47ac46653f"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/http-q3.md",
+          "sha": "488109b9c93c8f85a8a8dd0240c530f7e0919788"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/http-q4.md",
+          "sha": "dfa06600e17f5746bc6a8ccaae8f6eff3c11c0b8"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/http-q5.md",
+          "sha": "19362fee1b8b5166bf503cf5600995b0c4dd20e2"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f3ad4ea5fef1fcee83",
+      "title": "HTTP (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f4ad4ea5fef1fceeee": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/telnet-q1.md",
+          "sha": "6be14f781e48a63ed35d5b46d47e58a6486ae0a9"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/telnet-q2.md",
+          "sha": "5e1c8e342e554c607acbc9c673b76a72b43acbf2"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/telnet-q3.md",
+          "sha": "5a87e10e431299ada4abeb7375b3c13f53666fec"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/telnet-q4.md",
+          "sha": "e37f58b69f789f5e926b3e6eb9031233878b925b"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/telnet-q5.md",
+          "sha": "e988b79b86a1fdbfc40332c341228be3efb06a0b"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/telnet-q6.md",
+          "sha": "36f4cf48dd979709ecf7de936cd2a14ff2699709"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f4ad4ea5fef1fceeee",
+      "title": "Telnet (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f5ad4ea5fef1fcef67": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q1.md",
+          "sha": "8b869ec339cd7b47cc7cef4ac8b070d41a2e10d3"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q2.md",
+          "sha": "e31d5ebde265d4a98c4ecaf85281f10ccf671913"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q3.md",
+          "sha": "5eae04750963b4b3dfd79338b4773ad89340dfaa"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q4.md",
+          "sha": "cb745c603a3e53aec76d8b71911821b312db29e4"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q5.md",
+          "sha": "4b842cd33f9ba193bc6517323b5bb48712c71b84"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q6.md",
+          "sha": "035b2ed2f682de0c1bebeedc606b2309f698b0e5"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q7.md",
+          "sha": "98f956ccbcef35658cab0ca3347a733b940b59ea"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q8.md",
+          "sha": "e9508bbb114f4f860ce8e6ab939dda3851e393d2"
+        },
+        {
+          "number": 9,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q9.md",
+          "sha": "cad8fd1baaf3e9d9898d07c5f955b4523c9af9b2"
+        },
+        {
+          "number": 10,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q10.md",
+          "sha": "79c7451f6468723da4b84016636d91563d92e9f0"
+        },
+        {
+          "number": 11,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/pandora-q11.md",
+          "sha": "4c37818ab0d0f37550b27f21bb17f02ed96e92e9"
+        }
+      ],
+      "level": "hard",
+      "questions": 11,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b015f5ad4ea5fef1fcef67",
+      "title": "Pandora (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b01614ad4ea5fef1fcf12c": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/wifi-pcap-1-q1.md",
+          "sha": "ba1ed73b331d8922ac17d2e46e5e1e3edcc2065d"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/wifi-pcap-1-q2.md",
+          "sha": "b7dbc8c11660248c9e6063780b10ee00c2bd7f8e"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/wifi-pcap-1-q3.md",
+          "sha": "db1e60a8c15a6095e123f2bd786b327783b4567b"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/wifi-pcap-1-q4.md",
+          "sha": "49a2dd020ad1ee0ff2f7c9b67a184399d9bf28cb"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/easy/wifi-pcap-1-q5.md",
+          "sha": "083d932aac612a35c0a6e39e7e4219434df7086b"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b01614ad4ea5fef1fcf12c",
+      "title": "WiFi PCAP 1 (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b01617ad4ea5fef1fcf1d6": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/wifi-pcap-2-q1.md",
+          "sha": "c46bea92eb60ddd3f557e70a24ecffcb2cde1429"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/wifi-pcap-2-q2.md",
+          "sha": "23a1554f5bfb90a83aa8fffddfe1dd63c8474338"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/wifi-pcap-2-q3.md",
+          "sha": "c7cfc2818a5fc217b511d62023cf56a7f410c476"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/wifi-pcap-2-q4.md",
+          "sha": "b516ec49490a7540b8d678caa7480b0d47c24660"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/wifi-pcap-2-q5.md",
+          "sha": "030c94a0c4f034b91d2d65257b8b945a062957e0"
+        }
+      ],
+      "level": "medium",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b01617ad4ea5fef1fcf1d6",
+      "title": "WiFi PCAP 2 (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b0161aad4ea5fef1fcf29e": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q1.md",
+          "sha": "173e0d30b8172fda21d5d518feab7db6eb994764"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q2.md",
+          "sha": "53a143bc14e25ab81ae419a72063d9e3d8ec7dc7"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q3.md",
+          "sha": "d1b211b9fd37d5f7160826e6b08ed8c145e244c8"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q4.md",
+          "sha": "69767b8dbf7b97e66137844e2d467f01767cd948"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q5.md",
+          "sha": "8e18350cd8b572b3c6a36a1582ba2d6081323ae2"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q6.md",
+          "sha": "bbdb8218df236a4716a33e1b230ddb170633d128"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q7.md",
+          "sha": "0280409612444cf50fa01f2b61ece3299a461913"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q8.md",
+          "sha": "5340dbe448149475c0f64662e3c68c4b394fd9aa"
+        },
+        {
+          "number": 9,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q9.md",
+          "sha": "a97a7c40f499125dda8cbc8355fa41b8e64f1e81"
+        },
+        {
+          "number": 10,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q10.md",
+          "sha": "6c0afdbe3f0d19ce1a6b2a4e4cecae40944907cb"
+        },
+        {
+          "number": 11,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/wifi-pcap-3-q11.md",
+          "sha": "4a3e397b8624141f45b5376d9e1d0a99601ec61a"
+        }
+      ],
+      "level": "hard",
+      "questions": 11,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b0161aad4ea5fef1fcf29e",
+      "title": "WiFi PCAP 3 (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b02dfdad4ea5fef1fd1ca8": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/packet-dissection-q1.md",
+          "sha": "8ee2ad712472843c0e15a4627462fa90799878fe"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/packet-dissection-q2.md",
+          "sha": "2e2daa12c995504cf8674173603c61057864f1a5"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/packet-dissection-q3.md",
+          "sha": "bfad2a2320cbb2414ac98b3fea62013b722e2de5"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/packet-dissection-q4.md",
+          "sha": "08ea07413f715fca0dcf98b3c21c21329470c3cb"
+        }
+      ],
+      "level": "medium",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b02dfdad4ea5fef1fd1ca8",
+      "title": "Packet Dissection (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b02dfead4ea5fef1fd1ce9": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/decrypt-q1.md",
+          "sha": "c2ac442580fb72f9603d14f1584107e9dae48438"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/decrypt-q2.md",
+          "sha": "90f49522c9ea380f2651d5a7372d17f69250b901"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/medium/decrypt-q3.md",
+          "sha": "caaa44e1797beff15c203a4abf7e6e82beda38b3"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b02dfead4ea5fef1fd1ce9",
+      "title": "Decrypt (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b02dfead4ea5fef1fd1d21": {
+      "category": "Network Traffic Analysis",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/can-bus-q1.md",
+          "sha": "12722d7a7807cd3ceea72d11329ff937141e7e6c"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/can-bus-q2.md",
+          "sha": "9828ecabe1c17bcbb2129f01ebd0819736d61151"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/network-traffic-analysis/hard/can-bus-q3.md",
+          "sha": "b199d3a2cf588b4f6e0f2a8a78ede55ec985f40e"
+        }
+      ],
+      "level": "hard",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca940bdc5c96fd7c3ceed/65b02dfead4ea5fef1fd1d21",
+      "title": "CAN Bus (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca94cbdc5c96fd7c3cf06/65b02e08ad4ea5fef1fd2037": {
+      "category": "Enumeration & Exploitation",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/easy/timebomb-q1.md",
+          "sha": "ea6e00cd0dd3a583830ed85dc156793b50fbac96"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/easy/timebomb-q2.md",
+          "sha": "b27f7c3604953d72ade901a2f89a3815ecf666a7"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/easy/timebomb-q3.md",
+          "sha": "bf65141623fddb65acfb31c6e6cfb0a9e488eb8e"
+        }
+      ],
+      "level": "easy",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca94cbdc5c96fd7c3cf06/65b02e08ad4ea5fef1fd2037",
+      "title": "Timebomb (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca94cbdc5c96fd7c3cf06/67d821917c06227c4a515988": {
+      "category": "Enumeration & Exploitation",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/medium/not-affine-q1.md",
+          "sha": "74adf7ddb3f0998da6ad09fdb895845670f95743"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/medium/not-affine-q2.md",
+          "sha": "56d0136eb5caea03123c6418b73fc2f24d543d24"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/medium/not-affine-q3.md",
+          "sha": "9b8ce241fc0b49d79364527a4c041ebd9d4cdd5a"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/medium/not-affine-q4.md",
+          "sha": "e94f6058ca25d50aa1e9b0739bb74b4515d800c1"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/medium/not-affine-q5.md",
+          "sha": "96aa1e1f3cb1ceb91b38172eed6b35e42c8b12e5"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/enumeration-exploitation/medium/not-affine-q6.md",
+          "sha": "dd58415ad63bb4a2e29bd6b70bdea909e5eabcd1"
+        }
+      ],
+      "level": "medium",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca94cbdc5c96fd7c3cf06/67d821917c06227c4a515988",
+      "title": "Not Affine (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/5cc0d41aa88474750e71ce05": {
+      "category": "Web Application Exploitation",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/web/medium/cloud-marketing-q1.md",
+          "sha": "ea340f224efe00d3d2cbbe103f2d0507fa57efe7"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/web/medium/cloud-marketing-q2.md",
+          "sha": "63b934a7d217e84b47245b7c796f5a83bf7d6e26"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/web/medium/cloud-marketing-q3.md",
+          "sha": "ec5197e1698294a5a7191ec7781acbbd6b558e6b"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/web/medium/cloud-marketing-q4.md",
+          "sha": "1d16d72f6b4f27cece269318dbff212708efda86"
+        }
+      ],
+      "level": "medium",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/5cc0d41aa88474750e71ce05",
+      "title": "Cloud Marketing (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/65b0163bad4ea5fef1fcf509": {
+      "category": "Web Application Exploitation",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/web/hard/metro-clinic-q1.md",
+          "sha": "64b4bfbdbd855fd0941c7896ae8cc2f5f876fffb"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/web/hard/metro-clinic-q2.md",
+          "sha": "62ddd4253fc24d30610827748efe91b6c2aea0dd"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/web/hard/metro-clinic-q3.md",
+          "sha": "6e425a24dd10c8684b7b827154df929af3962192"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/web/hard/metro-clinic-q4.md",
+          "sha": "7b3700a25be5cba88c0218f7af32a8ffbfbf6ab8"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/web/hard/metro-clinic-q5.md",
+          "sha": "3854c8ec268b544cfa60afcafdd8754d76cac43d"
+        }
+      ],
+      "level": "hard",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/65b0163bad4ea5fef1fcf509",
+      "title": "Metro Clinic (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/65b0318cad4ea5fef1fd2ecc": {
+      "category": "Web Application Exploitation",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/web/easy/never-winter-bank-q1.md",
+          "sha": "cc752368832cf7d26930a927488f1a5f737e8b39"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/web/easy/never-winter-bank-q2.md",
+          "sha": "ae08ed138f9d76be808263aeeab42b20ee2f9244"
+        }
+      ],
+      "level": "easy",
+      "questions": 2,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/65b0318cad4ea5fef1fd2ecc",
+      "title": "Never Winter Bank (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/68dec6e248eb2dab5bdc40d4": {
+      "category": "Web Application Exploitation",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/web/medium/todo-q1.md",
+          "sha": "192d4b847bc33e7bdcc33fdbb4502e9c8a8eb1ce"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/web/medium/todo-q2.md",
+          "sha": "2c1598c195e3a48bffc7ae7be09c1f9c9fad8fd8"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/web/medium/todo-q3.md",
+          "sha": "3dd8cea3101691831dcdde5f400a9a8d69f02db5"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698ca959bdc5c96fd7c3cf21/68dec6e248eb2dab5bdc40d4",
+      "title": "Todo (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b015baad4ea5fef1fce9dd": {
+      "category": "Forensics",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/forensics/medium/file-carving-q1.md",
+          "sha": "8cf936724f9ead111ea71eb100bda60e21bf1667"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/forensics/medium/file-carving-q2.md",
+          "sha": "efa8565ac3f149fceab08b2265a75ba06ed511fa"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/forensics/medium/file-carving-q3.md",
+          "sha": "c31c075bb4701a3eec81c556c8dd0c50dacbd3c3"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b015baad4ea5fef1fce9dd",
+      "title": "File Carving (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2115": {
+      "category": "Forensics",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/forensics/medium/doctor-q1.md",
+          "sha": "275cf2c9628616483e7532f739c98e02e26ad8b0"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/forensics/medium/doctor-q2.md",
+          "sha": "fe3110eaa80c7d3d6213740cb1e8bf3e6357e771"
+        }
+      ],
+      "level": "medium",
+      "questions": 2,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2115",
+      "title": "Doctor (Medium)"
+    },
     "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2151": {
       "category": "Forensics",
       "competition": "gym",
@@ -403,6 +1784,248 @@
       "season": "fall-2026",
       "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/65b02e0bad4ea5fef1fd2151",
       "title": "The Book (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/6abd21206fc325fc44285f13": {
+      "category": "Forensics",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/forensics/medium/hack-the-gibson-q1.md",
+          "sha": "d564b957df573021b2edd529f152af694ef47f68"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/forensics/medium/hack-the-gibson-q2.md",
+          "sha": "5b4e11bd44533dc8192cdfce9da539d7bbfab94b"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/forensics/medium/hack-the-gibson-q3.md",
+          "sha": "f2347164cce3300ff2ab6036ca3462f4c18f7953"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/forensics/medium/hack-the-gibson-q4.md",
+          "sha": "e1aa8ba75ecad737132d2f36d9edb6c2f38679d2"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/forensics/medium/hack-the-gibson-q5.md",
+          "sha": "3e3f4a405657e2692dca2fb350aee11e8d87c132"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/forensics/medium/hack-the-gibson-q6.md",
+          "sha": "99b8e8a59056cc3957ccca96c7f47b648737b431"
+        }
+      ],
+      "level": "medium",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa49bdc5c96fd7c3d08c/6abd21206fc325fc44285f13",
+      "title": "Hack the Gibson (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02607ad4ea5fef1fd0556": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/nmap-q1.md",
+          "sha": "4ab4fda5c103f23eff8d6800ced3902e30c11e03"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/nmap-q2.md",
+          "sha": "320cebe22c11425dc2d14d92dc760dbb12a625fe"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/nmap-q3.md",
+          "sha": "b6d398ae31f803e91a1cbf8e1bf7009599a58c19"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/nmap-q4.md",
+          "sha": "37f015d94e1c50737d011a3856ed1efe7408bdba"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/nmap-q5.md",
+          "sha": "59f941199b2541aebceab829bb6a10384018b1d5"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02607ad4ea5fef1fd0556",
+      "title": "NMAP (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02e05ad4ea5fef1fd1f4d": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/hard/metadata-q1.md",
+          "sha": "e07d5ecc340fba599ba72e03f5be63a3f6464149"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/hard/metadata-q2.md",
+          "sha": "b58072b3800ea726f1fa1bb90b6a0b9ea582f7bb"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/hard/metadata-q3.md",
+          "sha": "7595facb5f1c666664800465016f809c1b43655a"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/hard/metadata-q4.md",
+          "sha": "915f519d35d0493133f429232d6111b9a101a749"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/hard/metadata-q5.md",
+          "sha": "636b654442be8104142d07129d88cdde0cca4a6a"
+        }
+      ],
+      "level": "hard",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02e05ad4ea5fef1fd1f4d",
+      "title": "Metadata (Hard)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02e06ad4ea5fef1fd1fa0": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/medium/net-track-q1.md",
+          "sha": "4ec5b5e3636be3cb1d37967ec5b2aabd33eaca8e"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/medium/net-track-q2.md",
+          "sha": "8d92bf4e09bf4463863d3fc12ba2f423bed9bf3f"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/medium/net-track-q3.md",
+          "sha": "ca7f7a2bba8ec87d7d9385acc72eaf664bda85a4"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02e06ad4ea5fef1fd1fa0",
+      "title": "Net Track (Medium)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02e06ad4ea5fef1fd1fc6": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q1.md",
+          "sha": "dcaabb6d1c8993ee3a4c2adccf7f8f4adf235537"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q2.md",
+          "sha": "2124d5261c67c8c4e40b4dd92f93be003f96d53e"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q3.md",
+          "sha": "a2758ca6a876804a5c3575f7f24dcb4ac74e6130"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q4.md",
+          "sha": "503fb2aac5ce929796cdcf42a78bb2d53139f8be"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q5.md",
+          "sha": "db77b42c33fb377528047cb192212c897e547593"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q6.md",
+          "sha": "562eee8b7541bd6117e425b648914b8d065e888b"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/git-q7.md",
+          "sha": "d49043dd84fe41bad0b48ca8af0900244ad39878"
+        }
+      ],
+      "level": "easy",
+      "questions": 7,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/65b02e06ad4ea5fef1fd1fc6",
+      "title": "Git (Easy)"
+    },
+    "6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/67b753ecb86f6054e0df2751": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "gym",
+      "event": "NCL Fall 2026 Gymnasium",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q1.md",
+          "sha": "93b2820ea0b0a45385fac8580d75bd37de3718e8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q2.md",
+          "sha": "661c72f84e0b63ecf0fc77ebc5a4d645d4b05f03"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q3.md",
+          "sha": "96a5f4627ea548261512381e6230387a181c40f6"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q4.md",
+          "sha": "5b6b698a2922105c3151ac090aec71cc9e517776"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q5.md",
+          "sha": "8e77aa6d8efec75c84073f47f8b99126bfee2656"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q6.md",
+          "sha": "91598dbbff40a1e1131b66df3afde309c6d54d0e"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q7.md",
+          "sha": "291d97a31760fa321bb02e1a0e15148e6ffbcbcb"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/gym/scanning-reconnaissance/easy/dig-q8.md",
+          "sha": "00585158b0675b0860ae926c3f830fe34505617e"
+        }
+      ],
+      "level": "easy",
+      "questions": 8,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/67b753ecb86f6054e0df2751",
+      "title": "Dig (Easy)"
     }
   },
   "version": 2
