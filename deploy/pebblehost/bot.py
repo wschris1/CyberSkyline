@@ -17,29 +17,31 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "7b2e1753c681310679f798dc9f6b3c5a31ea3295"
+SOURCE_REVISION = "f4149413fa1bdf8f7098172659af874ff28b8592"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
     'bots/skyline_archive/__main__.py': '74c93f4abc973b89e25f31a6c7ffc8ab612fd3baf1affc9bd981d9c729632fa9',
-    'bots/skyline_archive/ai_verification.py': '3a7698aecccc019821bf2b3f47ed3189534a8d643b43f2cfae58e51e351fd093',
-    'bots/skyline_archive/attachments.py': '9ec25f809ffdad0eaed1dfcbbfe5d693d9943f5b009fd47f817b6cd2de5caedc',
-    'bots/skyline_archive/bot.py': 'c25dd4896db78df2aa17468fbf8e8dd4610e805ac8f7734769b6615cdcc17adb',
+    'bots/skyline_archive/ai_verification.py': '3e6fc5cd4f50caaa9e00458e00e73d3dd7fd6f797a80bd92c68a072d59994b6c',
+    'bots/skyline_archive/attachments.py': 'a1db2a781c891327a56d954b512c87024ddf74876d6f44e5166b574e94e01387',
+    'bots/skyline_archive/bot.py': '4b8fd888edc97b0dc4ba60ef905f75566ff5b69f9893ed8e3192653966dde27f',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
-    'bots/skyline_archive/discord_archive.py': 'a760e48f73ca8dcf400d71612654d4e38dfe87b563020ee7eda4179739d293f1',
-    'bots/skyline_archive/dom_extract.js': '3739ac987f2b7a83df02832b92e161ab83e6c0d6da2d457470b2c8e3680ef5fb',
+    'bots/skyline_archive/discord_archive.py': '3bcb02a2ad20ba4d7b22df871319513361f5d4d563d9bd0c581a682c523af9b3',
+    'bots/skyline_archive/dom_extract.js': '050835ec858d9f64964d81b5e545e627e16ea6f109f5549960e1b6d51c558842',
     'bots/skyline_archive/github.py': '3568e6a96df23e853bbb4af0cc9aa82cb8fdf6deb35538b961113d41b637bd0e',
-    'bots/skyline_archive/preferences.py': '0621bd14c5d622792ff0889b6791d0a3c4a608ec32c26d6a1c1eee0d428c3516',
-    'bots/skyline_archive/progress.py': '02e78726bb4c1806a124eee2acbe0ab673dd8e1b255766014b4605b71d82b8a5',
-    'bots/skyline_archive/scanner.py': '928c4d659bcef5b2f550dc7c21f80c6e455ad459f321fc22a90f390d51c21b2f',
+    'bots/skyline_archive/jobs.py': '124f30d2651952990cb69448aaa20aec0382c4458dc56fd565d3620dfc30b6d0',
+    'bots/skyline_archive/operations.py': '3c490d6be6252edc6bb3f3f61c9d7bae3a8dc2357002c4d325530c81181e1fee',
+    'bots/skyline_archive/preferences.py': '25bfc3481289d8f2d809618b3fbde7414046839b066ab001c3bcbfa24f489dc3',
+    'bots/skyline_archive/progress.py': 'cc33be10254093ae2bfc5a7de12b39d9c707e7caad565aa73eb606607c08e13a',
+    'bots/skyline_archive/scanner.py': '891d3dd91fb4eea1d97b1628876ab14136f645ea758d86e30bd21be5ebe92cd8',
     'bots/skyline_archive/settings.py': 'fbce643ac606980e289c65cdb8773a6325a6ced6f1d5c66e86059e769e2dbe75',
-    'bots/skyline_archive/storage.py': '94213608f429e69430d1f4457e4ff76c34d8fb2ccf0df794c7c8e91ac33bd7b3',
+    'bots/skyline_archive/storage.py': '5da7da4716b737d1c437ffa58a3004bcd92c0974a1fc4568a5fca2782a9393e5',
     'bots/skyline_archive/survey.py': '86f2bef2980443f9e57439dc1e377b0de3a06b0d1ea3ed73fda949eaf037f4dc',
-    'bots/skyline_archive/ui.py': '02d075ea1231f9458a94f4b78bcd075ec5dc32bfc50c1c2c43ce8eafced9094d',
-    'bots/skyline_archive/verification.py': '66b34df2cc9376ec7db1d84a6f5862aa0f20c13a2e905b9714e6c26409a0fde6',
-    'bots/skyline_archive/verify_worker.py': '3376446cb7a8d91f2ec7bafc56171463f49573f31e5bc9023575d09ba7a214fc',
+    'bots/skyline_archive/ui.py': '816374d576bd0bd00819cede2fd4f463ba887d1ed824fa07b25bf41051c518de',
+    'bots/skyline_archive/verification.py': '44905dc6efaf6b776069c3d9127482e38763481ce0456daa26aa30c5febafc17',
+    'bots/skyline_archive/verify_worker.py': '7b7c6a89d566e402706cde37030c46d2a597f062da0f39f0a659d6357d9bd9cb',
     'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
     'tools/_common.py': '33eda94911afe784e2fbc22731126ac8ca318db14f9eade5ae814f597a702a6f',
     'tools/artifact_inventory.py': '76ce149815cfdff979c3f238eb9a6aecbb94b6cc0d72e2765865b8f7818a7dce',
