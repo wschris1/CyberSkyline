@@ -626,6 +626,15 @@ class DiscordFeatureTests(unittest.IsolatedAsyncioTestCase):
         self.store.close(); self.store=Store(self.tmp.name)
         self.assertEqual(Preferences(self.store,self.config).effective()['frequency'],120)
 
+    async def test_ten_minute_frequency_persists_and_rejects_invalid_changes(self):
+        await self.preferences.save(dict(frequency=10),self.guild)
+        for invalid in (0,9,10081,True,10.5,'10'):
+            with self.subTest(invalid=invalid), self.assertRaises(ArchiveError):
+                await self.preferences.save(dict(frequency=invalid),self.guild)
+            self.assertEqual(self.preferences.effective()['frequency'],10)
+        self.store.close(); self.store=Store(self.tmp.name)
+        self.assertEqual(Preferences(self.store,self.config).effective()['frequency'],10)
+
     async def test_picker_paginates_over_discord_limits(self):
         catalog=[dict(season=f'fall-{2000+i}',competition='gym',event_url=f'event{i}',event=f'Event {i}',category='Forensics',level='easy') for i in range(60)]
         picker=Picker(self.client,456,catalog)
@@ -771,6 +780,31 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
                     start.assert_called_once()
                     self.assertTrue(start.call_args.kwargs['all_events'])
                     self.assertGreater(self.bot.store.get('last_scheduled'),0)
+
+    async def test_ten_minute_schedule_waits_until_due_and_does_not_overlap(self):
+        event='https://cyberskyline.com/world/'+'1'*24
+        self.bot.settings.event_url=event
+        self.bot.store.save_settings(dict(enabled=True,frequency=10,notification_channel=42,default_preview=False))
+        self.bot.recovered.set()
+        for elapsed,busy,expected in ((599,False,False),(600,True,False),(600,False,True)):
+            with self.subTest(elapsed=elapsed,busy=busy):
+                self.bot.store.put('last_scheduled',1000)
+                with (patch.object(self.bot,'wait_until_ready',new=AsyncMock()),
+                      patch.object(self.bot,'is_closed',side_effect=[False,True]),
+                      patch.object(self.bot,'busy',return_value=busy),
+                      patch.object(self.bot.archive,'channel',new=AsyncMock(return_value=Identity(42))),
+                      patch('bots.skyline_archive.bot.asyncio.sleep',new=AsyncMock()),
+                      patch('bots.skyline_archive.bot.time.time',return_value=1000+elapsed),
+                      patch.object(self.bot,'start_sync') as start):
+                    await self.bot.schedule_loop()
+                    if expected:
+                        start.assert_called_once()
+                        self.assertEqual(start.call_args.args,(event,))
+                        self.assertFalse(start.call_args.kwargs['all_events'])
+                        self.assertEqual(self.bot.store.get('last_scheduled'),1600)
+                    else:
+                        start.assert_not_called()
+                        self.assertEqual(self.bot.store.get('last_scheduled'),1000)
 
 
 if __name__=='__main__': unittest.main()

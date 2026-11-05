@@ -130,7 +130,7 @@ One successful batch produces one commit. Unchanged scans produce no commits. Cl
 
 ## Automatic archive scans
 
-Use `/skyline settings` to choose a progress hub or notification channel, set a frequency (60–10080 minutes), and enable scheduled scans. A nonempty `SKYLINE_EVENT_URL` scopes them to that event; otherwise they discover all accessible events. The saved default preview applies to both manual and scheduled scans. Explicit `preview:true` / `preview:false` and picker buttons override it for one run.
+Use `/skyline settings` to choose a progress hub or notification channel, set a frequency (10–10080 minutes), and enable scheduled scans. Choose **Set frequency** and enter **10** for checks every ten minutes. A nonempty `SKYLINE_EVENT_URL` scopes them to that event; otherwise they discover all accessible events. The saved default preview applies to both manual and scheduled scans. Explicit `preview:true` / `preview:false` and picker buttons override it for one run.
 
 Existing `SYNC_INTERVAL_MINUTES` and `SKYLINE_EVENT_URL` are still environment defaults. A positive environment interval requires an event URL; `0` defaults scheduling off. Saved settings override the corresponding environment defaults, survive restarts, and apply to the next run. The timer checks every 15 seconds and preserves its last scheduled start time. It waits while any scan, discovery, reindex or session check is active, and while login is known invalid. Existing installs need a progress destination selected before scheduled scans resume. Survey watches keep their separate polling cycle.
 

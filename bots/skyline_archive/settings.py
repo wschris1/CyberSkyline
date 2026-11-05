@@ -85,8 +85,8 @@ class Settings:
         if event_url:
             event_url = skyline_url(event_url)
         interval = number(env, "SYNC_INTERVAL_MINUTES", 0, 0, 10080)
-        if interval and (interval < 60 or not event_url):
-            raise ArchiveError("Timed sync needs SKYLINE_EVENT_URL and an interval of at least 60 minutes.")
+        if interval and (interval < 10 or not event_url):
+            raise ArchiveError("Timed sync needs SKYLINE_EVENT_URL and an interval of at least 10 minutes.")
         default = Path(env.get("LOCALAPPDATA") or env.get("XDG_DATA_HOME") or Path.home() / ".local" / "share") / "skyline-archive"
         state = Path(env.get("SKYLINE_STATE_DIR") or default).expanduser().resolve()
         if state.is_relative_to(REPO_ROOT):

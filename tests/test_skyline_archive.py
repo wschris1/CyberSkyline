@@ -154,6 +154,16 @@ class ArchiveTests(unittest.TestCase):
                 config(**overrides)
         self.assertEqual(config(SYNC_INTERVAL_MINUTES="60", SKYLINE_EVENT_URL=EVENT).interval, 60)
 
+    def test_ten_minute_environment_schedule_boundaries(self):
+        for interval in (0, 10, 60, 10080):
+            with self.subTest(interval=interval):
+                self.assertEqual(config(SYNC_INTERVAL_MINUTES=str(interval), SKYLINE_EVENT_URL=EVENT).interval, interval)
+        for interval in (-1, 1, 9, 10081):
+            with self.subTest(interval=interval), self.assertRaises(ArchiveError):
+                config(SYNC_INTERVAL_MINUTES=str(interval), SKYLINE_EVENT_URL=EVENT)
+        with self.assertRaises(ArchiveError):
+            config(SYNC_INTERVAL_MINUTES="10")
+
 
 class FakeGitHub(GitHub):
     def __init__(self, files=None, conflict=False, policy_failure=False):

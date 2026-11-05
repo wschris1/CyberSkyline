@@ -56,7 +56,7 @@ Use the existing desktop `python -m bots.skyline_archive login` workflow, upload
 
 | Setting | Initial default | Saved behavior |
 | --- | --- | --- |
-| Automatic scans | Off; `SYNC_INTERVAL_MINUTES` can enable for `SKYLINE_EVENT_URL` | Saved enabled toggle and 60–10080 minute interval override environment defaults |
+| Automatic scans | Off; `SYNC_INTERVAL_MINUTES` can enable for `SKYLINE_EVENT_URL` | Saved enabled toggle and 10–10080 minute interval override environment defaults |
 | Scope for automatic scans | `SKYLINE_EVENT_URL` if configured, otherwise all accessible events | Manual picker selections apply only to their run |
 | Discord archive | Off unless `DISCORD_ARCHIVE_HUB_ID` is set | Toggle separately from GitHub publication |
 | Archive/progress hub | `DISCORD_ARCHIVE_HUB_ID`, or invocation channel for manual progress | Saved channel applies to future progress; old archive mappings remain |

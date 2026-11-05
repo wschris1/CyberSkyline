@@ -30,8 +30,8 @@ class Preferences:
                 raise ArchiveError(f'{key} must be true or false.')
         if values.get('ai_enabled') and not getattr(self.settings,'openai_api_key',''):
             raise ArchiveError('Set OPENAI_API_KEY in the private PebbleHost configuration and restart before enabling AI. Never paste keys into Discord.')
-        if type(result['frequency']) is not int or not 60 <= result['frequency'] <= 10080:
-            raise ArchiveError('Automatic scan frequency must be 60–10080 minutes.')
+        if type(result['frequency']) is not int or not 10 <= result['frequency'] <= 10080:
+            raise ArchiveError('Automatic scan frequency must be 10–10080 minutes.')
         if not isinstance(result['category_prefix'],str) or len(result['category_prefix']) > 35:
             raise ArchiveError('Category prefix must be at most 35 characters.')
         for key in ('archive_hub','notification_channel'):
