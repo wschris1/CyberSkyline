@@ -49,7 +49,7 @@ Survey watches are added with the Discord slash command after startup.
 Use the server's private panel file manager/SFTP connection. These steps keep the
 existing login, survey watches, mappings, questions and discussion intact.
 
-1. In Discord, use `/skyline stop` if collection is running. If publication has
+1. In Discord, use `/skyline pause` on releases that support it (otherwise `/skyline stop`) if collection is running. If publication has
    started, wait for `/skyline status` to finish. Then press **Stop** in PebbleHost
    and wait until the process is offline.
 2. Back up the root `bot.py`, `requirements.txt`, and the **entire**
@@ -86,7 +86,7 @@ existing login, survey watches, mappings, questions and discussion intact.
    channel, enable the Discord archive, and turn **default preview** on for
    the first check. Keep scheduling off until the checks below succeed.
    Existing category/channel IDs remain mapped; new installs create only
-   missing categories and difficulty channels.
+   missing categories and challenge channels.
 9. Run `/skyline reindex` for older GitHub imports, `/skyline session recheck`,
    and `/skyline pick`. Choose one small scope and **Preview**. Confirm the
    scope, permissions and extraction results before pressing **Start scan**.
@@ -166,3 +166,9 @@ It does not automatically run new code from a moving Git branch.
 The Chromium preflight establishes browser startup and local form interaction,
 not successful login, Discord authorization, GitHub write access, or an actual
 competition scan. Check those separately after private configuration is supplied.
+
+### Scan-control and challenge-channel release
+
+This update requires no dependency or credential changes. Preserve the entire private tree before replacing the pinned loader/application. Startup migrates SQLite to v3 and keeps a pre-migration SQLite backup. After restarting, run `/skyline health test_ai:true`, then `/skyline reorganize` to preview existing-archive migration and `/skyline reorganize preview:false` to apply it. Old discussions remain linked; no answers are deleted. Run reorganization again after interruption to reuse the saved IDs. Do not use an older recovery loader against v3 state. The standalone `recover.py` reconstructs legacy layouts only; for v3 restore the full private backup.
+
+Use `/skyline resume` after a paused/interrupted scan to release the persistent schedule hold. Confirm `/skyline settings` shows scheduled scans enabled, frequency 10, the intended default preview, and your archive/notification destinations. A not-yet-open event should show waiting, not failure. After one small archive run verify its challenge channel, question threads, old-discussion links, file statuses and search results; repeat to check reuse. Survey opening and actual competition opening remain event-dependent checks.

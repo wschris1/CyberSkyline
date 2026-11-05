@@ -27,20 +27,39 @@ class Verifier:
         self.lock = asyncio.Lock()
         self.ai, self.ai_enabled = ai, ai_enabled or (lambda: False)
 
+    def payload(self, question, answer):
+        files, unavailable = [], []
+        for row in self.store.rows('''SELECT a.*,e.user_id AS evidence_user FROM attachments a
+            LEFT JOIN evidence e ON e.attachment_key=a.key WHERE a.challenge_key=?
+            AND (e.question_key IS NULL OR e.question_key=?)''',(question['challenge_key'],question['key'])):
+            path = self.attachments.local_path(row)
+            if path and row['status'] in ('ready','uploaded','oversized-upload','upload-failed'):
+                files.append(dict(name=row['name'],path=str(path),sha256=row['sha256'],
+                    provenance='owner-supplied supplemental evidence' if row['evidence_user'] else 'source challenge artifact'))
+            else:
+                unavailable.append(dict(name=row['name'],status=row['status']))
+        return dict(question=question['text'],instructions=question['prompt'],answer=answer,files=files,
+                       root=str(self.attachments.root.resolve()),unavailable_files=unavailable)
+
+    async def explain(self, question, mode):
+        if mode not in ('hint','explain'):
+            raise ValueError('Unsupported assistance mode')
+        if not self.ai or not self.ai_enabled():
+            return result('Inconclusive','AI configuration','Enable AI assistance in /skyline settings first.')
+        if self.lock.locked():
+            return result('Verification error','worker','Another analysis is running. Retry when it finishes.')
+        payload = {**self.payload(question,''),'mode':mode}
+        async with self.lock:
+            async def tool(args):
+                return await self.run_worker({**payload,'inspect':args})
+            return await self.ai.assist(payload,result('Inconclusive','assistance','No answer supplied.'),tool)
+
     async def check(self, question, answer):
         if len(answer) > 4000:
             return result('Inconclusive','answer selection','Provide an answer of at most 4000 characters.')
         if self.lock.locked():
             return result('Verification error','worker','Another verification is running. Retry when it finishes.')
-        files, unavailable = [], []
-        for row in self.store.rows('SELECT * FROM attachments WHERE challenge_key=?',(question['challenge_key'],)):
-            path = self.attachments.local_path(row)
-            if path and row['status'] in ('ready','uploaded','oversized-upload','upload-failed'):
-                files.append(dict(name=row['name'],path=str(path),sha256=row['sha256']))
-            else:
-                unavailable.append(dict(name=row['name'],status=row['status']))
-        payload = dict(question=question['text'],instructions=question['prompt'],answer=answer,files=files,
-                       root=str(self.attachments.root.resolve()),unavailable_files=unavailable)
+        payload = self.payload(question,answer)
         async with self.lock:
             local = await self.run_worker(payload)
             if local['outcome'] == 'Inconclusive' and self.ai and self.ai_enabled():

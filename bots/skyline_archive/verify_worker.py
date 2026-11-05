@@ -62,7 +62,7 @@ def validate_files(data):
     root = Path(data['root']).resolve()
     for f in data['files']:
         p = Path(f['path'])
-        if p.is_symlink() or not p.resolve().is_relative_to(root) or not p.is_file() or p.stat().st_size > LIMIT:
+        if p.is_symlink() or not p.resolve().is_relative_to(root) or not p.is_file() or p.stat().st_size > 2*1024**3:
             raise ValueError('Evidence file unavailable or outside the verification limit')
         if artifact_inventory.sha256_file(p) != f['sha256']:
             raise ValueError('Evidence file changed')
@@ -80,6 +80,8 @@ def inspect_evidence(data):
     item = data['files'][index]
     path = Path(item['path'])
     operation = request['operation']
+    if path.stat().st_size > LIMIT and operation not in ('file_facts','text','strings'):
+        return dict(error='This operation is limited to 64 MiB on the bot worker. The larger file remains cached; file facts and bounded text/strings previews are available.')
     if operation == 'verify':
         # Preserve the actual question and exact proposed answer. Restrict the
         # evidence file only when the prompt explicitly names it or it is unique.
@@ -118,6 +120,9 @@ def check(data):
         validate_files(data)
     except (OSError, ValueError):
         return result('Verification error','evidence files','A cached file changed or is unavailable; refresh the source before verifying.')
+    if any(Path(f['path']).stat().st_size > LIMIT for f in files):
+        return result('Inconclusive','large evidence file',
+            'The original file is cached, but deterministic verification is limited to 64 MiB per file on this worker. AI can inspect bounded file facts/text/strings; full memory-image analysis needs an external analysis runtime.')
     selected = choose_file(files,question)
     path = Path(selected['path']) if selected else None
     # These adapters deliberately recognize narrow question shapes. A keyword alone

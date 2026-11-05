@@ -4,7 +4,8 @@ from .core import ArchiveError
 
 
 DEFAULTS = dict(enabled=False,frequency=60,archive_enabled=False,archive_hub=0,notification_channel=0,
-                notify_login=True,notify_results=False,default_preview=False,category_prefix='',ai_enabled=False)
+                notify_login=True,notify_results=False,default_preview=False,category_prefix='',ai_enabled=False,
+                max_file_mb=512,cache_mb=2048)
 
 
 class Preferences:
@@ -32,6 +33,11 @@ class Preferences:
             raise ArchiveError('Set OPENAI_API_KEY in the private PebbleHost configuration and restart before enabling AI. Never paste keys into Discord.')
         if type(result['frequency']) is not int or not 10 <= result['frequency'] <= 10080:
             raise ArchiveError('Automatic scan frequency must be 10–10080 minutes.')
+        for key,minimum,maximum in (('max_file_mb',1,2048),('cache_mb',64,20480)):
+            if type(result[key]) is not int or not minimum <= result[key] <= maximum:
+                raise ArchiveError(f'{key} must be {minimum}–{maximum} MiB.')
+        if result['max_file_mb'] > result['cache_mb']:
+            raise ArchiveError('The cache limit must be at least the per-file limit. Existing files are never deleted when lowering limits.')
         if not isinstance(result['category_prefix'],str) or len(result['category_prefix']) > 35:
             raise ArchiveError('Category prefix must be at most 35 characters.')
         for key in ('archive_hub','notification_channel'):
@@ -80,3 +86,20 @@ class Preferences:
             raise ArchiveError('The bot lacks permissions required for that mapping.')
         self.store.map(kind,scope,channel.id)
         # Existing questions retain their own channel/message/thread IDs.
+
+    async def challenge_mapping(self, guild, source, channel):
+        import discord
+        from .core import skyline_url, CHALLENGE
+        from urllib.parse import urlsplit
+        url = skyline_url(source,'challenge')
+        key = '/'.join(CHALLENGE.fullmatch(urlsplit(url).path).groups())
+        if not isinstance(channel,discord.TextChannel) or channel.guild.id != self.settings.guild_id:
+            raise ArchiveError('Choose a text channel in the configured server.')
+        needed=('view_channel','send_messages','read_message_history','embed_links','attach_files',
+                'create_public_threads','send_messages_in_threads','manage_threads')
+        if not all(getattr(channel.permissions_for(guild.me),p,False) for p in needed):
+            raise ArchiveError('The bot lacks permissions for that challenge channel.')
+        used=self.store.one("SELECT scope FROM mappings WHERE kind='challenge-channel' AND discord_id=? AND scope!=?",(channel.id,key))
+        if used:
+            raise ArchiveError('That channel already belongs to another challenge. Select a separate channel.')
+        self.store.map('challenge-channel',key,channel.id)

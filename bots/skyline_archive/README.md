@@ -12,6 +12,13 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline sync preview:true event_url:<event overview URL>` | Check extraction and counts without uploading. |
 | `/skyline sync-all` | Discover events on your Competition dashboard and scan those still accessible. |
 | `/skyline stop` | Cancel the current scan or preview before GitHub publication starts. |
+| `/skyline pause` | Save progress, close collection safely and hold scheduled checks. |
+| `/skyline resume` | Continue the latest paused/interrupted/stopped scan; release the schedule hold. |
+| `/skyline retry-failed` | Retry failed pages/publications using saved complete snapshots. |
+| `/skyline health test_ai:true` | Check source login, GitHub access, Discord permissions, cache and an optional small AI connection request. |
+| `/skyline evidence file:<upload>` | Associate supplemental evidence with this question; omit file to import your latest thread upload, or specify message_id. |
+| `/skyline hint` / `/skyline explain` | Ask for an investigative hint or solving approach without a proposed answer. |
+| `/skyline reorganize preview:false` | Create separate challenge channels for existing archives, preserving and linking older discussions. Defaults to preview. |
 | `/skyline status` | Show current scan progress, authentication state and schedule. |
 | `/skyline pick` | Discover accessible competitions; choose season, competition, category and difficulty, then Preview or Start scan. |
 | `/skyline search keyword:<words>` | Search archived titles/question text; optional season, competition, category and difficulty filters. |
@@ -126,7 +133,7 @@ Regular Q1/Q2 question tables and username/ciphertext tables are supported. Each
 
 The public repository's existing policy is applied: common flag-like text, hash-like values, temporary instance URLs, and URL query values are removed. These redactions can remove part of a supplied example; use the original source challenge for the full input. Review a preview and export only content you have permission to archive or share. The importer cannot recognize every possible response-bearing string embedded in a prompt.
 
-One successful batch produces one commit. Unchanged scans produce no commits. Closed/unavailable events are reported and never delete old imports. An unexpected page failure stops that batch before publication. Manually changed imported prompts or a reduction in source question count cause a conflict instead of silently overwriting/deleting files; keep authored notes in the existing guide folders or reconcile the managed manifest deliberately.
+One successful batch produces one commit. Unchanged scans produce no commits. Closed/unavailable events are reported and never delete old imports. Complete challenges publish even when other pages fail. Failed pages remain pending for `/skyline retry-failed`. A challenge with incomplete or unrecognized question rows is never marked successfully archived. Conversational Launchpad challenges require submissions to reveal later questions; they remain explicitly unsupported and the bot never submits those replies. Manually changed imported prompts or a reduction in source question count cause a conflict instead of silently overwriting/deleting files; keep authored notes in the existing guide folders or reconcile the managed manifest deliberately.
 
 ## Automatic archive scans
 
@@ -179,8 +186,7 @@ error is reported explicitly. If no challenge files are cached, the model gets
 their unavailable/oversized status without a file-inspection tool and explains
 the missing evidence. This remains **Inconclusive**, not an incorrect answer.
 
-AI runs only for an owner-initiated verification, not for archive scans or survey
-watches. Up to **4 API requests and 3 evidence tools per job**, **40 attempted
+AI runs only for owner-initiated verification, hint, explain, or an explicitly requested health connection test. Archive scans and survey watches do not use AI. Up to **4 API requests and 3 evidence tools per job**, **40 attempted
 API requests per UTC day**, 1,600 output tokens per request and 120 seconds per
 job are the defaults. Attempts count even if they fail, and the daily counter
 persists in the existing private SQLite key/value storage. Set the daily limit
@@ -198,8 +204,7 @@ Large memory images, full packet-protocol analysis, OSINT browsing and arbitrary
 code execution need separate tools. Missing files remain missing evidence.
 
 Existing verification records already persist the answer, user, timestamp,
-method, outcome and full evidence/AI explanation. No schema migration or repost
-is needed. Tests mock the API and use synthetic image metadata. An actual billed
+method, outcome and full evidence/AI explanation. Schema v3 adds scan checkpoints, question-location history, evidence associations and assistance records; existing verification records stay intact. Tests mock the API and use synthetic image metadata. An actual billed
 OpenAI call must be checked after supplying your own key.
 
 Primary references: [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling),
@@ -222,6 +227,18 @@ py -3 .github/scripts/check_challenges.py
 py -3 -m unittest discover -s tests -v
 ```
 
-The original extractor had live checks for regular and ciphertext question tables on November 3, 2026. That does not validate every competition page: unfamiliar layouts, missing access and page failures stop publication rather than silently claiming a complete archive. This release still needs a deployment check of your host permissions, refreshed login, current page layouts, actual attachment delivery and live Discord interactions. Follow the [PebbleHost update instructions](../../deploy/pebblehost/README.md#upgrading-an-existing-ncl-tracker-installation).
+The original extractor had live checks for regular and ciphertext question tables on November 3, 2026. That does not validate every competition page: unfamiliar layouts, missing access and page failures remain pending while complete challenges publish. This release still needs a deployment check of your host permissions, refreshed login, current page layouts, actual attachment delivery and live Discord interactions. Follow the [PebbleHost update instructions](../../deploy/pebblehost/README.md#upgrading-an-existing-ncl-tracker-installation).
 
 API references: [discord.py interactions](https://discordpy.readthedocs.io/en/stable/interactions/api.html), [Playwright authentication](https://playwright.dev/python/docs/auth), [GitHub Git trees](https://docs.github.com/en/rest/git/trees), and [GitHub references](https://docs.github.com/en/rest/git/refs).
+
+## Challenge channels and recovery controls
+
+Each source category contains one channel per challenge, such as **Open Source Intelligence → #meta-easy, #lookup-easy, #ssl-medium, #owasp-hard**. Each question gets its own parent message and thread. Same-named challenges from different events receive distinct channels. `/skyline reorganize` previews migration of already posted archives; `preview:false` applies it. Discord cannot move an existing question thread to another parent/channel, so original discussions remain intact and new threads link to them. Verification still recognizes older mapped threads. Rescanning/reorganizing reuses IDs.
+
+`/skyline pause` holds scheduling across restarts and saves complete collected challenges. During publication it pauses after the current challenge completes; GitHub may already contain the complete batch. `/skyline resume` reuses that checkpoint and progress message, skipping already published items. A crash also holds scheduling until resumed. `/skyline stop` retains its existing cancellation behavior and does not disable schedules. `/skyline retry-failed` retries the latest failed run without reposting successful questions.
+
+A future event shows **waiting for event** and the next check, reusing the same waiting message. Once its accessible challenges appear, a scheduled archive run attempts one owner ping and begins scanning. The event opening transition still needs checking when the actual event opens.
+
+Private downloads default to **512 MiB per file / 2048 MiB total cache**, adjustable in `/skyline settings`; old files are never deleted to meet a lowered budget. Downloads stream independently of Discord upload limits. Files over the server limit remain cached for analysis and are linked to the source challenge. The bot worker supports bounded facts/text/strings inspection of large files; deterministic checks remain limited to 64 MiB. Full memory-image analysis requires a separate stronger analysis environment.
+
+Supplemental evidence is private and question-specific, never added to GitHub. `/skyline evidence` imports only your own uploads from the current question thread. File imports from message history require Message Content Intent; the file option works without it. Hints/explanations use the same fixed evidence tools and daily API budget, are saved separately, and never update verified-answer status. Images are available for metadata inspection; visual image reasoning is not implemented. Team assignment/tracking is not included.

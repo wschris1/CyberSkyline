@@ -66,6 +66,13 @@
   const title = text(menus[1].querySelector('[role="alert"]'));
   result.category = category;
   result.title = title;
+  // Conversational launchpad challenges reveal questions after submissions.
+  // Never export chat history: it contains participants' submitted answers.
+  if (document.querySelector('input[placeholder="Reply..."], textarea[placeholder="Reply..."]')) {
+    result.interactive = true;
+    result.issue = "Interactive questions cannot be collected completely without submitting responses.";
+    return result;
+  }
   const descriptions = Array.from(document.querySelectorAll(".ui.basic.segment.body:not(.fat)"));
   const tables = Array.from(document.querySelectorAll(".ui.basic.segment.fat.tall.body > table"));
   if (descriptions.length !== 1 || tables.length !== 1) {

@@ -19,6 +19,7 @@ class ScanResult:
     challenges: list = field(default_factory=list)
     skipped_events: list = field(default_factory=list)
     errors: list = field(default_factory=list)
+    waiting_events: list = field(default_factory=list)
 
 
 def links_for(snapshot, pattern, prefix=''):
@@ -54,6 +55,7 @@ class Scanner:
         self.last_visit = 0.0
         self.discovery_errors = []
         self.skipped_events = []
+        self.waiting_events = []
 
     def update(self, **values):
         if self.progress:
@@ -78,7 +80,7 @@ class Scanner:
                 await browser.close()
 
     async def visit(self, url, kind, timeout=40):
-        from playwright.async_api import TimeoutError as PlaywrightTimeout
+        from playwright.async_api import TimeoutError as PlaywrightTimeout, Error as PlaywrightError
         wait = self.settings.delay - (time.monotonic() - self.last_visit)
         if wait > 0:
             await asyncio.sleep(wait)
@@ -98,6 +100,8 @@ class Scanner:
                 if parsed.hostname != 'cyberskyline.com':
                     raise ArchiveError('Cyber Skyline redirected to an unexpected website; check access or service status.')
                 snapshot = await self.page.evaluate(EXTRACTOR)
+                if kind == 'challenge' and snapshot.get('interactive'):
+                    raise ArchiveError('Interactive conversation: later questions require submitted answers. This read-only scanner cannot collect a complete challenge; no replies were submitted.')
                 if kind == 'challenge' and snapshot.get('challenge'):
                     return snapshot
                 if kind == 'module':
@@ -108,11 +112,12 @@ class Scanner:
                     if snapshot.get('category') and candidates and all(name.strip() for name in candidates.values()):
                         return snapshot
                 if kind == 'event' and snapshot.get('event'):
-                    if links_for(snapshot, MODULE):
-                        return snapshot
                     import re
                     unavailable = re.compile(r'This challenge has ended|Starting in:|Opening in:', re.I)
                     if await self.page.get_by_role('heading', name=unavailable).count():
+                        snapshot['waiting'] = bool(await self.page.get_by_role('heading', name=re.compile(r'Starting in:|Opening in:',re.I)).count())
+                        return snapshot
+                    if links_for(snapshot, MODULE):
                         return snapshot
                 if kind == 'events' and links_for(snapshot, WORLD):
                     return snapshot
@@ -121,7 +126,10 @@ class Scanner:
                 await asyncio.sleep(0.5)
         except PlaywrightTimeout as exc:
             raise ArchiveError('Cyber Skyline timed out; check the connection and retry.') from exc
-        raise ArchiveError(f'The {kind} page did not expose the expected content. Check access or page layout.')
+        except PlaywrightError as exc:
+            raise ArchiveError('Cyber Skyline navigation or page evaluation failed; retry this page. Login was not marked invalid.') from exc
+        issue = snapshot.get('issue') if 'snapshot' in locals() else None
+        raise ArchiveError(f'The {kind} page did not expose the expected content. '+(issue or 'Check access or page layout.'))
 
     async def validate_session(self):
         async with self.opened():
@@ -130,7 +138,7 @@ class Scanner:
 
     async def _discover(self, event_url=None, all_events=False, scope=None):
         scope = scope or {}
-        self.discovery_errors, self.skipped_events = [], []
+        self.discovery_errors, self.skipped_events, self.waiting_events = [], [], []
         self.update(state='discovering challenges', total=None, processed=0)
         if all_events:
             dashboard = await self.visit('https://cyberskyline.com/competition', 'events')
@@ -155,9 +163,11 @@ class Scanner:
                 if not matches(base, {k:v for k,v in scope.items() if k not in ('category','level')}):
                     continue
                 world = WORLD.fullmatch(urlsplit(url).path).group(1)
-                modules = links_for(event,MODULE,f'/module/{world}/')
+                modules = {} if event.get('waiting') else links_for(event,MODULE,f'/module/{world}/')
                 if not modules:
                     self.skipped_events.append(name)
+                    if event.get('waiting'):
+                        self.waiting_events.append(dict(url=url,name=name))
                 for module_url, module_title in modules.items():
                     self.update(competition=name,category=module_title)
                     try:
@@ -190,14 +200,21 @@ class Scanner:
             entries = await self._discover(all_events=True, scope=scope)
         return entries
 
-    async def collect(self, event_url=None, all_events=False, *, scope=None, catalog=None, on_challenge=None):
+    async def collect(self, event_url=None, all_events=False, *, scope=None, catalog=None, on_challenge=None,
+                      on_catalog=None, on_error=None, skip_urls=()):
         scope = scope or {}
         result = ScanResult()
         async with self.opened() as context:
             entries = await self._discover(event_url, all_events, scope) if catalog is None else [e for e in catalog if matches(e,scope)]
             result.errors.extend(self.discovery_errors)
             result.skipped_events.extend(self.skipped_events)
-            self.update(state='scanning',total=None if self.discovery_errors else len(entries),processed=0,scan_started=time.monotonic())
+            result.waiting_events.extend(self.waiting_events)
+            if on_catalog:
+                await on_catalog(entries,not bool(self.discovery_errors))
+            entries = [e for e in entries if e['url'] not in skip_urls]
+            offset=len(skip_urls)
+            self.update(state='scanning',total=None if self.discovery_errors else len(entries)+offset,
+                        processed=offset,scan_offset=offset,scan_started=time.monotonic())
             for number, entry in enumerate(entries,1):
                 url = entry['url']
                 self.update(competition=entry['event'],category=entry['category'],challenge=entry['title'])
@@ -219,15 +236,17 @@ class Scanner:
                     c = Challenge(url,entry['event'],item['category'],item['title'],item['prompt'],
                                   tuple(item['questions']),tuple(item['attachments']),tuple(qids),refs)
                     c.markdown(1)
-                    result.challenges.append(c)
                     if on_challenge:
                         await on_challenge(c,context)
+                    result.challenges.append(c)
                 except SessionExpired:
                     raise
                 except ArchiveError as exc:
                     result.errors.append(f'Challenge {entry["title"] or number}: {exc}')
+                    if on_error:
+                        await on_error(entry,str(exc))
                 finally:
-                    self.update(processed=number,failed=len(result.errors))
+                    self.update(processed=number+offset,failed=len(result.errors))
         return result
 
 async def login(settings):

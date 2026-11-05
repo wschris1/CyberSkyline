@@ -38,18 +38,12 @@ class DiscordArchive:
         return found
 
     async def destination(self, c):
-        # Retain the original channel when settings change; only missing content uses new mappings.
-        previous = self.store.one('SELECT channel_id FROM questions WHERE challenge_key=? AND channel_id IS NOT NULL LIMIT 1',(c.key,))
-        if previous:
-            channel = await self.channel(previous['channel_id'])
-            if channel:
-                return self.check_permissions(channel)
         guild = self.client.get_guild(self.guild_id)
         if guild is None:
             raise ArchiveError('Configured Discord server is unavailable.')
         level = level_and_title(c.title)[0]
-        category_scope,channel_scope = c.category.casefold(),c.category.casefold()+'/'+level
-        mapped = self.store.mapping('channel',channel_scope)
+        category_scope,channel_scope = c.category.casefold(),c.key
+        mapped = self.store.mapping('challenge-channel',channel_scope)
         if mapped:
             channel = await self.channel(mapped)
             if channel:
@@ -81,16 +75,22 @@ class DiscordArchive:
                 category = await guild.create_category(name,overwrites=overwrites,reason='NCL TRACKER archive')
             self.store.map('category',category_scope,category.id)
             self.store.put('creating-category/'+category_scope,False)
-        short = 'passcracking' if c.category.casefold() == 'password cracking' else slug(c.category)
-        channel_name = f'{short}-{level}'[:100]
+        channel_name = f'{slug(level_and_title(c.title)[1])}-{level}'[:100]
+        identity = 'NCL challenge '+c.key
         candidates = [x for x in category.text_channels if x.name == channel_name]
-        if len(candidates) > 1:
-            raise ArchiveError('Several difficulty channels match. Set an explicit channel mapping.')
-        channel = candidates[0] if candidates else await guild.create_text_channel(channel_name,category=category,
-            topic=f'NCL TRACKER: {c.category} / {level}. Seasons and competitions are identified per challenge.',
+        # Topics identify a create that succeeded before its mapping was saved.
+        recovered = [x for x in category.text_channels if identity in (getattr(x,'topic','') or '')]
+        if len(recovered) > 1:
+            raise ArchiveError('Duplicate challenge channel identities need reconciliation; nothing new was created.')
+        if candidates and not recovered:
+            channel_name = f'{channel_name[:65]}-{digest(c.key)[:10]}'
+        if not recovered and len(category.text_channels) >= 50:
+            raise ArchiveError('This Discord category is full. Map the source category to another category, then retry failed items.')
+        channel = recovered[0] if recovered else await guild.create_text_channel(channel_name,category=category,
+            topic=f'{identity} | {c.event} | {c.category} | {level}'[:1024],
             reason='NCL TRACKER archive')
         self.check_permissions(channel)
-        self.store.map('channel',channel_scope,channel.id)
+        self.store.map('challenge-channel',channel_scope,channel.id)
         return channel
 
     def check_permissions(self, channel):
@@ -164,28 +164,32 @@ class DiscordArchive:
 
     async def files(self, channel, c, progress=None):
         links = []
-        rows = self.store.rows('SELECT * FROM attachments WHERE challenge_key=? ORDER BY name,key',(c.key,))
+        rows = self.store.rows('SELECT * FROM attachments WHERE challenge_key=? AND key NOT IN (SELECT attachment_key FROM evidence) ORDER BY name,key',(c.key,))
         for row in rows:
             path = self.attachments.local_path(row)
-            if row['status'] not in ('ready','uploaded') or path is None:
+            if row['status'] not in ('ready','uploaded','oversized-upload','upload-failed') or path is None:
+                if path is None and row['status'] in ('ready','uploaded','oversized-upload','upload-failed'):
+                    row=self.store.attachment(row['key'],status='missing-cache',error='Cached file missing; retry the source download.')
                 links.append(f"{discord.utils.escape_markdown(row['name'])}: {row['status']} — [open source challenge]({c.url})")
                 continue
             # The current guild limit is authoritative, not a hard-coded Discord tier.
             limit = channel.guild.filesize_limit
             if path.stat().st_size > limit:
                 if progress:
-                    progress.attachment_failed += 1
+                    progress.upload_failed += 1
                 self.store.attachment(row['key'],status='oversized-upload',error=f'Exceeds Discord upload limit ({limit} bytes).')
-                links.append(f"{discord.utils.escape_markdown(row['name'])}: exceeds this server's {limit}-byte upload limit — [source]({c.url})")
+                links.append(f"{discord.utils.escape_markdown(row['name'])}: cached privately for analysis; exceeds this server's {limit}-byte upload limit — [source]({c.url})")
                 continue
             try:
                 message = await self.message(channel,'file/'+row['key']+'/'+row['sha256'],
                     f"**{discord.utils.escape_markdown(c.title)} — {discord.utils.escape_markdown(row['name'])}**\nSource: <{c.url}>",path,row['name'])
                 self.store.attachment(row['key'],status='uploaded',channel_id=message.channel.id,message_id=message.id,error=None)
+                if progress:
+                    progress.uploaded += 1
                 links.append(f"[{discord.utils.escape_markdown(row['name'])}]({jump(self.guild_id,message.channel.id,message.id)})")
             except (discord.HTTPException,OSError):
                 if progress:
-                    progress.attachment_failed += 1
+                    progress.upload_failed += 1
                 self.store.attachment(row['key'],status='upload-failed',error='Discord upload failed; retry the scan.')
                 links.append(f"{discord.utils.escape_markdown(row['name'])}: upload failed — [source]({c.url})")
         return links
@@ -213,15 +217,17 @@ class DiscordArchive:
             file_links = await self.files(channel,c,progress)
             context = f'**{c.event}** · {c.category} · {level_and_title(c.title)[0]}\nSource: <{c.url}>\n'
             files = '\n'.join(file_links) or 'No downloadable files listed.'
-            headers = await self.text(channel,'challenge/'+c.key,f'## {c.title}\n{context}\n{c.prompt}\n\n**Files**\n{files}')
+            namespace = f'layout3/{channel.id}/'
+            headers = await self.text(channel,namespace+'challenge/'+c.key,f'## {c.title}\n{context}\n{c.prompt}\n\n**Files**\n{files}')
             header_link = jump(self.guild_id,headers[0].channel.id,headers[0].id)
             for q in questions:
-                # A mapping change must not move a previously posted question.
-                destination = await self.channel(q['channel_id']) if q.get('channel_id') else channel
-                destination = destination or channel
-                body = f"## {c.title} — Q{q['number']}\n{context}\n{q['text']}\n\n[Shared instructions]({header_link})\n**Files**\n{files}"
-                parents = await self.text(destination,'question/'+q['key'],body)
-                thread = await self.thread(parents[0],q,c)
+                old_locations = self.store.rows('SELECT * FROM question_locations WHERE question_key=? AND channel_id!=?',(q['key'],channel.id))
+                # v2 threads stay intact. A new parent/thread links back to their complete history.
+                history = '\n'.join(f'[Earlier discussion](https://discord.com/channels/{self.guild_id}/{r["thread_id"]})' for r in old_locations)
+                body = f"## {c.title} — Q{q['number']}\n{context}\n{q['text']}\n\n[Shared instructions]({header_link})\n**Files**\n{files}\n{history}"
+                parents = await self.text(channel,namespace+'question/'+q['key'],body)
+                target_q = q if q.get('channel_id') == channel.id else {**q,'thread_id':None}
+                thread = await self.thread(parents[0],target_q,c)
                 self.store.link_question(q['key'],parents[0].channel.id,parents[0].id,thread.id)
                 # A repaired parent cannot reattach a surviving thread, so always link it explicitly.
                 embed = discord.Embed.from_dict(parents[0].embeds[0].to_dict())
@@ -234,7 +240,7 @@ class DiscordArchive:
                 if embed.to_dict() != before:
                     await parents[0].edit(embed=embed,allowed_mentions=discord.AllowedMentions.none())
                 intro = f"## {c.title} — Q{q['number']}\n{context}\n{q['text']}\n\n**Instructions**\n{c.prompt}\n\n**Files**\n{files}\n\nDiscuss here. Use `/skyline verify answer:<answer>` to check a proposal without submitting it to Cyber Skyline."
-                await self.text(thread,'thread/'+q['key'],intro)
+                await self.text(thread,f'layout3/{thread.id}/thread/'+q['key'],intro+'\n'+history)
             self.store.synced(c.key)
 
     async def update_verification(self, question):
@@ -242,12 +248,10 @@ class DiscordArchive:
         channel = await self.channel(question['channel_id']) if question['channel_id'] else None
         if not channel or not status:
             return
-        key = 'question/'+question['key']+'/part0'
-        row = self.store.one('SELECT * FROM posts WHERE key=?',(key,))
-        if not row or not row['message_id']:
+        if not question['message_id']:
             return
         try:
-            message = await channel.fetch_message(row['message_id'])
+            message = await channel.fetch_message(question['message_id'])
         except discord.NotFound:
             return
         # Keep the complete question in its existing continuation messages.

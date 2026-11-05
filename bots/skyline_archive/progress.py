@@ -21,23 +21,33 @@ class Progress:
     attachments: int = 0
     attachment_total: int = 0
     attachment_failed: int = 0
+    uploaded: int = 0
+    upload_failed: int = 0
     detail: str = ''
     started: float = field(default_factory=time.monotonic)
     scan_started: float | None = None
+    scan_offset: int = 0
+    finished: float | None = None
+    elapsed_before: float = 0
 
     def update(self, **values):
         for key, value in values.items():
             if key in self.__dataclass_fields__:
                 setattr(self,key,value)
+        if values.get('state') in ('completed','completed with errors','failed','stopped','paused','interrupted',
+                                  'waiting for login','waiting for event','discovery complete') and self.finished is None:
+            self.finished = time.monotonic()
 
     def render(self, preview=False):
-        elapsed = max(0, round(time.monotonic() - self.started))
+        clock = self.finished if self.finished is not None else time.monotonic()
+        elapsed = max(0, round(clock - self.started + self.elapsed_before))
         total = str(self.total) if self.total is not None else 'unknown (discovering)'
         eta = 'not available'
-        if self.total and self.processed >= 3 and self.scan_started and self.processed < self.total:
+        samples = self.processed-self.scan_offset
+        if self.finished is None and self.state == 'scanning' and self.total and samples >= 3 and self.scan_started and self.processed < self.total:
             seconds = time.monotonic() - self.scan_started
             if seconds >= 10:
-                eta = f'about {round(seconds / self.processed * (self.total-self.processed))}s (scan phase only)'
+                eta = f'about {round(seconds / samples * (self.total-self.processed))}s (scan phase only)'
         text = (f'**NCL TRACKER — {self.state}**\n'
                 f'**Mode:** {"Preview (no archive writes)" if preview else "Scan and archive"}\n'
                 f'**Competition:** {clean(self.competition)[:180] or "Discovering"}\n'
@@ -45,7 +55,8 @@ class Progress:
                 f'**Challenge:** {clean(self.challenge)[:180] or "—"}\n'
                 f'**Processed:** {self.processed} / {total}\n'
                 f'**New:** {self.new} · **Skipped:** {self.skipped} · **Failed:** {self.failed}\n'
-                f'**Files checked:** {self.attachments}/{self.attachment_total} · **File failures:** {self.attachment_failed}\n'
+                f'**Files downloaded/cached:** {self.attachments}/{self.attachment_total} · **Download failures:** {self.attachment_failed}\n'
+                f'**Files uploaded/linked:** {self.uploaded} · **Upload failures/oversized:** {self.upload_failed}\n'
                 f'**Elapsed:** {elapsed}s · **Remaining:** {eta}\n{self.detail}')
         return text[:1950]
 

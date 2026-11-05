@@ -106,7 +106,7 @@ class StorageTests(unittest.IsolatedAsyncioTestCase):
         self.store.db.executescript('DROP TRIGGER question_search_insert; DROP TRIGGER question_search_update; DROP TRIGGER challenge_search_title; DROP TABLE question_search; PRAGMA user_version=1;')
         self.store.close(); self.store=Store(self.tmp.name)
         self.assertEqual(len(self.store.rows('SELECT * FROM question_search')),1)
-        self.assertTrue((Path(self.tmp.name)/'archive.before-v2.sqlite3').is_file())
+        self.assertTrue((Path(self.tmp.name)/'archive.before-v3.sqlite3').is_file())
 
     async def test_interrupted_scan_is_recovered_only_once(self):
         with self.store.db:
@@ -151,7 +151,7 @@ class ProgressTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_eta_only_after_known_total_and_enough_samples(self):
         with patch('bots.skyline_archive.progress.time.monotonic',return_value=100):
-            p=Progress(total=10,processed=3,started=70,scan_started=80)
+            p=Progress(state='scanning',total=10,processed=3,started=70,scan_started=80)
             self.assertIn('about 47s (scan phase only)',p.render())
             p.total=None
             self.assertIn('Remaining:** not available',p.render())
@@ -489,7 +489,7 @@ class FakeGuild:
     async def create_category(self,name,**kwargs):
         c=FakeChannel(self,self.next_id(),name); self.categories.append(c); self.channels[c.id]=c; return c
     async def create_text_channel(self,name,category,**kwargs):
-        c=FakeChannel(self,self.next_id(),name,category); self.channels[c.id]=c; category.text_channels.append(c); return c
+        c=FakeChannel(self,self.next_id(),name,category); c.topic=kwargs.get('topic',''); self.channels[c.id]=c; category.text_channels.append(c); return c
 
 
 @unittest.skipIf(discord is None,'Install bot requirements for Discord integration fixtures')
@@ -522,7 +522,7 @@ class DiscordFeatureTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(thread.archived)
         self.assertEqual(len(self.guild.categories),1)
         self.assertEqual(len(self.guild.categories[0].text_channels),1)
-        self.assertEqual(self.guild.categories[0].text_channels[0].name,'passcracking-easy')
+        self.assertEqual(self.guild.categories[0].text_channels[0].name,'synthetic-example-easy')
 
     async def test_missing_parent_is_repaired_without_replacing_existing_thread(self):
         c=challenge(); await self.archive.publish([c])
@@ -566,7 +566,7 @@ class DiscordFeatureTests(unittest.IsolatedAsyncioTestCase):
         c=challenge(questions=(text,),prompt='Shared instructions. '*300)
         await self.archive.publish([c])
         q=self.store.rows('SELECT * FROM questions')[0]
-        for key in ('question/'+q['key'],'thread/'+q['key']):
+        for key in (f'layout3/{q["channel_id"]}/question/'+q['key'],f'layout3/{q["thread_id"]}/thread/'+q['key']):
             rows=self.store.rows('SELECT * FROM posts WHERE key LIKE ? ORDER BY key',(key+'/part%',))
             contents=''.join(self.guild.channels[r['channel_id']].messages[r['message_id']].embeds[0].description for r in rows)
             self.assertIn(text,contents)

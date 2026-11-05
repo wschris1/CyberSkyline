@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, urlunsplit
 import re
 import sqlite3
 
-from .core import ArchiveError, Challenge, event_location, level_and_title, parse_manifest
+from .core import ArchiveError, AttachmentRef, Challenge, event_location, level_and_title, parse_manifest
 
 
 def now():
@@ -31,7 +31,7 @@ def fingerprint(challenge):
 
 
 class Store:
-    VERSION = 2
+    VERSION = 3
 
     def __init__(self, directory):
         self.directory = Path(directory)
@@ -89,6 +89,7 @@ class Store:
                 CREATE INDEX question_channels ON questions(channel_id);
                 PRAGMA user_version=1;
                 COMMIT;''')
+
         if version < 2:
             self.db.executescript('''BEGIN IMMEDIATE;
                 CREATE VIRTUAL TABLE question_search USING fts5(question_key UNINDEXED, title, text);
@@ -105,6 +106,26 @@ class Store:
                     UPDATE question_search SET title=new.title WHERE question_key IN
                         (SELECT key FROM questions WHERE challenge_key=new.key); END;
                 PRAGMA user_version=2;
+                COMMIT;''')
+
+        if version < 3:
+            self.db.executescript('''BEGIN IMMEDIATE;
+                CREATE TABLE IF NOT EXISTS snapshots(challenge_key TEXT PRIMARY KEY, payload TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS scan_jobs(id INTEGER PRIMARY KEY REFERENCES scans(id), options TEXT NOT NULL,
+                    discovery_complete INTEGER NOT NULL DEFAULT 0);
+                CREATE TABLE IF NOT EXISTS scan_items(scan_id INTEGER NOT NULL REFERENCES scans(id), url TEXT NOT NULL,
+                    entry TEXT NOT NULL, payload TEXT, state TEXT NOT NULL, error TEXT,
+                    PRIMARY KEY(scan_id,url));
+                CREATE TABLE IF NOT EXISTS question_locations(question_key TEXT NOT NULL REFERENCES questions(key),
+                    channel_id INTEGER NOT NULL, message_id INTEGER NOT NULL, thread_id INTEGER PRIMARY KEY);
+                INSERT OR IGNORE INTO question_locations SELECT key,channel_id,message_id,thread_id FROM questions
+                    WHERE channel_id IS NOT NULL AND message_id IS NOT NULL AND thread_id IS NOT NULL;
+                CREATE TABLE IF NOT EXISTS evidence(attachment_key TEXT PRIMARY KEY REFERENCES attachments(key),
+                    question_key TEXT NOT NULL REFERENCES questions(key), user_id INTEGER NOT NULL,
+                    thread_id INTEGER NOT NULL, message_id INTEGER, created TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS assistance(id INTEGER PRIMARY KEY, question_key TEXT NOT NULL REFERENCES questions(key),
+                    user_id INTEGER NOT NULL, mode TEXT NOT NULL, created TEXT NOT NULL, report TEXT NOT NULL);
+                PRAGMA user_version=3;
                 COMMIT;''')
 
     @contextmanager
@@ -172,19 +193,47 @@ class Store:
                 self.db.execute('''INSERT INTO questions(key,challenge_key,source_id,number,text,points) VALUES(?,?,?,?,?,?)
                     ON CONFLICT(key) DO UPDATE SET source_id=excluded.source_id,number=excluded.number,
                     text=excluded.text,points=excluded.points''', (key,c.key,sid,number,text,int(match[1]) if match else None))
+        with self.db:
+            self.db.execute('INSERT OR REPLACE INTO snapshots VALUES(?,?)',(c.key,json.dumps(asdict(c))))
         return self.rows('SELECT * FROM questions WHERE challenge_key=? ORDER BY number', (c.key,))
+
+    @staticmethod
+    def decode_challenge(payload):
+        data = json.loads(payload) if isinstance(payload,str) else dict(payload)
+        for key in ('questions','attachments','question_ids'):
+            data[key] = tuple(data.get(key,()))
+        data['attachment_refs'] = tuple(AttachmentRef(**r) for r in data.get('attachment_refs',()))
+        return Challenge(**data)
+
+    def snapshot(self, key):
+        row = self.one('SELECT payload FROM snapshots WHERE challenge_key=?',(key,))
+        if row:
+            return self.decode_challenge(row['payload'])
+        c = self.one('SELECT * FROM challenges WHERE key=?',(key,))
+        if not c:
+            return None
+        questions = self.rows('SELECT * FROM questions WHERE challenge_key=? ORDER BY number',(key,))
+        files = self.rows('SELECT * FROM attachments WHERE challenge_key=? AND key NOT IN (SELECT attachment_key FROM evidence)',(key,))
+        return Challenge(c['source'],c['event'],c['category'],c['title'],c['prompt'],
+            tuple(q['text'] for q in questions),tuple(f['name'] for f in files),
+            tuple(q['source_id'] for q in questions),tuple(AttachmentRef(f['name'],f['source']) for f in files))
 
     def synced(self, key):
         with self.db:
             self.db.execute('UPDATE challenges SET synced_fingerprint=fingerprint WHERE key=?', (key,))
 
     def question(self, key=None, thread_id=None):
+        if key is None:
+            location = self.one('SELECT question_key FROM question_locations WHERE thread_id=?',(thread_id,))
+            if location:
+                key = location['question_key']
         field, value = ('q.key', key) if key is not None else ('q.thread_id', thread_id)
         return self.one(f'''SELECT q.*,c.title,c.prompt,c.event,c.season,c.competition,c.category,c.level,c.source
             FROM questions q JOIN challenges c ON c.key=q.challenge_key WHERE {field}=?''', (value,))
 
     def link_question(self, key, channel_id, message_id, thread_id):
         with self.db:
+            self.db.execute('INSERT OR REPLACE INTO question_locations VALUES(?,?,?,?)',(key,channel_id,message_id,thread_id))
             self.db.execute('UPDATE questions SET channel_id=?,message_id=?,thread_id=? WHERE key=?',
                             (channel_id,message_id,thread_id,key))
 

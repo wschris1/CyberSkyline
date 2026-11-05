@@ -81,6 +81,19 @@ class OpenAIAssistant:
             raise AIError('The daily AI request limit has been reached. Local checks still work; retry after 00:00 UTC.')
         self.store.put(key, used + 1)  # Count attempts before I/O, including failures/restarts.
 
+    async def health(self):
+        if not getattr(self.settings,'openai_api_key',''):
+            return 'API key missing'
+        try:
+            self.reserve()
+            response = await asyncio.wait_for(self.request(dict(model=self.settings.openai_model,store=False,
+                input='Connection test. Reply OK.',max_output_tokens=256)),45)
+            if not isinstance(response,dict) or response.get('status') != 'completed':
+                return 'Connection returned an incomplete response; model access is not confirmed.'
+            return 'Connected; model responded. No challenge data sent or verification recorded.'
+        except (AIError,asyncio.TimeoutError) as exc:
+            return str(exc) if isinstance(exc,AIError) else 'Connection test timed out.'
+
     async def _request(self, body):
         import aiohttp
         try:
@@ -125,7 +138,7 @@ class OpenAIAssistant:
         secrets = tuple(getattr(self.settings, key, '') for key in ('openai_api_key', 'discord_token', 'github_token'))
         context = dict(question=payload['question'], instructions=payload['instructions'],
                        proposed_answer=payload['answer'],
-                       files=[dict(file_id=i, name=f['name']) for i, f in enumerate(payload['files'])],
+                       files=[dict(file_id=i, name=f['name'],provenance=f.get('provenance','source challenge artifact')) for i, f in enumerate(payload['files'])],
                        unavailable_files=payload.get('unavailable_files', []))
         encoded = json.dumps(sanitize(context, secrets), ensure_ascii=False)
         if len(encoded.encode()) > 24000:
@@ -133,12 +146,21 @@ class OpenAIAssistant:
         history = [dict(role='user', content=encoded)]
         evidence, calls = {}, 0
         model = getattr(self.settings, 'openai_model', 'gpt-5.4-mini')
+        mode = payload.get('mode','verify')
+        operations = tuple(x for x in OPERATIONS if x != 'verify') if mode != 'verify' else OPERATIONS
+        tool_spec = json.loads(json.dumps(TOOL))
+        tool_spec['parameters']['properties']['operation']['enum'] = list(operations)
+        instructions = INSTRUCTIONS
+        if mode == 'hint':
+            instructions += '\nHINT MODE: Give one useful next investigative step without revealing a final answer. Return suggested_answer=null. Never claim a correctness verdict.'
+        elif mode == 'explain':
+            instructions += '\nEXPLAIN MODE: Explain a reproducible solving approach and the evidence inspected. There is no proposed answer. Never claim verified correctness. Return suggested_answer=null.'
         for round_number in range(4):
             if len(json.dumps(history).encode()) > 80000:
                 raise AIError('AI evidence context reached its size limit.')
             self.reserve()
-            response = await self.request(dict(model=model, store=False, instructions=INSTRUCTIONS,
-                input=history, tools=[TOOL] if payload['files'] else [], parallel_tool_calls=False,
+            response = await self.request(dict(model=model, store=False, instructions=instructions,
+                input=history, tools=[tool_spec] if payload['files'] else [], parallel_tool_calls=False,
                 tool_choice='none' if not payload['files'] or round_number == 3 else 'auto',
                 max_output_tokens=getattr(self.settings, 'ai_output_tokens', 1600),
                 text=dict(format=dict(type='json_schema', name='evidence_assessment', schema=SCHEMA, strict=True))))
@@ -156,7 +178,7 @@ class OpenAIAssistant:
                 args = json.loads(function.get('arguments', '{}'))
                 if (function.get('name') != 'inspect_evidence' or not isinstance(args, dict)
                     or set(args) != {'file_id', 'operation'} or type(args['file_id']) is not int
-                    or not 0 <= args['file_id'] < len(payload['files']) or args['operation'] not in OPERATIONS
+                    or not 0 <= args['file_id'] < len(payload['files']) or args['operation'] not in operations
                     or not isinstance(function.get('call_id'), str)):
                     raise AIError('The AI requested an unsupported tool or file; nothing was executed.')
                 report = await run_tool(args)
@@ -188,7 +210,7 @@ class OpenAIAssistant:
                 raise AIError('The AI returned an invalid assessment or cited evidence it did not inspect.')
             label = assessment['assessment'] if assessment['evidence_ids'] else 'uncertain'
             details = f'AI assessment (not independent proof): {label}.\n' + assessment['explanation'][:1800]
-            if assessment['suggested_answer'] is not None:
+            if assessment['suggested_answer'] is not None and mode == 'verify':
                 details += '\nUnverified candidate (JSON preserves whitespace): ' + json.dumps(assessment['suggested_answer'][:4000], ensure_ascii=False)
             if assessment['evidence_ids']:
                 details += '\nEvidence inspected: ' + '; '.join(e + ': ' + evidence[e] for e in assessment['evidence_ids'])

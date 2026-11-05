@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import socket
+import shutil
 from urllib.parse import urljoin, urlsplit
 
 from .core import ArchiveError, SessionExpired
@@ -54,8 +55,10 @@ class PublicResolver:
 
 
 class Attachments:
-    def __init__(self, store, max_bytes=64*1024*1024):
+    def __init__(self, store, max_bytes=512*1024*1024, preferences=None):
         self.store, self.max_bytes = store, max_bytes
+        self.preferences = preferences
+        self.lock = asyncio.Lock()
         self.root = store.directory / 'artifacts'
         self.root.mkdir(exist_ok=True,mode=0o700)
         self.temp = self.root / 'temporary'
@@ -72,7 +75,18 @@ class Attachments:
             return None
         return p
 
+    def limits(self):
+        prefs = self.preferences.effective() if self.preferences else {}
+        return prefs.get('max_file_mb',self.max_bytes/1048576)*1048576,prefs.get('cache_mb',2048)*1048576
+
+    def usage(self):
+        return sum(p.stat().st_size for p in self.root.rglob('*') if p.is_file() and not p.is_symlink())
+
     async def fetch(self, challenge, ref, context):
+        async with self.lock:
+            return await self._fetch(challenge,ref,context)
+
+    async def _fetch(self, challenge, ref, context):
         import aiohttp
         from yarl import URL
         key = digest([challenge.key, urlsplit(ref.url).path])
@@ -95,13 +109,15 @@ class Attachments:
                     return self.store.attachment(key,**base,status='ready',error=None)
                 return old
         temporary = self.temp / (key + '.part')
+        max_bytes,budget = self.limits()
+        available = min(budget-await asyncio.to_thread(self.usage),shutil.disk_usage(self.root).free-128*1048576)
         jar = aiohttp.CookieJar()
         cookies = await context.cookies([ref.url])
         # Scope host cookies to Skyline. Never carry auth headers into redirects/CDNs.
         jar.update_cookies({c['name']:c['value'] for c in cookies}, response_url=URL('https://cyberskyline.com'))
         try:
             async with aiohttp.ClientSession(cookie_jar=jar,connector=aiohttp.TCPConnector(resolver=PublicResolver()),
-                                            timeout=aiohttp.ClientTimeout(total=120),trust_env=False) as session:
+                                            timeout=aiohttp.ClientTimeout(total=600,sock_read=45),trust_env=False) as session:
                 target = ref.url
                 for redirects in range(6):
                     dest = public_url(target)
@@ -119,15 +135,19 @@ class Attachments:
                         if response.status >= 400:
                             return self.store.attachment(key,**base,status='unavailable',error=f'HTTP {response.status}')
                         size_hint = response.content_length
-                        if size_hint and size_hint > self.max_bytes:
+                        if size_hint and size_hint > max_bytes:
                             return self.store.attachment(key,**base,status='oversized',size=size_hint,error='Exceeds local download limit.')
+                        if available <= 0 or (size_hint and size_hint > available):
+                            return self.store.attachment(key,**base,status='cache-full',size=size_hint,error='Private cache budget or free disk space is insufficient; existing files were preserved.')
                         sha, size = hashlib.sha256(), 0
                         fd = os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600)
                         with os.fdopen(fd,'wb') as output:
                             async for chunk in response.content.iter_chunked(65536):
                                 size += len(chunk)
-                                if size > self.max_bytes:
+                                if size > max_bytes:
                                     return self.store.attachment(key,**base,status='oversized',size=size,error='Exceeds local download limit.')
+                                if size > available:
+                                    return self.store.attachment(key,**base,status='cache-full',size=size,error='Private cache budget reached; existing files were preserved.')
                                 output.write(chunk)
                                 sha.update(chunk)
                         checksum = sha.hexdigest()
@@ -145,3 +165,50 @@ class Attachments:
             return self.store.attachment(key,**base,status='failed',error='Download failed; retry the scan or open the source challenge.')
         finally:
             temporary.unlink(missing_ok=True)
+
+    async def evidence(self, question, attachment, user_id, thread_id, message_id=None):
+        """Copy an explicitly chosen Discord upload; never send source cookies to its CDN."""
+        import aiohttp
+        key = digest(['discord-evidence',question['key'],attachment.id])
+        async with self.lock:
+            old = self.store.attachment(key)
+            if self.local_path(old) and old['status'] == 'ready':
+                return old
+            name = filename(attachment.filename)
+            base = dict(challenge_key=question['challenge_key'],name=name,source='',status='pending')
+            self.store.attachment(key,**base)
+            with self.store.db:
+                self.store.db.execute('INSERT OR REPLACE INTO evidence VALUES(?,?,?,?,?,?)',
+                    (key,question['key'],user_id,thread_id,message_id,now()))
+            temporary = self.temp/(key+'.part')
+            try:
+                host = public_url(attachment.url).hostname
+                if host not in ('cdn.discordapp.com','media.discordapp.net'):
+                    raise ArchiveError('Only Discord-uploaded attachments are accepted as supplemental evidence.')
+                maximum,budget = self.limits()
+                available = min(budget-await asyncio.to_thread(self.usage),shutil.disk_usage(self.root).free-128*1048576)
+                if attachment.size > maximum or attachment.size > available:
+                    raise ArchiveError('Evidence exceeds the file/cache limit or available disk space. Adjust /skyline settings if appropriate.')
+                async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(resolver=PublicResolver()),
+                    timeout=aiohttp.ClientTimeout(total=600,sock_read=45),trust_env=False) as session:
+                    async with session.get(attachment.url,allow_redirects=False) as response:
+                        if response.status != 200:
+                            raise ArchiveError('Discord evidence could not be downloaded. Reattach the file and retry.')
+                        sha,size = hashlib.sha256(),0
+                        fd = os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600)
+                        with os.fdopen(fd,'wb') as output:
+                            async for chunk in response.content.iter_chunked(65536):
+                                size += len(chunk)
+                                if size > min(maximum,available):
+                                    raise ArchiveError('Evidence reached the private storage limit.')
+                                output.write(chunk); sha.update(chunk)
+                folder = self.root/key
+                folder.mkdir(exist_ok=True,mode=0o700)
+                destination = folder/(sha.hexdigest()[:16]+'-'+name)
+                os.replace(temporary,destination)
+                return self.store.attachment(key,status='ready',path=str(destination),size=size,sha256=sha.hexdigest(),error=None)
+            except (aiohttp.ClientError,asyncio.TimeoutError,OSError,ArchiveError,ValueError) as exc:
+                error = str(exc) if isinstance(exc,ArchiveError) else 'Evidence download failed; reattach and retry.'
+                return self.store.attachment(key,status='failed',error=error)
+            finally:
+                temporary.unlink(missing_ok=True)

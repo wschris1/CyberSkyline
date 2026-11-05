@@ -126,7 +126,7 @@ class SettingModal(discord.ui.Modal):
         await i.response.defer(ephemeral=True)
         value=str(self.value)
         try:
-            if self.key=='frequency':
+            if self.key in ('frequency','max_file_mb','cache_mb'):
                 value=int(value)
             await self.parent.client.preferences.save({self.key:value},i.guild)
         except (ValueError,ArchiveError) as exc:
@@ -137,12 +137,13 @@ class SettingModal(discord.ui.Modal):
 
 class MappingModal(discord.ui.Modal):
     def __init__(self,view):
-        super().__init__(title='Map a source category or difficulty')
+        super().__init__(title='Map an archive destination')
         self.parent=view
-        self.category=discord.ui.TextInput(label='Exact source category name',max_length=100)
-        self.level=discord.ui.TextInput(label='Difficulty (blank to map category)',required=False,max_length=15)
+        self.category=discord.ui.TextInput(label='Source category (for category mapping)',required=False,max_length=100)
+        self.level=discord.ui.TextInput(label='Legacy difficulty (optional)',required=False,max_length=15)
+        self.challenge=discord.ui.TextInput(label='Challenge URL (for challenge channel)',required=False,max_length=200)
         self.destination=discord.ui.TextInput(label='Discord category/channel ID',max_length=22)
-        for value in (self.category,self.level,self.destination):
+        for value in (self.category,self.level,self.challenge,self.destination):
             self.add_item(value)
 
     async def on_submit(self,i):
@@ -155,12 +156,15 @@ class MappingModal(discord.ui.Modal):
         try:
             ident=int(str(self.destination))
             channel=i.guild.get_channel(ident) or await i.guild.fetch_channel(ident)
-            await self.parent.client.preferences.mapping(i.guild,str(self.category).strip(),str(self.level).strip().lower(),channel)
+            if str(self.challenge).strip():
+                await self.parent.client.preferences.challenge_mapping(i.guild,str(self.challenge).strip(),channel)
+            else:
+                await self.parent.client.preferences.mapping(i.guild,str(self.category).strip(),str(self.level).strip().lower(),channel)
         except (ValueError,ArchiveError,discord.HTTPException) as exc:
             message=str(exc) if isinstance(exc,ArchiveError) else 'Destination is unavailable; check its ID and permissions.'
             await i.followup.send(message,ephemeral=True)
             return
-        await i.edit_original_response(content=self.parent.summary('Mapping saved; existing posts stay in their original channels.'),view=self.parent)
+        await i.edit_original_response(content=self.parent.summary('Mapping saved. Future scans/reorganize use it; older discussions remain linked.'),view=self.parent)
 
 
 class SettingsView(OwnerView):
@@ -169,14 +173,17 @@ class SettingsView(OwnerView):
         actions=[('Toggle scheduled scans','enabled'),('Set frequency','frequency'),('Toggle Discord archive','archive_enabled'),
                  ('Toggle default preview','default_preview'),('Toggle login alerts','notify_login'),
                  ('Toggle completion alerts','notify_results'),('Toggle OpenAI assistance','ai_enabled'),
+                 ('Maximum file size (MiB)','max_file_mb'),('Private cache budget (MiB)','cache_mb'),
                  ('Set category name prefix','category_prefix'),('Category/channel mapping','mapping')]
         select=discord.ui.Select(placeholder='Change a setting',options=[discord.SelectOption(label=a,value=b) for a,b in actions],row=0)
         async def select_action(i):
             if self.client.busy():
                 raise ArchiveError('Wait for the active scan before changing settings.')
             key=select.values[0]
-            if key in ('frequency','category_prefix'):
-                await i.response.send_modal(SettingModal(self,key,'Frequency in minutes' if key=='frequency' else 'Category prefix'))
+            if key in ('frequency','category_prefix','max_file_mb','cache_mb'):
+                labels={'frequency':'Frequency in minutes','category_prefix':'Category prefix',
+                        'max_file_mb':'Maximum file size in MiB','cache_mb':'Private cache budget in MiB'}
+                await i.response.send_modal(SettingModal(self,key,labels[key]))
             elif key=='mapping':
                 await i.response.send_modal(MappingModal(self))
             else:
