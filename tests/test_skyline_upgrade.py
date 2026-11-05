@@ -111,6 +111,15 @@ class UpgradeTests(unittest.IsolatedAsyncioTestCase):
         await reorganize(self.bot,self.interaction(),True)
         self.assertEqual(before,self.guild.counter)
 
+    async def test_reorganize_reuse_is_counted_as_skipped_not_new(self):
+        await self.bot.archive.publish([challenge()])
+        before=self.guild.counter
+        await reorganize(self.bot,self.interaction(),False)
+        await self.bot.scan_task
+        self.assertEqual(self.guild.counter,before+1) # Only the run's progress message.
+        self.assertEqual(self.bot.progress.new,0)
+        self.assertEqual(self.bot.progress.skipped,1)
+
     async def test_partial_pages_publish_complete_challenge_and_retry_only_failure(self):
         good=challenge(); bad=replace(good,url=good.url[:-24]+'4'*24,title='Other (Easy)')
         async def collect(*args,**kw):

@@ -148,9 +148,13 @@ async def reorganize(client, interaction, preview=True):
         try:
             for item in keys:
                 c=client.store.snapshot(item['challenge_key'])
+                previous_channel=client.store.mapping('challenge-channel',c.key)
                 try:
                     await client.archive.publish([c],progress)
-                    progress.new+=1
+                    if client.store.mapping('challenge-channel',c.key)!=previous_channel:
+                        progress.new+=1
+                    else:
+                        progress.skipped+=1
                 except (ArchiveError,discord.HTTPException):
                     progress.failed+=1
                 progress.processed+=1
