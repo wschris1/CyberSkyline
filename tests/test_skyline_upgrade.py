@@ -12,6 +12,8 @@ from unittest.mock import AsyncMock, patch
 
 from test_skyline_features import challenge, settings, FakeGuild, Identity
 import test_skyline_features as fixtures
+if fixtures.discord is None:
+    raise unittest.SkipTest('Install optional bot dependencies for upgrade integration tests')
 from test_skyline_ai import final_response, tool_response
 from bots.skyline_archive.ai_verification import OpenAIAssistant
 from bots.skyline_archive.attachments import Attachments
