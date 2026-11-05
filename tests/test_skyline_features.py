@@ -106,7 +106,7 @@ class StorageTests(unittest.IsolatedAsyncioTestCase):
         self.store.db.executescript('DROP TRIGGER question_search_insert; DROP TRIGGER question_search_update; DROP TRIGGER challenge_search_title; DROP TABLE question_search; PRAGMA user_version=1;')
         self.store.close(); self.store=Store(self.tmp.name)
         self.assertEqual(len(self.store.rows('SELECT * FROM question_search')),1)
-        self.assertTrue((Path(self.tmp.name)/'archive.before-v3.sqlite3').is_file())
+        self.assertTrue((Path(self.tmp.name)/f'archive.before-v{Store.VERSION}.sqlite3').is_file())
 
     async def test_interrupted_scan_is_recovered_only_once(self):
         with self.store.db:

@@ -72,7 +72,7 @@ class ScanControlTests(unittest.IsolatedAsyncioTestCase):
         await self.finished()
         self.collect.assert_not_awaited()
         self.publish.assert_not_awaited()
-        self.assertIn("Scan stopped. Nothing uploaded", self.client.archive_status)
+        self.assertIn("Scan stopped. Saved questions and completed posts are preserved", self.client.archive_status)
         self.client.start_sync(all_events=True, preview=True)
         await asyncio.wait_for(self.entered.wait(), 3)
         self.client.stop_sync()

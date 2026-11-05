@@ -41,13 +41,14 @@ def main():
     parser.add_argument("command", choices=("login", "run", "check"), help="Save login, run the Discord bot, or check configuration.")
     args = parser.parse_args()
     try:
-        settings = load_settings(require_bot=args.command != "login", require_github=args.command != "login")
+        settings = load_settings(require_bot=args.command != "login", require_github=False)
         if args.command == "login":
             from .scanner import login
             with InstanceLock(settings.state_dir):
                 asyncio.run(login(settings))
         elif args.command == "check":
-            print("Configuration is valid. Tokens are present but not tested against the services.")
+            print("Discord configuration is valid. Credentials have not been tested against the services.")
+            print("GitHub export:", "configured" if settings.github_token else "needs GITHUB_TOKEN; Discord-only scans can run")
             print("Saved Cyber Skyline login:", "present" if settings.auth_file.is_file() else "missing; run the login command")
         else:
             from .bot import SkylineBot

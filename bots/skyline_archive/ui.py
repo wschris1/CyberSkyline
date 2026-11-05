@@ -148,10 +148,11 @@ class Picker(OwnerView):
     stages=('season','event_url','category','level')
     labels=('Season/year','Competition','Challenge category','Difficulty')
 
-    def __init__(self,client,owner,catalog,warning=''):
+    def __init__(self,client,owner,catalog,warning='',workflow='both'):
         super().__init__(client,owner)
         self.catalog,self.scope,self.stage,self.page=catalog,{},0,0
         self.warning=warning
+        self.workflow=workflow
         self.build()
 
     def choices(self):
@@ -165,7 +166,8 @@ class Picker(OwnerView):
         selected='\n'.join(f'**{label}:** {names.get(self.scope.get(key),self.scope.get(key,"All"))}'
                            for key,label in zip(self.stages,self.labels))
         count=sum(matches(r,self.scope) for r in self.catalog)
-        return f'**Choose scan scope**\n{self.warning}\n{selected}\n**Discovered challenges in scope:** {count}\nPreview makes no archive posts, threads, uploads or successful-sync markers.'
+        mode='Discord only' if self.workflow=='discord' else 'Discord first, then GitHub'
+        return f'**Choose scan scope**\n**Destination:** {mode}\n{self.warning}\n{selected}\n**Discovered challenges in scope:** {count}\nPreview makes no archive posts, threads, uploads or successful-sync markers.'
 
     def build(self):
         self.clear_items()
@@ -198,9 +200,9 @@ class Picker(OwnerView):
             self.button('Next page',following,disabled=start+24>=len(choices))
         else:
             async def preview(i):
-                await self.client.launch_interaction(i,all_events=True,scope=self.scope,preview=True)
+                await self.client.launch_interaction(i,all_events=True,scope=self.scope,preview=True,workflow=self.workflow)
             async def start(i):
-                await self.client.launch_interaction(i,all_events=True,scope=self.scope,preview=False)
+                await self.client.launch_interaction(i,all_events=True,scope=self.scope,preview=False,workflow=self.workflow)
             self.button('Preview',preview,style=discord.ButtonStyle.primary)
             self.button('Start scan',start,style=discord.ButtonStyle.success)
         async def back(i):

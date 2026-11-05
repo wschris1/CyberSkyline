@@ -37,6 +37,8 @@ class GitHub:
 
     async def request(self, method, path, payload=None):
         import aiohttp
+        if not getattr(self.settings,'github_token',''):
+            raise ArchiveError('Set GITHUB_TOKEN in the private host configuration before exporting. Discord-only scans remain available.')
         headers = {"Authorization": f"Bearer {self.settings.github_token}",
                    "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
         for attempt in range(3):

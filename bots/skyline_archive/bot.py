@@ -7,6 +7,7 @@ import json
 import logging
 import re
 import time
+from typing import Literal
 
 import aiohttp
 import discord
@@ -16,7 +17,7 @@ from .core import ArchiveError, SessionExpired, skyline_url, level_and_title
 from .github import GitHub, ApiError
 from .scanner import Scanner
 from .survey import SurveyManager, SurveyProbe
-from .storage import Store, now, fingerprint
+from .storage import Store, now
 from .jobs import Jobs
 from . import operations
 from .preferences import Preferences
@@ -26,6 +27,7 @@ from .progress import Progress, ProgressMessage
 from .verification import Verifier, select_answer
 from .ai_verification import OpenAIAssistant
 from .ui import Picker, SettingsView, SearchView, AnswerPicker, FailuresView
+from .workflows import DiscordPipeline, catalog_entry, github_target, mapped_archives, validate_parents
 
 LOG=logging.getLogger(__name__)
 
@@ -97,7 +99,36 @@ class SkylineCommands(app_commands.Group):
     async def sync_all(self,interaction:discord.Interaction,preview:bool|None=None):
         await self.client.launch_interaction(interaction,all_events=True,preview=preview)
 
-    @app_commands.command(name='stop',description='Cancel the current scan or preview before GitHub publication starts.')
+    async def scoped_scan(self,interaction,event_url,all_events,preview,workflow):
+        if all_events and event_url:
+            raise ArchiveError('Choose either one event URL or all_events:true.')
+        target=None if all_events else skyline_url(event_url or self.client.settings.event_url)
+        await self.client.launch_interaction(interaction,event_url=target,all_events=all_events,
+                                             preview=preview,workflow=workflow)
+
+    @app_commands.command(name='scan-discord',description='Fast scan: collect challenges and build Discord channels and threads as they arrive.')
+    @app_commands.describe(event_url='One event URL; otherwise use the configured event.',all_events='Scan every accessible event instead.',
+                           preview='Show the plan without creating archive content.')
+    async def scan_discord(self,interaction:discord.Interaction,event_url:str|None=None,all_events:bool=False,preview:bool|None=None):
+        await self.scoped_scan(interaction,event_url,all_events,preview,'discord')
+
+    @app_commands.command(name='scan-both',description='Build the Discord archive first, then export collected prompts to GitHub.')
+    @app_commands.describe(event_url='One event URL; otherwise use the configured event.',all_events='Scan every accessible event instead.',
+                           preview='Show the plan without creating archive content or GitHub files.')
+    async def scan_both(self,interaction:discord.Interaction,event_url:str|None=None,all_events:bool=False,preview:bool|None=None):
+        await self.scoped_scan(interaction,event_url,all_events,preview,'both')
+
+    @app_commands.command(name='export-github',description='Export saved prompts from mapped Discord archives; never read answers or rescan Skyline.')
+    async def export_github(self,interaction:discord.Interaction,channel:discord.TextChannel|None=None,
+                            season:str|None=None,competition:str|None=None,category:str|None=None,
+                            difficulty:str|None=None,preview:bool|None=None):
+        if channel and channel.guild.id!=self.client.settings.guild_id:
+            raise ArchiveError('Choose an archive channel in the configured server.')
+        await self.client.launch_interaction(interaction,workflow='github',preview=preview,
+            archive_channel_id=channel.id if channel else 0,
+            scope=dict(season=season,competition=competition,category=category,level=difficulty))
+
+    @app_commands.command(name='stop',description='Stop collecting or posting; preserve completed work. GitHub commits finish safely.')
     async def stop(self,interaction:discord.Interaction):
         await interaction.response.send_message(self.client.stop_sync(),ephemeral=True)
 
@@ -153,13 +184,14 @@ class SkylineCommands(app_commands.Group):
             f'**Repository:** https://github.com/{self.client.settings.repository}')[:1950],ephemeral=True)
 
     @app_commands.command(name='pick',description='Discover accessible competitions and choose a scope interactively.')
-    async def pick(self,interaction:discord.Interaction):
+    async def pick(self,interaction:discord.Interaction,destination:Literal['discord','both']='discord'):
         if self.client.busy():
             raise ArchiveError('A scan or discovery is already running.')
         if self.client.store.get('auth_invalid',False):
             raise ArchiveError('Refresh the saved login and run /skyline session recheck first.')
         await interaction.response.defer(ephemeral=True)
-        self.client.start_sync(all_events=True,preview=True,channel=interaction.channel,catalog_only=True,owner=interaction.user.id)
+        self.client.start_sync(all_events=True,preview=True,channel=interaction.channel,catalog_only=True,
+                               owner=interaction.user.id,workflow=destination)
         await interaction.followup.send('Discovering accessible competitions. The progress message will contain your picker when ready.',ephemeral=True)
 
     @app_commands.command(name='search',description='Search locally archived questions you can access.')
@@ -335,21 +367,26 @@ class SkylineBot(discord.Client):
         await interaction.response.defer(ephemeral=True)
         self.store.put('last_command_channel',interaction.channel_id)
         self.start_sync(channel=interaction.channel,owner=interaction.user.id,**options)
-        await interaction.followup.send('Started. One progress message will update in the archive hub or this channel. Use `/skyline stop` to cancel before publishing.',ephemeral=True)
+        await interaction.followup.send('Started. One progress message will update in the archive hub or this channel. '
+            'Use `/skyline stop` to stop remaining work; completed posts are preserved.',ephemeral=True)
 
-    def start_sync(self,event_url=None,all_events=False,preview=None,**options):
+    def start_sync(self,event_url=None,all_events=False,preview=None,workflow=None,**options):
         if self.busy():
             raise ArchiveError('A scan is already running. Use /skyline status to check it or /skyline stop to cancel.')
-        if self.store.get('auth_invalid',False):
+        if workflow not in (None,'discord','github','both'):
+            raise ArchiveError('Unknown archive workflow.')
+        if workflow!='github' and self.store.get('auth_invalid',False):
             raise ArchiveError('Waiting for login. Refresh the session, then run /skyline session recheck.')
         prefs=self.preferences.effective()
         preview=prefs['default_preview'] if preview is None else preview
-        self.scan_options={**options,'preferences':prefs}
+        if workflow in ('discord','both') and not prefs['archive_enabled'] and not preview:
+            raise ArchiveError('Enable the Discord archive and choose its hub in /skyline settings first.')
+        self.scan_options={**options,'preferences':prefs,'workflow':workflow or 'both'}
         self.pause_requested=False
         self.scan_phase='scanning'
         self.scan_preview=preview
         self.archive_status='Starting preview…' if preview else 'Starting scan…'
-        self.progress=Progress()
+        self.progress=Progress(workflow=workflow or 'both')
         self.scan_task=asyncio.create_task(self.run_sync(event_url,all_events,preview))
         self.scan_task.add_done_callback(self.scan_finished)
 
@@ -363,11 +400,11 @@ class SkylineBot(discord.Client):
         if self.scan_phase=='stopping':
             return 'The scan is already stopping. Use `/skyline status` to check when cleanup finishes.'
         self.scan_phase='stopping'
-        self.archive_status='Stopping scan; closing its browser. Nothing will be uploaded.'
+        self.archive_status='Stopping remaining work. Saved questions and completed posts are preserved.'
         if self.progress:
             self.progress.update(state='stopping',detail=self.archive_status)
         self.scan_task.cancel()
-        return 'Stop requested. Nothing from this scan will be uploaded. Use `/skyline status` to check when it has stopped.'
+        return 'Stop requested. Completed posts are preserved; pending work can be resumed. Use `/skyline status` for cleanup progress.'
 
     def scan_finished(self,task):
         if task is self.scan_task:
@@ -376,7 +413,7 @@ class SkylineBot(discord.Client):
                 if self.progress:
                     self.progress.update(state='paused',detail=self.archive_status)
             if task.cancelled() and self.scan_phase=='stopping':
-                self.archive_status='Scan stopped. Nothing uploaded. You can start another scan.'
+                self.archive_status='Scan stopped. Saved questions and completed posts are preserved; use /skyline resume.'
                 if self.progress:
                     self.progress.update(state='stopped',detail=self.archive_status)
             self.scan_phase='idle'
@@ -398,6 +435,7 @@ class SkylineBot(discord.Client):
 
     async def run_sync(self,event_url,all_events,preview):
         options=dict(self.scan_options)
+        workflow=options.get('workflow','both')
         prefs=options.get('preferences',self.preferences.effective())
         scope=options.get('scope',{})
         self.progress=self.progress or Progress()
@@ -405,8 +443,11 @@ class SkylineBot(discord.Client):
         live=None
         scan_id=None
         message=None
+        pipeline=None
         source_channel=options.get('channel')
         watch_key='event-wait/'+(event_url or 'all')+('/preview' if preview else '/archive')
+        if workflow!='both':
+            watch_key+='/'+workflow
         try:
             destination=await self.archive.channel(prefs['archive_hub']) if prefs['archive_hub'] else source_channel
             resume=options.get('resume_id')
@@ -416,7 +457,8 @@ class SkylineBot(discord.Client):
                 progress.elapsed_before=json.loads(previous['progress']).get('elapsed',0)
             else:
                 scan_id=self.jobs.create(dict(event_url=event_url,all_events=all_events,scope=scope,
-                    owner=options.get('owner'),scheduled=options.get('scheduled',False)),preview)
+                    owner=options.get('owner'),scheduled=options.get('scheduled',False),workflow=workflow,
+                    archive_channel_id=options.get('archive_channel_id',0)),preview)
                 previous=None
             waiting=self.store.get(watch_key)
             if destination:
@@ -435,10 +477,13 @@ class SkylineBot(discord.Client):
                     with self.store.db:
                         self.store.db.execute('UPDATE scans SET state=?,progress=? WHERE id=?',
                             (progress.state,json.dumps(dict(processed=progress.processed,total=progress.total,
-                            new=progress.new,skipped=progress.skipped,failed=progress.failed,
+                            new=progress.new,skipped=progress.skipped,failed=progress.failed+progress.publication_failed,
                             elapsed=time.monotonic()-progress.started+progress.elapsed_before)),scan_id))
                 live=ProgressMessage(message,progress,preview,checkpoint=checkpoint)
                 live.start()
+            if workflow=='github':
+                await self.export_saved(scan_id,scope,options.get('archive_channel_id',0),preview)
+                return
             scanner=Scanner(self.settings,lambda text:setattr(self,'archive_status',text),progress=progress)
             if options.get('catalog_only'):
                 catalog=await scanner.discover()
@@ -451,12 +496,15 @@ class SkylineBot(discord.Client):
                     await live.finish()
                     live=None
                 if message:
-                    view=Picker(self,options['owner'],catalog,warning=progress.detail if scanner.discovery_errors else '')
+                    view=Picker(self,options['owner'],catalog,warning=progress.detail if scanner.discovery_errors else '',workflow=workflow)
                     await message.edit(content=view.summary(),view=view)
                 return
+            if not preview:
+                pipeline=DiscordPipeline(self,scan_id,prefs['archive_enabled'],progress)
+            progress.collecting=True
             async def capture(c,context):
-                old=self.store.one('SELECT fingerprint,synced_fingerprint FROM challenges WHERE key=?',(c.key,))
-                if old and old['synced_fingerprint']==fingerprint(c):
+                target='discord' if prefs['archive_enabled'] else github_target(self.settings)
+                if self.store.delivered(c,target):
                     progress.skipped+=1
                 else:
                     progress.new+=1
@@ -472,6 +520,7 @@ class SkylineBot(discord.Client):
                     else:
                         progress.attachment_failed+=1
                 self.jobs.capture(scan_id,c)
+                pipeline.offer(c.url)
             async def discovered(entries,complete):
                 self.jobs.catalog(scan_id,entries,complete)
                 if entries and waiting and not waiting.get('announced') and options.get('scheduled') and not preview:
@@ -491,9 +540,14 @@ class SkylineBot(discord.Client):
             progress.new=sum(r['state']=='collected' for r in saved_items)
             progress.skipped=sum(r['state']=='published' for r in saved_items)
             skip_urls=[r['url'] for r in saved_items if r['state'] in ('collected','published')]
+            if pipeline:
+                for item in saved_items:
+                    if item['state']=='collected':
+                        pipeline.offer(item['url'])
             catalog=[json.loads(r['entry']) for r in saved_items if r['state']=='pending'] if resume and previous['discovery_complete'] else None
             result=await scanner.collect(event_url,all_events,scope=scope,on_challenge=capture,
                 catalog=catalog,on_catalog=discovered,on_error=failed,skip_urls=skip_urls)
+            progress.collecting=False
             if not preview:
                 # Rediscovery may no longer include a previously accessible item.
                 # Keep it retryable instead of reporting a completed checkpoint.
@@ -502,9 +556,18 @@ class SkylineBot(discord.Client):
                     self.jobs.state(scan_id,item['url'],'failed',error)
                     result.errors.append(error)
                     progress.failed+=1
-                ready={c.url:c for c in result.challenges}
-                ready.update({r['url']:self.store.decode_challenge(r['payload']) for r in self.jobs.items(scan_id,'collected')})
+                ready={r['url']:self.store.decode_challenge(r['payload']) for r in self.jobs.items(scan_id) if r['payload']}
+                ready.update({c.url:c for c in result.challenges})
                 result.challenges=list(ready.values())
+                # Also support complete collectors which return a batch without callbacks.
+                for c in result.challenges:
+                    row=self.store.one('SELECT state FROM scan_items WHERE scan_id=? AND url=?',(scan_id,c.url))
+                    if not row:
+                        self.jobs.catalog(scan_id,[catalog_entry(c)],not bool(result.errors))
+                        self.store.upsert_challenge(c)
+                        self.jobs.capture(scan_id,c)
+                    if not row or row['state']=='collected':
+                        pipeline.offer(c.url)
             count=len(result.challenges)
             questions=sum(len(c.questions) for c in result.challenges)
             skipped=len(result.skipped_events)
@@ -537,46 +600,28 @@ class SkylineBot(discord.Client):
                 files=sum(len(c.attachment_refs) for c in result.challenges)
                 self.archive_status=f'Preview complete: {summary} {plan} {files} file links discovered; sizes/downloadability not checked. No archive writes or uploads.'
             else:
-                # Store complete successful snapshots before publication; sync markers are written only after success.
-                for c in result.challenges:
-                    self.store.upsert_challenge(c)
-                self.scan_phase='publishing'
-                progress.update(state='publishing to GitHub',detail=summary)
-                publication=await GitHub(self.settings,self.http_session).publish(result.challenges)
-                with self.store.db:
-                    for key,entry in getattr(publication,'manifest',{}).items():
-                        for item in entry['files']:
-                            self.store.db.execute('UPDATE questions SET github_path=? WHERE challenge_key=? AND number=?',
-                                                  (item['path'],key,item['number']))
-                published=0
-                for c in result.challenges:
+                self.scan_phase='archiving'
+                progress.update(state='archiving to Discord' if prefs['archive_enabled'] else 'preparing GitHub export',detail=summary)
+                await pipeline.finish()
+                errors.extend(pipeline.errors)
+                progress.publication_failed=0
+                self.archive_status='Complete: '+summary+f' {progress.discord_completed} Discord challenge archives completed this run.'
+                if workflow=='both':
+                    progress.update(state='publishing to GitHub',detail='Discord processing finished. '+summary)
                     try:
-                        if prefs['archive_enabled']:
-                            await self.archive.publish([c],progress)
-                        else:
-                            self.store.synced(c.key)
-                        failed_files=self.store.rows("SELECT key FROM attachments WHERE challenge_key=? AND status IN ('failed','unavailable','cache-full','oversized','upload-failed','missing-cache') AND key NOT IN (SELECT attachment_key FROM evidence)",(c.key,))
-                        if failed_files:
-                            # Retry must revisit source/downloads, not just replay the cached challenge.
-                            self.jobs.state(scan_id,c.url,'failed','Files need retry; question posts were archived.')
-                            with self.store.db:
-                                self.store.db.execute('UPDATE scan_items SET payload=NULL WHERE scan_id=? AND url=?',(scan_id,c.url))
-                            errors.append(f'{c.title}: {len(failed_files)} file(s) need retry; question posts are preserved.')
-                        else:
-                            self.jobs.state(scan_id,c.url,'published')
-                        published+=1
-                    except (ArchiveError,discord.HTTPException,OSError,asyncio.TimeoutError) as exc:
-                        error=str(exc) if isinstance(exc,ArchiveError) else f'Discord publication failed ({type(exc).__name__}); saved posts will be reused.'
-                        self.jobs.state(scan_id,c.url,'failed',error)
-                        errors.append(f'{c.title}: {error}')
-                    if self.pause_requested:
-                        progress.update(state='paused',detail='Publication paused at a safe checkpoint. Use /skyline resume; saved posts are reused.')
-                        self.archive_status=progress.detail
-                        return
-                if published:
-                    self.store.put('last_success',now())
-                self.archive_status='Complete: '+summary+f' {published} question archives completed.'
-                self.archive_status+=(f' {publication.changed} files changed. {publication.commit_url}' if publication.changed else ' GitHub is already up to date.')
+                        publication=await self.publish_github(result.challenges)
+                        self.archive_status+=(f' {publication.changed} files changed. {publication.commit_url}' if publication.changed else ' GitHub is already up to date.')
+                    except ArchiveError as exc:
+                        error='GitHub export failed: '+str(exc)+' Discord archives were preserved.'
+                        errors.append(error)
+                        for item in self.jobs.items(scan_id,'published','collected'):
+                            self.jobs.state(scan_id,item['url'],'failed',error)
+                else:
+                    self.archive_status+=' GitHub was not contacted. Use /skyline export-github when ready.'
+                if self.pause_requested:
+                    progress.update(state='paused',detail='Work saved. Use /skyline resume to release the schedule hold.')
+                    self.archive_status=progress.detail
+                    return
             if errors:
                 self.archive_status+=' Pending errors: '+' '.join(errors[:2])+' Use /skyline retry-failed.'
             progress.update(state='completed with errors' if errors else 'completed',detail=self.archive_status,failed=len(errors))
@@ -590,7 +635,7 @@ class SkylineBot(discord.Client):
             state='paused' if self.pause_requested else ('stopped' if self.scan_phase=='stopping' else 'interrupted')
             if state!='stopped':
                 self.store.put('schedule_hold',True)
-            self.archive_status='Scan stopped. Nothing uploaded. You can start another scan.' if state=='stopped' else 'Work saved. Use /skyline resume to continue; existing posts and threads are reused.'
+            self.archive_status='Scan stopped. Saved questions and completed posts are preserved; use /skyline resume.' if state=='stopped' else 'Work saved. Use /skyline resume to continue; existing posts and threads are reused.'
             progress.update(state=state,detail=self.archive_status)
             raise
         except SessionExpired as exc:
@@ -608,6 +653,9 @@ class SkylineBot(discord.Client):
             progress.update(state='failed',detail=self.archive_status)
             LOG.error('Archive scan failed (%s)',type(exc).__name__)
         finally:
+            progress.collecting=False
+            if pipeline:
+                await pipeline.close()
             if scan_id:
                 with self.store.db:
                     self.store.db.execute('UPDATE scans SET state=?,progress=?,finished=? WHERE id=?',
@@ -615,6 +663,63 @@ class SkylineBot(discord.Client):
                          elapsed=(progress.finished or time.monotonic())-progress.started+progress.elapsed_before)),now(),scan_id))
             if live:
                 await live.finish()
+
+    async def publish_github(self,challenges):
+        self.scan_phase='publishing'  # Atomic ref update cannot be cancelled by /stop.
+        try:
+            publication=await GitHub(self.settings,self.http_session).publish(challenges)
+            with self.store.db:
+                for key,entry in getattr(publication,'manifest',{}).items():
+                    for item in entry['files']:
+                        self.store.db.execute('UPDATE questions SET github_path=? WHERE challenge_key=? AND number=?',
+                                              (item['path'],key,item['number']))
+            for c in challenges:
+                self.store.mark_delivered(c,github_target(self.settings))
+            self.store.put('last_success',now())
+            return publication
+        finally:
+            self.scan_phase='archiving'
+
+    async def export_saved(self,scan_id,scope,channel_id,preview):
+        progress=self.progress
+        candidates=await mapped_archives(self,scope,channel_id)
+        self.jobs.catalog(scan_id,[catalog_entry(c) for c,_ in candidates],True)
+        progress.update(state='checking Discord archives',total=len(candidates),processed=0)
+        selected=[]
+        errors=[]
+        for c,questions in candidates:
+            progress.update(competition=c.event,category=c.category,challenge=c.title)
+            try:
+                await validate_parents(self,c,questions)
+                selected.append(c)
+                if self.store.delivered(c,github_target(self.settings)):
+                    progress.skipped+=1
+                else:
+                    progress.new+=1
+                if not preview:
+                    self.jobs.capture(scan_id,c)
+            except (ArchiveError,discord.HTTPException) as exc:
+                error=str(exc) if isinstance(exc,ArchiveError) else 'Discord archive could not be read; check permissions and retry.'
+                errors.append(f'{c.title}: {error}')
+                self.jobs.state(scan_id,c.url,'failed',error)
+                progress.failed+=1
+            progress.processed+=1
+        if not selected:
+            raise ArchiveError('No complete mapped Discord archives matched this scope. Run /skyline scan-discord first. '+' '.join(errors[:2]))
+        count=sum(len(c.questions) for c in selected)
+        if preview:
+            self.archive_status=f'Preview complete: {len(selected)} challenges / {count} question files would be exported from saved Discord archives. '
+            self.archive_status+='Existing GitHub files would be compared before writing. No source scan, Discord archive writes or GitHub uploads.'
+        else:
+            progress.update(state='publishing to GitHub',detail=f'Exporting {len(selected)} challenges / {count} questions. No Cyber Skyline visit.')
+            publication=await self.publish_github(selected)
+            for c in selected:
+                self.jobs.state(scan_id,c.url,'published')
+            self.archive_status=f'Complete: exported {len(selected)} Discord challenge archives / {count} questions. '
+            self.archive_status+=(f'{publication.changed} files changed. {publication.commit_url}' if publication.changed else 'GitHub is already up to date.')
+        if errors:
+            self.archive_status+=' Pending errors: '+' '.join(errors[:2])+' Use /skyline failures.'
+        progress.update(state='completed with errors' if errors else 'completed',detail=self.archive_status,failed=len(errors))
 
     async def verify_answer(self,interaction,question,answer):
         # The view callbacks recheck ownership; keep this shared boundary explicit too.

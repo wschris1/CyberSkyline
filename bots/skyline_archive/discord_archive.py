@@ -213,7 +213,9 @@ class DiscordArchive:
             questions = self.store.upsert_challenge(c)
             channel = await self.destination(c)
             if progress:
-                progress.update(state='archiving to Discord',competition=c.event,category=c.category,challenge=c.title)
+                progress.update(discord_challenge=c.title)
+                if not progress.collecting:
+                    progress.update(state='archiving to Discord',competition=c.event,category=c.category,challenge=c.title)
             file_links = await self.files(channel,c,progress)
             context = f'**{c.event}** · {c.category} · {level_and_title(c.title)[0]}\nSource: <{c.url}>\n'
             files = '\n'.join(file_links) or 'No downloadable files listed.'
@@ -229,12 +231,17 @@ class DiscordArchive:
                 target_q = q if q.get('channel_id') == channel.id else {**q,'thread_id':None}
                 thread = await self.thread(parents[0],target_q,c)
                 self.store.link_question(q['key'],parents[0].channel.id,parents[0].id,thread.id)
-                # A repaired parent cannot reattach a surviving thread, so always link it explicitly.
+                # Discord supplies the attached-thread link on a fresh parent.
+                # Avoid a redundant edit per question; repaired parents still need
+                # an explicit link to a surviving thread with a different ID.
                 embed = discord.Embed.from_dict(parents[0].embeds[0].to_dict())
                 before = embed.to_dict()
-                embed.clear_fields()
-                embed.add_field(name='Discussion',value=f'[Open question thread](https://discord.com/channels/{self.guild_id}/{thread.id})')
+                linked = thread.id != parents[0].id or any(f.name=='Discussion' for f in embed.fields)
                 status = self.store.latest_verification(q['key'])
+                if linked or status or embed.fields:
+                    embed.clear_fields()
+                if linked:
+                    embed.add_field(name='Discussion',value=f'[Open question thread](https://discord.com/channels/{self.guild_id}/{thread.id})')
                 if status:
                     embed.add_field(name='Latest verification',value=f"{status['outcome']} · {status['method']}")
                 if embed.to_dict() != before:
@@ -242,6 +249,7 @@ class DiscordArchive:
                 intro = f"## {c.title} — Q{q['number']}\n{context}\n{q['text']}\n\n**Instructions**\n{c.prompt}\n\n**Files**\n{files}\n\nDiscuss here. Use `/skyline verify answer:<answer>` to check a proposal without submitting it to Cyber Skyline."
                 await self.text(thread,f'layout3/{thread.id}/thread/'+q['key'],intro+'\n'+history)
             self.store.synced(c.key)
+            self.store.mark_delivered(c,'discord')
 
     async def update_verification(self, question):
         status = self.store.latest_verification(question['key'])

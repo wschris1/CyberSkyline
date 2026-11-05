@@ -162,8 +162,8 @@ class UpgradeTests(unittest.IsolatedAsyncioTestCase):
             await captured.wait(); self.bot.pause_sync()
             await asyncio.gather(self.bot.scan_task,return_exceptions=True)
             self.assertTrue(self.bot.store.get('schedule_hold'))
-            self.assertEqual(len(self.bot.jobs.items(1,'collected')),1)
-            self.assertEqual(len(self.bot.store.rows('SELECT * FROM posts')),0)
+            self.assertEqual(len(self.bot.jobs.items(1,'collected','published')),1)
+            before=[q['thread_id'] for q in self.bot.store.rows('SELECT * FROM questions') if q['thread_id']]
             # Simulate a new SQLite connection after process restart.
             self.bot.store.close(); self.bot.store=Store(self.tmp.name); self.bot.jobs=Jobs(self.bot.store)
             self.bot.preferences.store=self.bot.store; self.bot.attachments.store=self.bot.store
@@ -179,6 +179,7 @@ class UpgradeTests(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(self.bot.store.get('schedule_hold'))
             self.assertEqual(len(self.bot.jobs.items(1,'published')),2)
             self.assertEqual(len(self.bot.store.rows('SELECT * FROM questions')),2)
+            self.assertTrue(set(before) <= {q['thread_id'] for q in self.bot.store.rows('SELECT * FROM questions')})
 
     async def test_resume_cannot_complete_when_pending_challenge_disappears(self):
         c=challenge(); missing=replace(c,url=c.url[:-24]+'4'*24)
@@ -331,8 +332,8 @@ class SmallUpgradeTests(unittest.IsolatedAsyncioTestCase):
             store.synced(challenge().key)
             store.db.executescript('DROP TABLE evidence; DROP TABLE assistance; DROP TABLE question_locations; DROP TABLE snapshots; DROP TABLE scan_items; DROP TABLE scan_jobs; PRAGMA user_version=2;')
             store.close(); store=Store(directory)
-            self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0],3)
-            self.assertTrue((Path(directory)/'archive.before-v3.sqlite3').exists())
+            self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0],Store.VERSION)
+            self.assertTrue((Path(directory)/f'archive.before-v{Store.VERSION}.sqlite3').exists())
             self.assertEqual(store.question(thread_id=12)['key'],q['key'])
             self.assertEqual(store.latest_verification(q['key'])['answer'],' Exact\n')
             self.assertEqual(len(store.search('example',{},[10])),1)

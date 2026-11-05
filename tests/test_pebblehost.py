@@ -37,7 +37,7 @@ class PebbleHostTests(unittest.TestCase):
                     "discord": SimpleNamespace(), "aiohttp": SimpleNamespace(),
                     "playwright": SimpleNamespace(),
                     "bots.skyline_archive.settings": SimpleNamespace(
-                        load_settings=lambda: SimpleNamespace(auth_file=session)),
+                        load_settings=lambda **kwargs: SimpleNamespace(auth_file=session)),
                     "bots.skyline_archive.__main__": SimpleNamespace(main=runner),
                 }
                 environment = {name: "test-value" for name in

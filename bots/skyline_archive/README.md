@@ -8,10 +8,13 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 
 | Command | Result |
 | --- | --- |
+| `/skyline scan-discord event_url:<event overview URL> preview:false` | Fast competition workflow: stream collected challenges into Discord channels, question threads and files; no GitHub requests. |
+| `/skyline export-github` | Export saved source prompts from mapped Discord posts; optional channel/season/competition/category/difficulty filters. Works without a current Skyline login. |
+| `/skyline scan-both event_url:<event overview URL> preview:false` | Stream to Discord first, then export the prompt batch to GitHub. |
 | `/skyline sync event_url:<event overview URL>` | Scan one event and upload all accessible question prompts. |
 | `/skyline sync preview:true event_url:<event overview URL>` | Check extraction and counts without uploading. |
 | `/skyline sync-all` | Discover events on your Competition dashboard and scan those still accessible. |
-| `/skyline stop` | Cancel the current scan or preview before GitHub publication starts. |
+| `/skyline stop` | Stop remaining collection/posting and preserve completed work. An in-flight GitHub commit finishes safely. |
 | `/skyline pause` | Save progress, close collection safely and hold scheduled checks. |
 | `/skyline resume` | Continue the latest paused/interrupted/stopped scan; release the schedule hold. |
 | `/skyline retry-failed` | Retry failed pages/publications using saved complete snapshots. |
@@ -21,7 +24,7 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 | `/skyline hint` / `/skyline explain` | Ask for an investigative hint or solving approach without a proposed answer. |
 | `/skyline reorganize preview:false` | Create separate challenge channels for existing archives, preserving and linking older discussions. Defaults to preview. |
 | `/skyline status` | Show current scan progress, authentication state and schedule. |
-| `/skyline pick` | Discover accessible competitions; choose season, competition, category and difficulty, then Preview or Start scan. |
+| `/skyline pick` | Choose a scope, then Preview or Start scan. Defaults to Discord only; `destination:both` also exports to GitHub. |
 | `/skyline search keyword:<words>` | Search archived titles/question text; optional season, competition, category and difficulty filters. |
 | `/skyline reindex` | Index older manifest-managed GitHub questions locally without reposting them. |
 | `/skyline settings` | Change schedule, destinations, mappings, notifications and default preview in Discord. |
@@ -33,12 +36,7 @@ The bot runs on your Windows PC or an always-on host. Discord controls it; GitHu
 
 Commands work only in the configured server and only for the Discord user IDs in `DISCORD_OWNER_IDS`.
 
-`/skyline stop` cancels the current scan and closes its browser without taking the
-Discord bot offline. Wait until `/skyline status` says **Scan stopped** before
-starting another scan. No archive posts are published by a stopped collection run; private, unsynced snapshots may remain for recovery. An upload
-that has already started cannot be cancelled or undone by this command. Survey
-watches keep running, and any configured automatic scans still run on their next
-scheduled interval. Start and status messages show whether the run is a preview.
+`/skyline stop` stops remaining collection/Discord posting without taking the bot offline. Completed posts and discussions remain available; `/skyline resume` continues the saved workflow. A GitHub commit already in progress cannot be cancelled safely. All workflows share one job lock. For the quickest competition setup, use `scan-discord`; export later with `export-github`. `scan-both`, legacy sync commands and existing schedules now finish Discord processing before GitHub. See [separate workflows](../../docs/skyline-tracker.md#separate-competition-workflows) for preview, filters and recovery semantics.
 
 ## Windows setup
 
@@ -61,7 +59,7 @@ Fill in these settings locally:
 | `DISCORD_BOT_TOKEN` | Your application's bot token from the [Discord Developer Portal](https://discord.com/developers/applications). |
 | `DISCORD_GUILD_ID` | Your Discord server ID. Enable Developer Mode in Discord, then use Copy Server ID. |
 | `DISCORD_OWNER_IDS` | Your Discord user ID, or a comma-separated list of owners. |
-| `GITHUB_TOKEN` | A [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) for this repository with **Contents: Read and write**. |
+| `GITHUB_TOKEN` | Required for GitHub export only: a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) for this repository with **Contents: Read and write**. |
 | `GITHUB_REPOSITORY` | Already set to `wschris1/wschris-CyberSecurity`. |
 | `GITHUB_BRANCH` | Already set to `main`; this branch must exist and allow your token to commit. |
 | `SKYLINE_EVENT_URL` | Optional event overview URL copied from Cyber Skyline. It has the form `https://cyberskyline.com/world/<event-id>`. |
@@ -236,7 +234,7 @@ API references: [discord.py interactions](https://discordpy.readthedocs.io/en/st
 
 Each source category contains one channel per challenge, such as **Open Source Intelligence → #meta-easy, #lookup-easy, #ssl-medium, #owasp-hard**. Each question gets its own parent message and thread. Same-named challenges from different events receive distinct channels. `/skyline reorganize` previews migration of already posted archives; `preview:false` applies it. Discord cannot move an existing question thread to another parent/channel, so original discussions remain intact and new threads link to them. Verification still recognizes older mapped threads. Rescanning/reorganizing reuses IDs.
 
-`/skyline pause` holds scheduling across restarts and saves complete collected challenges. During publication it pauses after the current challenge completes; GitHub may already contain the complete batch. `/skyline resume` reuses that checkpoint and progress message, skipping already published items. A crash also holds scheduling until resumed. `/skyline stop` retains its existing cancellation behavior and does not disable schedules. `/skyline retry-failed` retries the latest failed run without reposting successful questions.
+`/skyline pause` holds scheduling across restarts and saves complete collected challenges. Streaming Discord publication can pause using saved post/thread checkpoints; an in-flight GitHub commit finishes safely. `/skyline resume` reuses that checkpoint and progress message, skipping already published items. A crash also holds scheduling until resumed. `/skyline stop` preserves completed posts and does not disable schedules. `/skyline retry-failed` retries the latest failed run without reposting successful questions.
 
 A future event shows **waiting for event** and the next check, reusing the same waiting message. Once its accessible challenges appear, a scheduled archive run attempts one owner ping and begins scanning. The event opening transition still needs checking when the actual event opens.
 

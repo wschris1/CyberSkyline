@@ -9,6 +9,11 @@ from .core import clean
 
 @dataclass
 class Progress:
+    workflow: str = 'both'
+    collecting: bool = False
+    discord_completed: int = 0
+    discord_challenge: str = ''
+    publication_failed: int = 0
     state: str = 'discovering challenges'
     competition: str = ''
     category: str = ''
@@ -48,13 +53,15 @@ class Progress:
             seconds = time.monotonic() - self.scan_started
             if seconds >= 10:
                 eta = f'about {round(seconds / samples * (self.total-self.processed))}s (scan phase only)'
+        mode = {'discord':'Discord only','github':'Discord archive → GitHub','both':'Discord first, then GitHub'}[self.workflow]
         text = (f'**NCL TRACKER — {self.state}**\n'
-                f'**Mode:** {"Preview (no archive writes)" if preview else "Scan and archive"}\n'
+                f'**Mode:** {"Preview (no archive writes) — " if preview else ""}{mode}\n'
                 f'**Competition:** {clean(self.competition)[:180] or "Discovering"}\n'
                 f'**Category:** {clean(self.category)[:100] or "—"}\n'
                 f'**Challenge:** {clean(self.challenge)[:180] or "—"}\n'
                 f'**Processed:** {self.processed} / {total}\n'
-                f'**New:** {self.new} · **Skipped:** {self.skipped} · **Failed:** {self.failed}\n'
+                f'**New:** {self.new} · **Skipped:** {self.skipped} · **Failed:** {self.failed+self.publication_failed}\n'
+                f'**Discord archives completed:** {self.discord_completed} · **Posting:** {clean(self.discord_challenge)[:100] or "—"}\n'
                 f'**Files downloaded/cached:** {self.attachments}/{self.attachment_total} · **Download failures:** {self.attachment_failed}\n'
                 f'**Files uploaded/linked:** {self.uploaded} · **Upload failures/oversized:** {self.upload_failed}\n'
                 f'**Elapsed:** {elapsed}s · **Remaining:** {eta}\n{self.detail}')

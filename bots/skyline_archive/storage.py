@@ -31,7 +31,7 @@ def fingerprint(challenge):
 
 
 class Store:
-    VERSION = 3
+    VERSION = 4
 
     def __init__(self, directory):
         self.directory = Path(directory)
@@ -128,6 +128,15 @@ class Store:
                 PRAGMA user_version=3;
                 COMMIT;''')
 
+        if version < 4:
+            self.db.executescript('''BEGIN IMMEDIATE;
+                CREATE TABLE IF NOT EXISTS deliveries(
+                    challenge_key TEXT NOT NULL REFERENCES challenges(key), target TEXT NOT NULL,
+                    fingerprint TEXT NOT NULL, updated TEXT NOT NULL,
+                    PRIMARY KEY(challenge_key,target));
+                PRAGMA user_version=4;
+                COMMIT;''')
+
     @contextmanager
     def transaction(self):
         with self.db:
@@ -221,6 +230,17 @@ class Store:
     def synced(self, key):
         with self.db:
             self.db.execute('UPDATE challenges SET synced_fingerprint=fingerprint WHERE key=?', (key,))
+
+    def delivered(self, challenge, target):
+        row = self.one('SELECT fingerprint FROM deliveries WHERE challenge_key=? AND target=?',
+                       (challenge.key,target))
+        return bool(row and row['fingerprint'] == fingerprint(challenge))
+
+    def mark_delivered(self, challenge, target):
+        with self.db:
+            self.db.execute('INSERT INTO deliveries VALUES(?,?,?,?) ON CONFLICT(challenge_key,target) '
+                            'DO UPDATE SET fingerprint=excluded.fingerprint,updated=excluded.updated',
+                            (challenge.key,target,fingerprint(challenge),now()))
 
     def question(self, key=None, thread_id=None):
         if key is None:
