@@ -154,12 +154,16 @@ async def reorganize(client, interaction, preview=True):
                 except (ArchiveError,discord.HTTPException):
                     progress.failed+=1
                 progress.processed+=1
+                if client.pause_requested:
+                    progress.update(state='paused',detail='Reorganization paused safely. Rerun /skyline reorganize preview:false to continue; saved channels and threads will be reused.')
+                    return
             progress.update(state='completed with errors' if progress.failed else 'completed',
                 detail='Existing discussions retained and linked. Rerun reorganize to retry any incomplete migrations.')
         finally:
             if progress.finished is None:
                 progress.update(state='interrupted',detail='Rerun reorganize; saved IDs prevent duplicate channels and threads.')
             await live.finish()
+    client.pause_requested=False
     client.scan_phase='publishing'; client.scan_task=asyncio.create_task(work())
     client.scan_task.add_done_callback(client.scan_finished)
     await interaction.followup.send('Reorganizing existing archives into challenge channels. Progress will update here.',ephemeral=True)

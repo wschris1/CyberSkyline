@@ -171,6 +171,46 @@ class UpgradeTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(len(self.bot.jobs.items(1,'published')),2)
             self.assertEqual(len(self.bot.store.rows('SELECT * FROM questions')),2)
 
+    async def test_resume_cannot_complete_when_pending_challenge_disappears(self):
+        c=challenge(); missing=replace(c,url=c.url[:-24]+'4'*24)
+        ident=self.bot.jobs.create(dict(all_events=True),False)
+        self.bot.jobs.catalog(ident,[entry(c),entry(missing)],False)
+        self.bot.jobs.state(ident,c.url,'published')
+        with patch('bots.skyline_archive.bot.Scanner') as scanner,patch('bots.skyline_archive.bot.GitHub') as github:
+            scanner.return_value.collect=AsyncMock(return_value=ScanResult())
+            self.bot.start_sync(all_events=True,channel=self.hub,resume_id=ident)
+            await self.bot.scan_task
+            github.return_value.publish.assert_not_called()
+        self.assertEqual(self.bot.progress.state,'failed')
+        self.assertEqual(self.bot.jobs.items(ident,'failed')[0]['url'],missing.url)
+        self.assertEqual(len(self.bot.jobs.items(ident,'published')),1)
+
+    async def test_preview_catalog_is_not_treated_as_failed_capture(self):
+        c=challenge()
+        async def collect(*args,**kw):
+            await kw['on_catalog']([entry(c)],True)
+            await kw['on_challenge'](c,None)
+            return ScanResult(challenges=[c])
+        with patch('bots.skyline_archive.bot.Scanner') as scanner:
+            scanner.return_value.collect=AsyncMock(side_effect=collect)
+            self.bot.start_sync(all_events=True,channel=self.hub,preview=True)
+            await self.bot.scan_task
+        self.assertEqual(self.bot.progress.state,'completed')
+        self.assertEqual(self.bot.jobs.items(1)[0]['state'],'pending')
+        self.assertEqual(self.bot.store.rows('SELECT * FROM challenges'),[])
+
+    async def test_reorganize_pause_stops_after_current_challenge(self):
+        c=challenge(); other=replace(c,url=c.url[:-24]+'4'*24)
+        await self.bot.archive.publish([c,other])
+        async def pause_after_publish(*args):
+            self.bot.pause_sync()
+        with patch.object(self.bot.archive,'publish',side_effect=pause_after_publish) as publish:
+            await reorganize(self.bot,self.interaction(),False)
+            await self.bot.scan_task
+        publish.assert_awaited_once()
+        self.assertEqual(self.bot.progress.state,'paused')
+        self.assertIn('/skyline reorganize',self.bot.progress.detail)
+
     async def test_waiting_event_reuses_one_message_and_pings_once_on_open(self):
         self.bot.store.save_settings(dict(enabled=True,frequency=10,notification_channel=self.hub.id))
         url='https://cyberskyline.com/world/'+'1'*24

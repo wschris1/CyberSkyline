@@ -489,6 +489,13 @@ class SkylineBot(discord.Client):
             result=await scanner.collect(event_url,all_events,scope=scope,on_challenge=capture,
                 catalog=catalog,on_catalog=discovered,on_error=failed,skip_urls=skip_urls)
             if not preview:
+                # Rediscovery may no longer include a previously accessible item.
+                # Keep it retryable instead of reporting a completed checkpoint.
+                for item in self.jobs.items(scan_id,'pending'):
+                    error='Saved challenge was not collected; it may no longer be accessible in this session.'
+                    self.jobs.state(scan_id,item['url'],'failed',error)
+                    result.errors.append(error)
+                    progress.failed+=1
                 ready={c.url:c for c in result.challenges}
                 ready.update({r['url']:self.store.decode_challenge(r['payload']) for r in self.jobs.items(scan_id,'collected')})
                 result.challenges=list(ready.values())
