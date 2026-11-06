@@ -40,6 +40,9 @@ async def owner_check(client,interaction):
     if interaction.guild_id!=client.settings.guild_id or interaction.user.id not in client.settings.owners:
         await interaction.response.send_message('This bot is restricted to its configured owners and server.',ephemeral=True)
         return False
+    if getattr(client,'runtime_started',False) and not client.recovered.is_set():
+        await interaction.response.send_message('WS is restoring this server’s archive. Try again in a moment.',ephemeral=True)
+        return False
     return True
 
 
@@ -212,7 +215,7 @@ class WSCommands(app_commands.Group):
     async def status(self,interaction:discord.Interaction):
         prefs=self.client.preferences.effective()
         schedule=f"Every {prefs['frequency']} minutes" if prefs['enabled'] else 'Off'
-        mode=('**Mode:** '+('Preview (no uploads)' if self.client.scan_preview else 'Scan and upload')+'\n') if self.client.busy() else ''
+        mode=('**Mode:** '+('Preview (no uploads)' if self.client.scan_preview else 'Scan and upload')+'\n') if self.client.local_busy() else ''
         if self.client.progress:
             archive=self.client.progress.render(self.client.scan_preview)
         else:
@@ -339,12 +342,13 @@ class GuardedSurveyProbe:
             raise
 
 
-class WSBot(discord.Client):
-    def __init__(self,settings):
-        super().__init__(intents=discord.Intents(guilds=True,message_content=getattr(settings,'message_content',False)),
-                         allowed_mentions=discord.AllowedMentions.none())
+class Workspace:
+    """One server's archive and jobs, backed by the shared Discord connection."""
+
+    def __init__(self,settings,gateway=None,shared_store=None):
+        self.gateway=gateway or self
         self.settings=settings
-        self.store=Store(settings.state_dir)
+        self.store=Store(settings.state_dir,shared=shared_store)
         self.jobs=Jobs(self.store)
         self.preferences=Preferences(self.store,settings)
         self.attachments=Attachments(self.store,preferences=self.preferences)
@@ -352,16 +356,15 @@ class WSBot(discord.Client):
         self.ai=OpenAIAssistant(self.store,settings)
         self.verifier=Verifier(self.store,self.attachments,ai=self.ai,
                                ai_enabled=lambda:self.preferences.effective()['ai_enabled'])
-        self.tree=app_commands.CommandTree(self)
-        self.tree.add_command(WSCommands(self),guild=discord.Object(id=settings.guild_id))
         self.archive_status='No scan run yet.'
-        self.scan_task=None
+        self._scan_task=None
         self.scan_phase='idle'
         self.scan_preview=False
         self.progress=None
         self.recovered=asyncio.Event()
         self.background=[]
         self.ws_closing=False
+        self.runtime_started=False
         self.http_session=None
         self.surveys=SurveyManager(settings.state_dir/'survey-watches.json',GuardedSurveyProbe(self),self.send_survey_ping)
         self.scan_options={}
@@ -369,12 +372,49 @@ class WSBot(discord.Client):
         self.leaderboards=Leaderboards(self)
         self.panel=PanelBridge(self)
 
-    def busy(self):
+    @property
+    def user(self):
+        return self.gateway.user
+
+    def get_guild(self,ident):
+        return self.gateway.get_guild(ident)
+
+    def get_channel(self,ident):
+        return self.gateway.get_channel(ident)
+
+    async def fetch_channel(self,ident):
+        return await self.gateway.fetch_channel(ident)
+
+    async def wait_until_ready(self):
+        await self.gateway.wait_until_ready()
+
+    def is_closed(self):
+        return self.ws_closing or self.gateway.is_closed()
+
+    @property
+    def scan_task(self):
+        return self._scan_task
+
+    @scan_task.setter
+    def scan_task(self,task):
+        # Also guard callers that defer a Discord response before claiming a job.
+        if task is not None and any(w is not self and w.local_busy()
+                                   for w in getattr(self.gateway,'workspaces',{}).values()):
+            task.cancel()
+            raise ArchiveError('A scan or check is already running in another WS server. Try again when it finishes.')
+        self._scan_task=task
+
+    def local_busy(self):
         return self.scan_task is not None and not self.scan_task.done()
 
-    async def setup_hook(self):
+    def busy(self):
+        return self.local_busy() or any(w.local_busy() for w in getattr(self.gateway,'workspaces',{}).values())
+
+    async def start_runtime(self):
+        if self.runtime_started:
+            return
+        self.runtime_started=True
         self.http_session=aiohttp.ClientSession()
-        await self.tree.sync(guild=discord.Object(id=self.settings.guild_id))
         self.background.append(asyncio.create_task(self.recover()))
         self.background.append(asyncio.create_task(self.survey_loop()))
         self.background.append(asyncio.create_task(self.schedule_loop()))
@@ -385,7 +425,7 @@ class WSBot(discord.Client):
     async def apply_branding(self):
         await self.wait_until_ready()
         try:
-            if self.user.name != 'WS':
+            if self.gateway is self and self.user.name != 'WS':
                 await self.user.edit(username='WS')
             guild=self.get_guild(self.settings.guild_id)
             if guild and guild.me and guild.me.nick != 'WS':
@@ -428,7 +468,7 @@ class WSBot(discord.Client):
 
     def pause_sync(self):
         self.store.put('schedule_hold',True)
-        if not self.busy():
+        if not self.local_busy():
             return 'Scheduled checks are paused. Use /ws resume to continue.'
         if self.scan_phase=='leaderboard':
             return 'A leaderboard check is running. Use /ws leaderboard action:stop after it finishes to stop its schedule.'
@@ -490,7 +530,7 @@ class WSBot(discord.Client):
         self.scan_task.add_done_callback(self.scan_finished)
 
     def stop_sync(self):
-        if not self.busy():
+        if not self.local_busy():
             return 'No scan is running. Use `/ws sync` or `/ws sync-all` to start one.'
         if self.scan_phase=='leaderboard':
             self.scan_task.cancel()
@@ -958,7 +998,9 @@ class WSBot(discord.Client):
                     self.archive_status='Scheduled scan could not start. Check destination permissions and /ws settings.'
             await asyncio.sleep(15)
 
-    async def close(self):
+    async def close_runtime(self):
+        if self.ws_closing:
+            return
         self.ws_closing=True
         tasks=self.background+([self.scan_task] if self.scan_task else [])
         for task in tasks:
@@ -969,7 +1011,73 @@ class WSBot(discord.Client):
         if self.http_session:
             await self.http_session.close()
         self.store.close()
-        await super().close()
+
+
+class WSBot(discord.Client,Workspace):
+    """One gateway, with immediate guild command registration on join/restart."""
+
+    def __init__(self,settings):
+        discord.Client.__init__(self,
+            intents=discord.Intents(guilds=True,message_content=getattr(settings,'message_content',False)),
+            allowed_mentions=discord.AllowedMentions.none())
+        Workspace.__init__(self,settings)
+        self.workspaces={settings.guild_id:self}
+        self.registration_lock=asyncio.Lock()
+        self.registered_guilds=set()
+        self.tree=app_commands.CommandTree(self)
+        self.tree.add_command(WSCommands(self),guild=discord.Object(id=settings.guild_id))
+
+    async def setup_hook(self):
+        await self.start_runtime()
+
+    async def register_guild(self,guild):
+        async with self.registration_lock:
+            if self.ws_closing or guild.id in self.registered_guilds:
+                return
+            workspace=self.workspaces.get(guild.id)
+            if workspace is None:
+                workspace=Workspace(self.settings.for_guild(guild.id),self,self.store)
+                workspace.verifier.lock=self.verifier.lock
+                workspace.archive_status='This server has its own archive. Use /ws settings to choose an archive hub and enable archiving.'
+                self.workspaces[guild.id]=workspace
+                self.tree.add_command(WSCommands(workspace),guild=discord.Object(id=guild.id))
+            await workspace.start_runtime()
+            try:
+                commands=await self.tree.sync(guild=discord.Object(id=guild.id))
+            except discord.HTTPException as exc:
+                # Keep other guilds online and retry this guild on the next READY.
+                LOG.warning('WS command registration failed for server %s (HTTP %s).',guild.id,exc.status)
+                return
+            self.registered_guilds.add(guild.id)
+            LOG.info('WS commands registered for server %s (%s root commands).',guild.id,len(commands))
+
+    async def on_ready(self):
+        for guild in self.guilds:
+            await self.register_guild(guild)
+
+    async def on_guild_join(self,guild):
+        await self.register_guild(guild)
+
+    async def on_guild_remove(self,guild):
+        async with self.registration_lock:
+            self.registered_guilds.discard(guild.id)
+            workspace=self.workspaces.get(guild.id)
+            if workspace is self:
+                # Preserve the home archive and panel; prevent unattended writes.
+                self.store.put('schedule_hold',True)
+                self.pause_sync()
+            elif workspace:
+                await workspace.close_runtime()
+                del self.workspaces[guild.id]
+                self.tree.remove_command('ws',guild=discord.Object(id=guild.id))
+
+    async def close(self):
+        async with self.registration_lock:
+            for workspace in list(self.workspaces.values()):
+                if workspace is not self:
+                    await workspace.close_runtime()
+            await self.close_runtime()
+        await discord.Client.close(self)
 
 
 # Python imports remain compatible with existing host tools and integrations.

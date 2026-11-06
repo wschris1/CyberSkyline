@@ -1,6 +1,6 @@
 """Configuration and private paths, independent of the current working directory."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import os
 from pathlib import Path
 import re
@@ -52,10 +52,21 @@ class Settings:
     ai_daily_requests: int = 40
     ai_output_tokens: int = 1600
     ai_timeout: int = 120
+    auth_directory: Path | None = field(default=None, repr=False)
 
     @property
     def auth_file(self):
-        return self.state_dir / "browser-state.json"
+        return (self.auth_directory or self.state_dir) / "browser-state.json"
+
+    def for_guild(self, guild_id):
+        """Keep the original archive in place; new servers get independent state."""
+        if type(guild_id) is not int or not 0 < guild_id < 2**64:
+            raise ArchiveError('Choose a valid Discord server ID.')
+        if guild_id == self.guild_id:
+            return self
+        return replace(self, guild_id=guild_id, state_dir=self.state_dir/'guilds'/str(guild_id),
+                       auth_directory=self.auth_file.parent, interval=0, archive_hub=0,
+                       notification_channel=0, ai_verify_enabled=False)
 
     @classmethod
     def from_env(cls, env=None, require_bot=True, require_github=True):

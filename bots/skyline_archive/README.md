@@ -56,6 +56,39 @@ The WS rename preserves the current database, session, private directory, GitHub
 
 `/ws stop` stops remaining collection/Discord posting without taking the bot offline. Completed posts and discussions remain available; `/ws resume` continues the saved workflow. A GitHub commit already in progress cannot be cancelled safely. All workflows share one job lock. For the quickest competition setup, use `scan-discord`; export later with `export-github`. `scan-both`, legacy sync commands and existing schedules now finish Discord processing before GitHub. See [separate workflows](../../docs/skyline-tracker.md#separate-competition-workflows) for preview, filters and recovery semantics.
 
+## Using WS in more than one Discord server
+
+Install WS using **Guild Install** with both `bot` and `applications.commands`
+scopes. Inviting the app as a user-only integration does not add the bot to a
+server. The installing Discord account needs Manage Server in the destination.
+WS registers `/ws` for every server it has joined, both on startup and on a new
+join. Reconnects reuse successful registrations; a failed registration is logged
+with the server ID and HTTP status and retried on the next connection.
+
+`DISCORD_GUILD_ID` remains the home server. Its original database, archive,
+schedule, web panel and mappings stay in place. Each additional server stores
+its own settings, posts, threads, search index, files, watches and verification
+history under `WS_STATE_DIR/guilds/<server-id>` (the legacy `SKYLINE_STATE_DIR`
+name also works). Removing and re-adding WS preserves that state. Nothing is
+automatically copied, moved or deleted in Discord.
+
+In each new server, use `/ws settings` to select its archive hub and enable the
+Discord archive. New servers start with scheduled scans and AI assistance off;
+enable them explicitly if wanted. Use `/ws fast` for the competition
+workflow. The same configured owner IDs remain the only managers everywhere.
+All servers share the saved Cyber Skyline login, repository credentials,
+authentication-expiration alert latch and daily AI request budget. A session
+recheck in any server refreshes that shared login status. One scan/check runs
+at a time across the bot; `/ws stop` and `/ws pause` affect only their own server.
+The existing web panel continues to control the home server.
+
+If commands are missing, confirm WS appears in the server member list, check
+**Server Settings → Integrations → WS** and your channel's **Use Application
+Commands** permission, then refresh Discord. Check the host console for
+`WS commands registered for server ...`. A missing log or HTTP registration
+error needs a host restart or corrected app/server permissions. The bot does
+not need Administrator permission.
+
 ## Windows setup
 
 Use Python 3.10 or newer. Open PowerShell in the root of your downloaded/cloned `wschris-CyberSecurity` repository.

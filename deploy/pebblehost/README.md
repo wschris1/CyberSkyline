@@ -46,6 +46,13 @@ Survey watches are added with the Discord slash command after startup.
 
 ## Upgrading an existing WS installation
 
+WS now registers commands in every server it joins. Keep `DISCORD_GUILD_ID`
+set to the original home server so its archive and panel remain intact.
+Additional servers have separate state in `private/skyline-archive/guilds/`;
+include that directory in backups. Configure each new server with `/ws settings`
+before scanning. The owner allowlist remains shared; new server members do not
+gain management access automatically.
+
 Use the server's private panel file manager/SFTP connection. These steps keep the
 existing login, survey watches, mappings, questions and discussion intact.
 

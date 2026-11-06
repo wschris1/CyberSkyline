@@ -85,7 +85,7 @@ class PanelBridge:
         if progress:
             progress['elapsed']=round((c.progress.finished or time.monotonic())-c.progress.started+c.progress.elapsed_before)
         recent = c.store.rows('SELECT id,state,preview,started,finished FROM scans ORDER BY id DESC LIMIT 8')
-        return dict(version=1,busy=c.busy(),phase=c.scan_phase,progress=progress,
+        return dict(version=1,busy=getattr(c,'local_busy',c.busy)(),phase=c.scan_phase,progress=progress,
             status=c.archive_status,preview=c.scan_preview,auth_invalid=c.store.get('auth_invalid',False),
             schedule_hold=c.store.get('schedule_hold',False),counts=counts,
             settings={k:(str(p[k]) if k.endswith('_channel') or k=='archive_hub' else p[k]) for k in EDITABLE},

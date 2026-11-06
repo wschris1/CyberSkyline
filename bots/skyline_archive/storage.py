@@ -33,7 +33,8 @@ def fingerprint(challenge):
 class Store:
     VERSION = 5
 
-    def __init__(self, directory):
+    def __init__(self, directory, shared=None):
+        self.shared = shared
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.directory.chmod(0o700)
@@ -164,15 +165,24 @@ class Store:
     def get(self, key, default=None, table='meta'):
         if table not in ('meta', 'settings'):
             raise ValueError('Invalid key/value table')
+        if self.shared is not None and table == 'meta' and self.shared_key(key):
+            return self.shared.get(key,default,table)
         row = self.one(f'SELECT value FROM {table} WHERE key=?', (key,))
         return json.loads(row['value']) if row else default
 
     def put(self, key, value, table='meta'):
         if table not in ('meta', 'settings'):
             raise ValueError('Invalid key/value table')
+        if self.shared is not None and table == 'meta' and self.shared_key(key):
+            return self.shared.put(key,value,table)
         with self.db:
             self.db.execute(f'INSERT INTO {table} VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value',
                             (key, json.dumps(value)))
+
+    @staticmethod
+    def shared_key(key):
+        # One source login and API budget; all archive records stay server-local.
+        return key in ('auth_invalid','auth_alert_sent') or key.startswith('openai-requests/')
 
     def save_settings(self, values):
         with self.db:
