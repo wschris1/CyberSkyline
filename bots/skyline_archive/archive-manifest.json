@@ -2348,7 +2348,7 @@
         {
           "number": 1,
           "path": "challenges/fall-2026/team-game/osint/medium/well-well-well-q1.md",
-          "sha": "f305fb418d7cb8923f3e4f2a04952e40655b1bea"
+          "sha": "d3f12f86920b010fe3ece8ac0d04991ebbfb94c4"
         },
         {
           "number": 2,
@@ -3302,7 +3302,7 @@
         {
           "number": 1,
           "path": "challenges/fall-2026/team-game/survey/unrated/survey-q1.md",
-          "sha": "53f92ce1b62190cd74b7544d68a374432aad1107"
+          "sha": "c7666f10af81d14884a68cec415d3c129a02ebf9"
         }
       ],
       "level": "unrated",

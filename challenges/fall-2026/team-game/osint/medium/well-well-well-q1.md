@@ -16,7 +16,7 @@ An old treasure map with secret codes and hidden text has led us to believe that
 
 Q1 - 20 points
 
-What is the depth \(in feet\) of the water well located nearest to 31491 Industrial Road outside of Detroit, Michigan?
+What is the depth \(in feet\) of the water well located nearest to \(and on the same street as\) 31491 Industrial Road outside of Detroit, Michigan?
 
 ---
 

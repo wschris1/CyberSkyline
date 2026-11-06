@@ -10,7 +10,12 @@
 
 ## Prompt
 
-The survey will be here at 3pm Eastern on Friday. Work on some challenges and check back later.
+Mission: have one person on your team complete the [NCL Team Game Survey](<https://docs.google.com/forms/d/e/1FAIpQLSefcgp47fwA16uV-z3jVv7nBr6e3CS1ZyK-Gwi9qcg6Dqh86w/viewform>).
+
+
+
+
+Make sure you don't accidentally skip past the flag at the end. Please complete the mission after you have finished working on the other challenges.
 
 ## Question 1
 
