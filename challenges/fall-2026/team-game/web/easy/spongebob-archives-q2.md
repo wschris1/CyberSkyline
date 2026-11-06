@@ -10,7 +10,7 @@
 
 ## Prompt
 
-NOTE: Challenge Instance will not be accessible once challenge is completed. Fuzzing and brute-forcing are not required to solve this challenge.
+NOTE: Refresh your challenge instance, test and then submit your answer. We had to deploy a fix for this challenge\! Fuzzing and brute-forcing are not required to solve this challenge.
 
 We found a fan-run image board dedicated to Spongebob's finest memes. The admins swear everything sensitive is locked away safely - can you prove them wrong?
 
