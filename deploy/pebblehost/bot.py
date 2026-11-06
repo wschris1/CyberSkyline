@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "0396060937c59d0e48909e44db5a1283943c8524"
+SOURCE_REVISION = "fce310ba6ff86c4017c52c9b8a8ad09360bcb650"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
@@ -26,7 +26,7 @@ SOURCE_FILES = {
     'bots/skyline_archive/__main__.py': '705b9bb6486b38182d4438d73301c7a1d97337e2d458f7cd027494a9d6632acb',
     'bots/skyline_archive/ai_verification.py': '3e6fc5cd4f50caaa9e00458e00e73d3dd7fd6f797a80bd92c68a072d59994b6c',
     'bots/skyline_archive/attachments.py': 'bf95ea44955b9de7cbffcdbe40a6d458411a7a15b5897260783490408966a575',
-    'bots/skyline_archive/bot.py': '0875148747f9c617a3f94d763a6f746e4d5b5ede5f1683302906a2332474a331',
+    'bots/skyline_archive/bot.py': '8a08cb2708b7aa833bed4cec0aa4f7ecec9128db3ce475c9747137d360635502',
     'bots/skyline_archive/cleanup.py': 'a55ffbbbf29057b22260e9fad5232116d27443364d9118678281c6f6a810aa16',
     'bots/skyline_archive/cleanup_ui.py': 'e37aabc0c61ce516a1e68ba5dc935e6ba0cc1b18bbcc8a1ac056a65bd793376e',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
@@ -37,12 +37,12 @@ SOURCE_FILES = {
     'bots/skyline_archive/leaderboard.py': '880a28173f584833e7918e57040ccb0d93b0d9b2dfc3498bbe5f10b52f49626f',
     'bots/skyline_archive/leaderboard_dom.js': '77330935c15b68d27656c947e069227fb5186c660c7ebe6535df9ced28eff32d',
     'bots/skyline_archive/operations.py': '17f0328de930135e5ae56db79618c3addb85ecea382093c09219d60abd5595c6',
-    'bots/skyline_archive/panel.py': '3a38ff4241615dba81a7954300b414bc38f6b6ea651070a17b315bd2b1dd2518',
+    'bots/skyline_archive/panel.py': '3843cf5e11645be9f9e68cb4a08e3ecc3051be1e6a136a224edee28619dc8935',
     'bots/skyline_archive/preferences.py': '0c6baf307d422903b8f26af745183133950b9cc8a2e2335ecb0a4c99c4dcd10b',
     'bots/skyline_archive/progress.py': '401f112bd354f362749abdb9ab761f27266edcf9d7b3b4c4c67e10bf7ac1b973',
     'bots/skyline_archive/scanner.py': '71f7362a75b5e708057bd3b304e6e40cdeabb6071b5a3e5cc02b7f5253018d05',
-    'bots/skyline_archive/settings.py': 'f7c74698ab4a470eeeccb6ad7021102f4bdce4c2a0d946e19d7fe0f00c890d2f',
-    'bots/skyline_archive/storage.py': '8faf61ade2d9d5d775c1c1992c1a484360573ce2286c11ddf8baa2de2fc761af',
+    'bots/skyline_archive/settings.py': 'a7328588f24b10c31df7e6e881789b5c71c47293ff049907073cb87fb21d548d',
+    'bots/skyline_archive/storage.py': '890d3477164fbb4ec7e6a8707cfbf4c5042bfedcec0acbc76318ca091a829a4a',
     'bots/skyline_archive/survey.py': 'c682381988226b780fea2bd47a5713797eb0726b81049987080bc3cb467247b2',
     'bots/skyline_archive/ui.py': '1c37c41fae81f1076d703fc38a60bb305fc00b3aca5bd01c388ae16b4e663b65',
     'bots/skyline_archive/verification.py': '70fad9950d773e78e0afab9fc2b5435bc71382f06c28afcb3142db4a55bc4880',
