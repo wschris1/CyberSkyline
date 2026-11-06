@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "a7dc5560099d8b4f607d3e6301891cdd7ecad680"
+SOURCE_REVISION = "0396060937c59d0e48909e44db5a1283943c8524"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
@@ -25,28 +25,29 @@ SOURCE_FILES = {
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
     'bots/skyline_archive/__main__.py': '705b9bb6486b38182d4438d73301c7a1d97337e2d458f7cd027494a9d6632acb',
     'bots/skyline_archive/ai_verification.py': '3e6fc5cd4f50caaa9e00458e00e73d3dd7fd6f797a80bd92c68a072d59994b6c',
-    'bots/skyline_archive/attachments.py': '34014620341d45cbf5185b6e52ebe9725e5020da9cc0942cf451b7ba4afc4915',
-    'bots/skyline_archive/bot.py': '3c6b222c323b1c5569452a7cc3efcac7716605cdb016e585fe56f0a1c0134f67',
+    'bots/skyline_archive/attachments.py': 'bf95ea44955b9de7cbffcdbe40a6d458411a7a15b5897260783490408966a575',
+    'bots/skyline_archive/bot.py': '0875148747f9c617a3f94d763a6f746e4d5b5ede5f1683302906a2332474a331',
     'bots/skyline_archive/cleanup.py': 'a55ffbbbf29057b22260e9fad5232116d27443364d9118678281c6f6a810aa16',
     'bots/skyline_archive/cleanup_ui.py': 'e37aabc0c61ce516a1e68ba5dc935e6ba0cc1b18bbcc8a1ac056a65bd793376e',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
-    'bots/skyline_archive/discord_archive.py': '45bf21216c60510bfe57aac5217e82513c1a56846af2a6300fa55748bec9e73d',
+    'bots/skyline_archive/discord_archive.py': 'e7597fe45427fa9acf3030eeaf92a575fcac31c51586673901d83726b2e2632b',
     'bots/skyline_archive/dom_extract.js': '050835ec858d9f64964d81b5e545e627e16ea6f109f5549960e1b6d51c558842',
     'bots/skyline_archive/github.py': '5dfa69bf6a0c719a30220deec49931de2473458fdb448ac2ef992e8fdd64eadb',
     'bots/skyline_archive/jobs.py': '73cd8b0e1be423f26bd05fee5c01d15302cd872d6c69fcd16927433d0ae916cb',
     'bots/skyline_archive/leaderboard.py': '880a28173f584833e7918e57040ccb0d93b0d9b2dfc3498bbe5f10b52f49626f',
     'bots/skyline_archive/leaderboard_dom.js': '77330935c15b68d27656c947e069227fb5186c660c7ebe6535df9ced28eff32d',
     'bots/skyline_archive/operations.py': '17f0328de930135e5ae56db79618c3addb85ecea382093c09219d60abd5595c6',
-    'bots/skyline_archive/preferences.py': '25bfc3481289d8f2d809618b3fbde7414046839b066ab001c3bcbfa24f489dc3',
-    'bots/skyline_archive/progress.py': '069cfcb94e897ece90dbbf5d49c35bfaac88254d89d030edb45a1e93761222e3',
+    'bots/skyline_archive/panel.py': '3a38ff4241615dba81a7954300b414bc38f6b6ea651070a17b315bd2b1dd2518',
+    'bots/skyline_archive/preferences.py': '0c6baf307d422903b8f26af745183133950b9cc8a2e2335ecb0a4c99c4dcd10b',
+    'bots/skyline_archive/progress.py': '401f112bd354f362749abdb9ab761f27266edcf9d7b3b4c4c67e10bf7ac1b973',
     'bots/skyline_archive/scanner.py': '71f7362a75b5e708057bd3b304e6e40cdeabb6071b5a3e5cc02b7f5253018d05',
     'bots/skyline_archive/settings.py': 'f7c74698ab4a470eeeccb6ad7021102f4bdce4c2a0d946e19d7fe0f00c890d2f',
     'bots/skyline_archive/storage.py': '8faf61ade2d9d5d775c1c1992c1a484360573ce2286c11ddf8baa2de2fc761af',
     'bots/skyline_archive/survey.py': 'c682381988226b780fea2bd47a5713797eb0726b81049987080bc3cb467247b2',
-    'bots/skyline_archive/ui.py': 'd3bf9b0b86a1c0a675d1d7744a8885cfafbd861b12c209b23d373053d0070870',
+    'bots/skyline_archive/ui.py': '1c37c41fae81f1076d703fc38a60bb305fc00b3aca5bd01c388ae16b4e663b65',
     'bots/skyline_archive/verification.py': '70fad9950d773e78e0afab9fc2b5435bc71382f06c28afcb3142db4a55bc4880',
     'bots/skyline_archive/verify_worker.py': '7b7c6a89d566e402706cde37030c46d2a597f062da0f39f0a659d6357d9bd9cb',
-    'bots/skyline_archive/workflows.py': 'fff6b12eacd851c4219c482d1604a8b556bedde60fcba4c32da638afb7b61899',
+    'bots/skyline_archive/workflows.py': 'e68aa6b27f845a3f59049c61fafbd7fda36eaf4babea5c77f500bb254e21aae9',
     'bots/ws/__init__.py': '26fcbdf275d35ede6ee89f3267bdf2fbf677001e19de9c1858e9472a596c610b',
     'bots/ws/__main__.py': 'c463a563d2dff82bd997c6a50e5a26b07b2e3a5c824cde16acbb874ac4779cb9',
     'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
