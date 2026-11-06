@@ -2026,6 +2026,1290 @@
       "season": "fall-2026",
       "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a52/698caa54bdc5c96fd7c3d0ab/67b753ecb86f6054e0df2751",
       "title": "Dig (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6a39a6b7e1aa579fc845757c": {
+      "category": "Cryptography",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/merkle-tree-q1.md",
+          "sha": "f7f62e723b569d2bb7d6a8a95139b2507f52c064"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/merkle-tree-q2.md",
+          "sha": "2624b354fe3720a27143adb69cb2f7329ec543b4"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/merkle-tree-q3.md",
+          "sha": "3927a31f45f410aa58a5cc0db4b6088b3a690c7d"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/merkle-tree-q4.md",
+          "sha": "78028b7a8f5bb9bce1584f179487edf6784f4bc0"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/merkle-tree-q5.md",
+          "sha": "ac5cb75d09d0c1b7a24827d7fc029ac36163a388"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/merkle-tree-q6.md",
+          "sha": "bed89e36019463d8ad044a2e10314bc35a87d0f5"
+        }
+      ],
+      "level": "medium",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6a39a6b7e1aa579fc845757c",
+      "title": "Merkle Tree (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6a58fa88e1aa579fc8457c10": {
+      "category": "Cryptography",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/shadow-copy-q1.md",
+          "sha": "1c5cb5af83a0a1188b1f3f7d0e07d471403a2809"
+        }
+      ],
+      "level": "medium",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6a58fa88e1aa579fc8457c10",
+      "title": "Shadow Copy (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6a9b1046db183d26b3c32eb5": {
+      "category": "Cryptography",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/cryptography/hard/password-manager-q1.md",
+          "sha": "5a2ded7221107f82e027dd7900ffa5667b992540"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/cryptography/hard/password-manager-q2.md",
+          "sha": "b5cae58c937c8c766fc07edc7e849658417904ec"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/cryptography/hard/password-manager-q3.md",
+          "sha": "468e856a5a00bb0651ff8b195ec932126b1f984b"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/cryptography/hard/password-manager-q4.md",
+          "sha": "acbc02b44b7f2d0396df796a34d0de00865eac01"
+        }
+      ],
+      "level": "hard",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6a9b1046db183d26b3c32eb5",
+      "title": "Password Manager (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6aaa2a2ddb183d26b3c332f9": {
+      "category": "Cryptography",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/cryptography/easy/atin-lerb-q1.md",
+          "sha": "8a7f0b941fe871c5ee969a098e027df807b4fae8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/cryptography/easy/atin-lerb-q2.md",
+          "sha": "f85f8d353eaa8543b8d88accc6ea6195ee4df846"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/cryptography/easy/atin-lerb-q3.md",
+          "sha": "925054243747794282e4cbc3e859794272f27a3c"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/cryptography/easy/atin-lerb-q4.md",
+          "sha": "2fc50ea7f77f783bcf1f33ddc7ccf1569ba7d65d"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6aaa2a2ddb183d26b3c332f9",
+      "title": "Atin-Lerb (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6ab6ce58db183d26b3c3362f": {
+      "category": "Cryptography",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/bitting-q1.md",
+          "sha": "d8677cc6c075bf00058e1c8a8c81489cea85c9b5"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/bitting-q2.md",
+          "sha": "1cb0a5109c9e63ce42ac935be9a288462dbbcc9e"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/bitting-q3.md",
+          "sha": "06e1f591295bd9b5b23925395dff35420b6f0e11"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/bitting-q4.md",
+          "sha": "ea5691b7f10fa2d06a58d11b3f5b4eb0b7783eec"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/bitting-q5.md",
+          "sha": "2fc0324f196d89b553d0c413f98dff31e4cf4acb"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/cryptography/medium/bitting-q6.md",
+          "sha": "d6eb0517bcefaa8816561f04e029f1114e79d980"
+        }
+      ],
+      "level": "medium",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6ab6ce58db183d26b3c3362f",
+      "title": "Bitting (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6aba8163db183d26b3c33782": {
+      "category": "Cryptography",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/cryptography/easy/enclave-q1.md",
+          "sha": "cf5a75207fca8a99864425fe30475158e81424f8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/cryptography/easy/enclave-q2.md",
+          "sha": "e197bab4b89d0fdbf3cd03d931c2104a3bbf482d"
+        }
+      ],
+      "level": "easy",
+      "questions": 2,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb318174f36bdf883acd5/6aba8163db183d26b3c33782",
+      "title": "Enclave (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6a8dbe53db183d26b3c329df": {
+      "category": "Open Source Intelligence",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q1.md",
+          "sha": "dcb294263cba766973c8988af2a84216e8a1f556"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q2.md",
+          "sha": "598983421b6f22493006afbab097e318abffc362"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q3.md",
+          "sha": "bfdf37178aa75660a6349fb63f3a678ad9b62138"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q4.md",
+          "sha": "a58cfca9942db085f850159cdb43554ed764d131"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q5.md",
+          "sha": "946421fd106af8417ba724cfb6a5ccc7f0247982"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q6.md",
+          "sha": "5b1af7c131207216147a52b63186f750c8832898"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/team-game/osint/hard/carousel-q7.md",
+          "sha": "856adc9e2a10338ec0c9b4bb5a3f728638baa5a6"
+        }
+      ],
+      "level": "hard",
+      "questions": 7,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6a8dbe53db183d26b3c329df",
+      "title": "Carousel (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6aaaeb07db183d26b3c3335c": {
+      "category": "Open Source Intelligence",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/osint/easy/identify-q1.md",
+          "sha": "ce62299292b015826351e1d3b7593178d774fcc6"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/osint/easy/identify-q2.md",
+          "sha": "8322e52632150be69ed153a880ac317b43ac438d"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/osint/easy/identify-q3.md",
+          "sha": "4a994144b8b003d304e00f1411f3c3d17f928464"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/osint/easy/identify-q4.md",
+          "sha": "70f3c8063150f10b5a9edf8b83a40a20bc101bc7"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6aaaeb07db183d26b3c3335c",
+      "title": "Identify (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6ab56296db183d26b3c3358b": {
+      "category": "Open Source Intelligence",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q1.md",
+          "sha": "ae83f24d877f93bd3bb20f9d9e30e7b155fc7aa2"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q2.md",
+          "sha": "95daac057f88d5d44f44874e1e8f99520cd921c7"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q3.md",
+          "sha": "5c532e9425fb695c7d76cd40b3f13b93b0944021"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q4.md",
+          "sha": "dbebc1302ee734a32d15cb4908ec91902448f572"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q5.md",
+          "sha": "cd21988871e3356cd204b05ed203b992c1102716"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q6.md",
+          "sha": "08e55bb657bf43c7aaae9deb37bde79ee5962418"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/team-game/osint/medium/ominous-systems-q7.md",
+          "sha": "cdc45ee1af180b5ae25555dfa652d02b091d3a3c"
+        }
+      ],
+      "level": "medium",
+      "questions": 7,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6ab56296db183d26b3c3358b",
+      "title": "Ominous Systems (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6abe71201bbe52f2fc59b24a": {
+      "category": "Open Source Intelligence",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/osint/medium/well-well-well-q1.md",
+          "sha": "f305fb418d7cb8923f3e4f2a04952e40655b1bea"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/osint/medium/well-well-well-q2.md",
+          "sha": "be82f9ab41a57697ea8636290bb0229b560625d8"
+        }
+      ],
+      "level": "medium",
+      "questions": 2,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6abe71201bbe52f2fc59b24a",
+      "title": "Well Well Well (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6abff0c81bbe52f2fc59b2f7": {
+      "category": "Open Source Intelligence",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/osint/easy/looking-around-q1.md",
+          "sha": "d12c8131c5e3b8f7b9f3002f1b128fea882dd7e7"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/osint/easy/looking-around-q2.md",
+          "sha": "ec9330dc0b6b00279ba6b74fb257015ef5651046"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/osint/easy/looking-around-q3.md",
+          "sha": "2d254248f8a75a45a048a3262003b71a88b488fe"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/osint/easy/looking-around-q4.md",
+          "sha": "c74736657bcc1e509b5536237400592171d0eb13"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6abff0c81bbe52f2fc59b2f7",
+      "title": "Looking Around (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6ace6afb9c60e52231f7bf2c": {
+      "category": "Open Source Intelligence",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q1.md",
+          "sha": "ac6e63883854f8e7eb7c8b6aa6fb6add14ffff61"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q2.md",
+          "sha": "e3f81ca1c475b48b27b5735947a075197d60a380"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q3.md",
+          "sha": "47298b03ffe3757e83271535d2996a66e08dca5c"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q4.md",
+          "sha": "929eb1053d9193fd11f5d6d7a69269febfa63f66"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q5.md",
+          "sha": "81d42c9318f2acd7ed7d391ad96556074b3e76bb"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q6.md",
+          "sha": "741ebfdbb08b8f6fdb9070e2346d94c74e0466a3"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q7.md",
+          "sha": "184969c3ff98f72021d6b5ccd96cda51f810383d"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/team-game/osint/easy/rules-of-conduct-q8.md",
+          "sha": "7d20f878ebf3554a6a67976483c4d492613c04ba"
+        }
+      ],
+      "level": "easy",
+      "questions": 8,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6ace6afb9c60e52231f7bf2c",
+      "title": "Rules of Conduct (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6a2c5aeb7d6ba5093dd310d6": {
+      "category": "Password Cracking",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/s4uc3d-4nd-expos3d-q1.md",
+          "sha": "70c30a9bf18681f0e76e8eab9441a6514cc73322"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/s4uc3d-4nd-expos3d-q2.md",
+          "sha": "581e5df5ff527261f3fed6b2556c09292b3badf8"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/s4uc3d-4nd-expos3d-q3.md",
+          "sha": "24efe41950ce269c26003b138d7c8d44e27bbe12"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/s4uc3d-4nd-expos3d-q4.md",
+          "sha": "2e39a6ae1d9cf3d780c1c30aea7e49d99ed97cfa"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6a2c5aeb7d6ba5093dd310d6",
+      "title": "S4uc3d 4nd Expos3d (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6a9cb849db183d26b3c32ee1": {
+      "category": "Password Cracking",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/spin-a-yarn-q1.md",
+          "sha": "4fa164b43fdbbaca83675961733d80fd768923fd"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/spin-a-yarn-q2.md",
+          "sha": "7227ca815767b2699476d8aad200ffb50d74714f"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/spin-a-yarn-q3.md",
+          "sha": "79d18cdda3f73388b9793e1a1ecd1df9217455ef"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/spin-a-yarn-q4.md",
+          "sha": "cc6b7686ae3a81a67f0dff901c33e0a749d05a05"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/spin-a-yarn-q5.md",
+          "sha": "f3ecc1a512ae419e5d9436ca2d449ac41286108e"
+        }
+      ],
+      "level": "medium",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6a9cb849db183d26b3c32ee1",
+      "title": "Spin A Yarn (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6aa84cb0db183d26b3c331d7": {
+      "category": "Password Cracking",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/password-cracking/hard/scrambled-q1.md",
+          "sha": "9099550aaeca47debfd200d632abb7347dc94849"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/password-cracking/hard/scrambled-q2.md",
+          "sha": "b0d141cf185e7ac3bf6d69e532db5426e597c751"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/password-cracking/hard/scrambled-q3.md",
+          "sha": "2214379106694b29e88e2bad47b21142adaae2b0"
+        }
+      ],
+      "level": "hard",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6aa84cb0db183d26b3c331d7",
+      "title": "Scrambled (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6ab16a4fdb183d26b3c333f5": {
+      "category": "Password Cracking",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/unknowns-q1.md",
+          "sha": "2107e8f0dfd4f2e307afb51c51bb7e4412b990f2"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/unknowns-q2.md",
+          "sha": "70c38d7e8479182ee04564b62ef13dab750a5314"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/unknowns-q3.md",
+          "sha": "5958d008c1fdec048626732d6e25f1f46662e320"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/password-cracking/easy/unknowns-q4.md",
+          "sha": "bbf451f00637ba9a24c99e5e8c77d4f5a310e85a"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6ab16a4fdb183d26b3c333f5",
+      "title": "Unknowns (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6ab1b14cdb183d26b3c33438": {
+      "category": "Password Cracking",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/hexed-q1.md",
+          "sha": "792abb077bd114055c6e3a2165daaa152eeead37"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/hexed-q2.md",
+          "sha": "94bd522e9d8779f83423a437d7d379d36d2f0da6"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/hexed-q3.md",
+          "sha": "263207993d65bbc9e1316336d2925e1fd9c3bfdd"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6ab1b14cdb183d26b3c33438",
+      "title": "Hexed (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6ab2dcffdb183d26b3c33479": {
+      "category": "Password Cracking",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/vaulted-q1.md",
+          "sha": "f6b5c5577ba1d888c219ad1eda5d92d315022932"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/vaulted-q2.md",
+          "sha": "88b63c25bc4d93b3b3f6463ba601024db8205b9d"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/vaulted-q3.md",
+          "sha": "ac7b606c0ad0b7ded714bda68f72e246006bbaf5"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/password-cracking/medium/vaulted-q4.md",
+          "sha": "1c76e4bcceabbea51884882e302f38bf30a4d4c6"
+        }
+      ],
+      "level": "medium",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb34e174f36bdf883acda/6ab2dcffdb183d26b3c33479",
+      "title": "Vaulted (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb35f174f36bdf883acdd/6a873416db183d26b3c3263c": {
+      "category": "Log Analysis",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q1.md",
+          "sha": "abccecb734ae2e8b95cbb5a5e39f806eb51c47d8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q2.md",
+          "sha": "e0554c53cbf917a77ff238df71b467542fdcc157"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q3.md",
+          "sha": "c5f5e629467cc47ae4dd6be4473412b0585b2d7a"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q4.md",
+          "sha": "64d473850b1c70293c3986122105ce9440c419fa"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q5.md",
+          "sha": "85ba614c7e4f5f0f86dd9505b19eb76ad1bc9265"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q6.md",
+          "sha": "af97c8fa628726e4b1252a9b2e8bb70b196d772d"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q7.md",
+          "sha": "418fe4f0991767e53cf6242f534f39151c107c13"
+        },
+        {
+          "number": 8,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q8.md",
+          "sha": "45d8a4cb1b66d6adc8717e31578bc54673fbdc5d"
+        },
+        {
+          "number": 9,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q9.md",
+          "sha": "4b582ecdd9c91d1c7052f3a28ecaba705ae144e6"
+        },
+        {
+          "number": 10,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q10.md",
+          "sha": "f124bc9ba9b94d2e900bb484bb24cfc76ab4a427"
+        },
+        {
+          "number": 11,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q11.md",
+          "sha": "62d3a4bf760fd3f69126350eb1c23a5a843d039e"
+        },
+        {
+          "number": 12,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q12.md",
+          "sha": "634adc7e08e71b268b666612b4375629f15fbee5"
+        },
+        {
+          "number": 13,
+          "path": "challenges/fall-2026/team-game/log-analysis/hard/tricky-trading-q13.md",
+          "sha": "485aa56f53420d5d2eb9d80dc929e6a95eb756e8"
+        }
+      ],
+      "level": "hard",
+      "questions": 13,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb35f174f36bdf883acdd/6a873416db183d26b3c3263c",
+      "title": "Tricky Trading (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb35f174f36bdf883acdd/6aa1d100db183d26b3c330c2": {
+      "category": "Log Analysis",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/log-analysis/easy/meeting-notes-q1.md",
+          "sha": "08d6e44101b93776b88b59aaf362b5e491ee7bc8"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/log-analysis/easy/meeting-notes-q2.md",
+          "sha": "ab4c608ecfb32cc3fab93608493b94e411c745e6"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/log-analysis/easy/meeting-notes-q3.md",
+          "sha": "f2104bc4a79d00bc14439227464233a976829400"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/log-analysis/easy/meeting-notes-q4.md",
+          "sha": "b3e5083b9d64bc029dc62ce68561e049c2d128f7"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb35f174f36bdf883acdd/6aa1d100db183d26b3c330c2",
+      "title": "Meeting Notes (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb35f174f36bdf883acdd/6aa8c41bdb183d26b3c33257": {
+      "category": "Log Analysis",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/log-analysis/medium/sneaky-smtp-q1.md",
+          "sha": "2ff599735e51189e72b489f57d3aa23beaf79697"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/log-analysis/medium/sneaky-smtp-q2.md",
+          "sha": "e3985ebb96cf4751ff8827e0c853d85e906808b8"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/log-analysis/medium/sneaky-smtp-q3.md",
+          "sha": "0cfa5c74336b643c3c21b12c595f25c1a4c7dc4f"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/log-analysis/medium/sneaky-smtp-q4.md",
+          "sha": "e46dee41a27dc820cf43cbc6cd9617ee6b920fdb"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/log-analysis/medium/sneaky-smtp-q5.md",
+          "sha": "9974647f0ca0aee4bb74174db3ba3fac0514ab35"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/log-analysis/medium/sneaky-smtp-q6.md",
+          "sha": "8534b4f3c47f6a0a950ab8b9835615e05358f5c4"
+        }
+      ],
+      "level": "medium",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb35f174f36bdf883acdd/6aa8c41bdb183d26b3c33257",
+      "title": "Sneaky SMTP (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb36f174f36bdf883ace0/6aa310dfdb183d26b3c33189": {
+      "category": "Network Traffic Analysis",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/medium/uninvited-q1.md",
+          "sha": "3e964875da39b353c8cc6c53cb0eef34113f7489"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/medium/uninvited-q2.md",
+          "sha": "89c315410a7ed77f3101fe15437dc5132a15e234"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/medium/uninvited-q3.md",
+          "sha": "9e2013196ef1d337f558df63a81f5b40c4b71420"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/medium/uninvited-q4.md",
+          "sha": "ad6f0f01d34a24c5ab9e450a34756473100dfe98"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/medium/uninvited-q5.md",
+          "sha": "8c94d4cce26237169f6e61e8196a92a6667d4cc9"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/medium/uninvited-q6.md",
+          "sha": "b8428bb2bed2a384b8a8f00f6b36d7ccdb61724a"
+        }
+      ],
+      "level": "medium",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb36f174f36bdf883ace0/6aa310dfdb183d26b3c33189",
+      "title": "Uninvited (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb36f174f36bdf883ace0/6aaaaa4cdb183d26b3c33331": {
+      "category": "Network Traffic Analysis",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/hard/knock-knock-q1.md",
+          "sha": "34b9a2eb556e8d229f62bd069600e27114f61e29"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/hard/knock-knock-q2.md",
+          "sha": "85fdc272a3680739d1ee08d7e3e94201ad3f2173"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/hard/knock-knock-q3.md",
+          "sha": "72f15a35ec9ae984676914dea7fe3659334904a5"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/hard/knock-knock-q4.md",
+          "sha": "56c8d9680f425853a8a522e28b74b383785cd48d"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/hard/knock-knock-q5.md",
+          "sha": "53fe8e8959a870946289d8b373b03b5935ffb7b4"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/hard/knock-knock-q6.md",
+          "sha": "c42898a691e3f67a1c59ce72fcd678966c3cc061"
+        }
+      ],
+      "level": "hard",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb36f174f36bdf883ace0/6aaaaa4cdb183d26b3c33331",
+      "title": "Knock knock (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb36f174f36bdf883ace0/6abbbf961bbe52f2fc59b0fd": {
+      "category": "Network Traffic Analysis",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/easy/bad-exfil-q1.md",
+          "sha": "29862ff3fea62500d723a57e9961c76c99316241"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/easy/bad-exfil-q2.md",
+          "sha": "0e4e26d4936b07b3161ed7a000a0b886fb1fefa3"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/easy/bad-exfil-q3.md",
+          "sha": "0ba751b0159662789d120fbcd2112243e28c36c3"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/network-traffic-analysis/easy/bad-exfil-q4.md",
+          "sha": "a7f0b8b5be1a5b274e3b12ca301f02673202ae2a"
+        }
+      ],
+      "level": "easy",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb36f174f36bdf883ace0/6abbbf961bbe52f2fc59b0fd",
+      "title": "Bad exfil (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb385174f36bdf883ace1/6aa2cdf2db183d26b3c330ed": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/hard/pivots-q1.md",
+          "sha": "afc34973be6c92de7dd7026f9a4854860268fd10"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/hard/pivots-q2.md",
+          "sha": "a5fb5b35b1aca5533bad074e7e10f454dce1de1a"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/hard/pivots-q3.md",
+          "sha": "22c70dd6c78a37f609ad70a63822ebbaaef19235"
+        }
+      ],
+      "level": "hard",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb385174f36bdf883ace1/6aa2cdf2db183d26b3c330ed",
+      "title": "Pivots (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb385174f36bdf883ace1/6ab9c761db183d26b3c336ee": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q1.md",
+          "sha": "3066fd1e23bfebdc3de194abb2ba8ba101d4c465"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q2.md",
+          "sha": "a26f3a1d21b27b87a4abfd2cc9f0ccf50f080bfc"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q3.md",
+          "sha": "a0af0e8548458593309939ee84a11e9c9de3909c"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q4.md",
+          "sha": "1f82d38068ec1ff2b70a62a0bfc008427c67fb84"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q5.md",
+          "sha": "edd4acefa68f840d56dd8341470abd19607a679a"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q6.md",
+          "sha": "c5329b024b4db082acff106d27c406f38b21b5cb"
+        },
+        {
+          "number": 7,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/medium/department-of-hacking-q7.md",
+          "sha": "d28ae4479a9efe59c6823ce8d52159d54462d2e0"
+        }
+      ],
+      "level": "medium",
+      "questions": 7,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb385174f36bdf883ace1/6ab9c761db183d26b3c336ee",
+      "title": "Department of Hacking (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb385174f36bdf883ace1/6abd78fc1bbe52f2fc59b1f8": {
+      "category": "Scanning & Reconnaissance",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/easy/missing-tools-q1.md",
+          "sha": "a4fd09bb54fe5e9d918273e0eff55252e3a16f90"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/easy/missing-tools-q2.md",
+          "sha": "772d8e32317a19bd7c3deeb88ed3095ab5fb45c5"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/easy/missing-tools-q3.md",
+          "sha": "6e4bb4bc8eda95b579a589892601b78c04d09060"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/easy/missing-tools-q4.md",
+          "sha": "d274fb91b32ff627df93fca2097437be1150f5de"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/easy/missing-tools-q5.md",
+          "sha": "e032758222e386950ffc90bed8b3a2428f779e11"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/scanning-reconnaissance/easy/missing-tools-q6.md",
+          "sha": "7c81477f6b092d84316569b31a0114af0858cbba"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb385174f36bdf883ace1/6abd78fc1bbe52f2fc59b1f8",
+      "title": "Missing tools (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb396174f36bdf883ace2/6a15b70244944d7f32d51e05": {
+      "category": "Forensics",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/forensics/medium/missing-flag-q1.md",
+          "sha": "05bdcb69a0c5e53c5b0aea6ded24e1e8748bd7e2"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/forensics/medium/missing-flag-q2.md",
+          "sha": "b454271ff8f8596c8fd35c632282f2984517cb44"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/forensics/medium/missing-flag-q3.md",
+          "sha": "3bb183231569e1092f1149d1f9153abca3b8ff22"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/forensics/medium/missing-flag-q4.md",
+          "sha": "7aa597dac7593f9da5fec753a6943502e688b233"
+        }
+      ],
+      "level": "medium",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb396174f36bdf883ace2/6a15b70244944d7f32d51e05",
+      "title": "Missing flag (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb396174f36bdf883ace2/6a9619c5db183d26b3c32d93": {
+      "category": "Forensics",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/forensics/hard/mailbox-mix-up-q1.md",
+          "sha": "86dbaf18bce489247277e69734f0360412f6abf2"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/forensics/hard/mailbox-mix-up-q2.md",
+          "sha": "6e83ae3eb2cd9bc72db1e51d3ee0ddd559163024"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/forensics/hard/mailbox-mix-up-q3.md",
+          "sha": "e2c2da06df315a9733c56e0c97852c50991eefcc"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/forensics/hard/mailbox-mix-up-q4.md",
+          "sha": "8b26c045f92d66c20de15a6a1590e08ae6c554cd"
+        }
+      ],
+      "level": "hard",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb396174f36bdf883ace2/6a9619c5db183d26b3c32d93",
+      "title": "Mailbox Mix-Up (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb396174f36bdf883ace2/6ab43274db183d26b3c334d7": {
+      "category": "Forensics",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/forensics/easy/broadcast-q1.md",
+          "sha": "63461f3c30ee833872a6c93b25711d444597b0ed"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/forensics/easy/broadcast-q2.md",
+          "sha": "ae2e7ee4fd74837d48a3a19d6a75eb87d974fb86"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/forensics/easy/broadcast-q3.md",
+          "sha": "93e98d662b99b72e1f62121b578c3a0383227ee3"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/forensics/easy/broadcast-q4.md",
+          "sha": "746090be074c9dfc1de55efe95cf7e8f57d5a4c0"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/forensics/easy/broadcast-q5.md",
+          "sha": "f308cb25369b7f9fb89ff94ed38c64335cca6880"
+        }
+      ],
+      "level": "easy",
+      "questions": 5,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb396174f36bdf883ace2/6ab43274db183d26b3c334d7",
+      "title": "Broadcast (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb473174f36bdf883ace3/6a91b434db183d26b3c32c96": {
+      "category": "Exploitation & Enumeration",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/medium/ransomed-q1.md",
+          "sha": "54702e64894498dbf3bf5a3ed35f1ed81f39fe71"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/medium/ransomed-q2.md",
+          "sha": "ba05d04c7ada6ac8020e5c1d208f4f8ff2a274b8"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/medium/ransomed-q3.md",
+          "sha": "a6c3cd11bd4c40483a5361650db773a181d74119"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/medium/ransomed-q4.md",
+          "sha": "5897ae2fa7c7230f5636bf20a355de84d78a5276"
+        }
+      ],
+      "level": "medium",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb473174f36bdf883ace3/6a91b434db183d26b3c32c96",
+      "title": "Ransomed (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb473174f36bdf883ace3/6aa04f02db183d26b3c32f44": {
+      "category": "Exploitation & Enumeration",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/easy/access-control-q1.md",
+          "sha": "9cf10eb6640ae024cc9ce56ca52c3c2de10ab6dd"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/easy/access-control-q2.md",
+          "sha": "a0cd8b7ab96be74b259f63eaea4ca300433536dd"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/easy/access-control-q3.md",
+          "sha": "ad4cfe6ab74bb0e2e2cf616d17d0a80caf532fd9"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/easy/access-control-q4.md",
+          "sha": "d510b32250d22c23477a563fbee1bca7e2dec0f8"
+        },
+        {
+          "number": 5,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/easy/access-control-q5.md",
+          "sha": "3ceec9b9ccd61678ffb5e903a00d271d27f65f8c"
+        },
+        {
+          "number": 6,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/easy/access-control-q6.md",
+          "sha": "c7de337bddb8da7876ce00147a071ecde1f5745c"
+        }
+      ],
+      "level": "easy",
+      "questions": 6,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb473174f36bdf883ace3/6aa04f02db183d26b3c32f44",
+      "title": "Access Control (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb473174f36bdf883ace3/6ac002ee1bbe52f2fc59b31d": {
+      "category": "Exploitation & Enumeration",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/enumeration-exploitation/hard/ship-of-theseus-q1.md",
+          "sha": "83f0eb365aedd86b7020e5be7afd8ec0f2cbbaa2"
+        }
+      ],
+      "level": "hard",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb473174f36bdf883ace3/6ac002ee1bbe52f2fc59b31d",
+      "title": "Ship of Theseus (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6a46a5a7e1aa579fc845788f": {
+      "category": "Web Application Exploitation",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/web/easy/spongebob-archives-q1.md",
+          "sha": "45b1418ab639b302d038fba69b8c8135c07affc4"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/web/easy/spongebob-archives-q2.md",
+          "sha": "e31aed2c1f73926652fde96834066c94abff62e9"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/web/easy/spongebob-archives-q3.md",
+          "sha": "b13a087b6e39af1bd5beb62884357c4e210bef8d"
+        }
+      ],
+      "level": "easy",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6a46a5a7e1aa579fc845788f",
+      "title": "Spongebob Archives (Easy)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6aa048dbdb183d26b3c32f43": {
+      "category": "Web Application Exploitation",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/web/hard/flow-state-q1.md",
+          "sha": "02a6e7e12b8a11ca0034ad3592e5a1d65f6c661e"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/web/hard/flow-state-q2.md",
+          "sha": "060aea4adcdf87968b70e70c6bb67eaba43bc3b9"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/web/hard/flow-state-q3.md",
+          "sha": "6d2534a8273dbc7ab4655453f2c53ab8af9d7d11"
+        },
+        {
+          "number": 4,
+          "path": "challenges/fall-2026/team-game/web/hard/flow-state-q4.md",
+          "sha": "91689a466ff250f56d6b137315a5773b7341f524"
+        }
+      ],
+      "level": "hard",
+      "questions": 4,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6aa048dbdb183d26b3c32f43",
+      "title": "Flow State (Hard)"
+    },
+    "6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6aab6321db183d26b3c333a7": {
+      "category": "Web Application Exploitation",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/web/medium/napkin-q1.md",
+          "sha": "17fe9db96e13b9afc791e9aa9dcc4b2f96eb7ccc"
+        },
+        {
+          "number": 2,
+          "path": "challenges/fall-2026/team-game/web/medium/napkin-q2.md",
+          "sha": "61e5cfca055fbbe89e53800a789f8e6fc97e1a2c"
+        },
+        {
+          "number": 3,
+          "path": "challenges/fall-2026/team-game/web/medium/napkin-q3.md",
+          "sha": "ac32f5790b91c19656a58de615282f362047bee6"
+        }
+      ],
+      "level": "medium",
+      "questions": 3,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6aab6321db183d26b3c333a7",
+      "title": "Napkin (Medium)"
+    },
+    "6a1729e7d4551af5a8772a55/6ace5cdd9c60e52231f7ba9e/6ace5ddf9c60e52231f7bad6": {
+      "category": "Survey",
+      "competition": "team-game",
+      "event": "NCL Fall 2026 Team Game",
+      "files": [
+        {
+          "number": 1,
+          "path": "challenges/fall-2026/team-game/survey/unrated/survey-q1.md",
+          "sha": "53f92ce1b62190cd74b7544d68a374432aad1107"
+        }
+      ],
+      "level": "unrated",
+      "questions": 1,
+      "season": "fall-2026",
+      "source": "https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6ace5cdd9c60e52231f7ba9e/6ace5ddf9c60e52231f7bad6",
+      "title": "Survey"
     }
   },
   "version": 2

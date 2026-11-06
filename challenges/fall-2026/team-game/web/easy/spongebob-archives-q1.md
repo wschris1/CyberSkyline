@@ -1,0 +1,27 @@
+# Spongebob Archives \(Easy\) — Question 1
+
+**Event:** NCL Fall 2026 Team Game
+
+**Category:** Web Application Exploitation
+
+**Level:** easy
+
+**Source:** https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb486174f36bdf883ace4/6a46a5a7e1aa579fc845788f
+
+## Prompt
+
+NOTE: Challenge Instance will not be accessible once challenge is completed. Fuzzing and brute-forcing are not required to solve this challenge.
+
+We found a fan-run image board dedicated to Spongebob's finest memes. The admins swear everything sensitive is locked away safely - can you prove them wrong?
+
+## Question 1
+
+Q1 - 20 points
+
+
+
+What route lets you download a file from the server? Answer format: ` /route `
+
+---
+
+Imported question text. Response fields, submission history, and solution guides are excluded.

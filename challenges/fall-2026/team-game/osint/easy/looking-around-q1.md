@@ -1,0 +1,25 @@
+# Looking Around \(Easy\) — Question 1
+
+**Event:** NCL Fall 2026 Team Game
+
+**Category:** Open Source Intelligence
+
+**Level:** easy
+
+**Source:** https://cyberskyline.com/module/6a1729e7d4551af5a8772a55/6a5fb33c174f36bdf883acd8/6abff0c81bbe52f2fc59b2f7
+
+## Prompt
+
+Recently, it came to our attention that we have not dug into the companies that are acting as the certificate authorities for Liber8tions websites. We need you to get us the information so we can get it in front of the right people.
+
+We have provided you a website that Liber8tion was known to be using recently.
+
+## Question 1
+
+Q1 - 10 points
+
+What is the common name of the subject name of the SSL cert used for this webpage?
+
+---
+
+Imported question text. Response fields, submission history, and solution guides are excluded.
