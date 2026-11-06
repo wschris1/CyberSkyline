@@ -10,7 +10,7 @@
 
 ## Prompt
 
-NOTE: Challenge Instance will not be accessible once challenge is completed.
+NOTE: Challenge Instance will not be accessible once challenge is completed. Your scope is limited to HTTPS. You may use automated tools that make educated guesses for this challenge, but blind automated brute force is not permitted.
 
 
 
