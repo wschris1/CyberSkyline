@@ -18,7 +18,7 @@ Your job is to identify potential transaction patterns, using the proprietary lo
 
 Q13 - 5 points
 
-How much gold did the gold farming ring earn in net profit by the end of the day?
+How much gold did the gold farming ring earn with the glitch in net profit by the end of the day?
 
 ## Referenced files
 
