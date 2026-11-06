@@ -17,34 +17,38 @@ import urllib.error
 import urllib.request
 
 
-SOURCE_REVISION = "c684a935d0f6a39d932231914b07b981f6ff7c1f"
+SOURCE_REVISION = "a7dc5560099d8b4f607d3e6301891cdd7ecad680"
 SOURCE_ROOT = "https://raw.githubusercontent.com/wschris1/wschris-CyberSecurity/"
 # SHA-256 values are filled by the release preparation script, not at runtime.
 SOURCE_FILES = {
     'bots/__init__.py': 'c76016f913102f4ac56316fcf88a7e13a4fbdc381b38a2b192178359050fde65',
     'bots/skyline_archive/__init__.py': 'ccc2c70d57ce6880c6f89d56c141263260b47f9ddb4d443a5a4742a04ea575bf',
-    'bots/skyline_archive/__main__.py': 'd4ab8d8d2dbcc4d2d47926d02f8d12fdd638bcb2868dc9e291ff17f8e34db67d',
+    'bots/skyline_archive/__main__.py': '705b9bb6486b38182d4438d73301c7a1d97337e2d458f7cd027494a9d6632acb',
     'bots/skyline_archive/ai_verification.py': '3e6fc5cd4f50caaa9e00458e00e73d3dd7fd6f797a80bd92c68a072d59994b6c',
-    'bots/skyline_archive/attachments.py': 'a1db2a781c891327a56d954b512c87024ddf74876d6f44e5166b574e94e01387',
-    'bots/skyline_archive/bot.py': 'd542c4f595fa152ac5a7d0e863fb7a8b7f172499c24bcc9f19ec2cd3f8ff7f82',
-    'bots/skyline_archive/cleanup.py': '17095961a6026ae1d080d08f1acb40dd9be2c1a6534a8dcb3e180233850727ad',
-    'bots/skyline_archive/cleanup_ui.py': '9492cfc57e1284bb326ca29c2d99b41f80b1a20ee317cc45782d29737bad47e5',
+    'bots/skyline_archive/attachments.py': '34014620341d45cbf5185b6e52ebe9725e5020da9cc0942cf451b7ba4afc4915',
+    'bots/skyline_archive/bot.py': '3c6b222c323b1c5569452a7cc3efcac7716605cdb016e585fe56f0a1c0134f67',
+    'bots/skyline_archive/cleanup.py': 'a55ffbbbf29057b22260e9fad5232116d27443364d9118678281c6f6a810aa16',
+    'bots/skyline_archive/cleanup_ui.py': 'e37aabc0c61ce516a1e68ba5dc935e6ba0cc1b18bbcc8a1ac056a65bd793376e',
     'bots/skyline_archive/core.py': 'f76bd527c432182ee4d057fc3ce01051de5e86cd3cfd9cc9e07b2f9ffa5f67f2',
-    'bots/skyline_archive/discord_archive.py': 'cc615dcaadad296f32f4fd5f9ab5a820b256545039f6facf2901a8f34768cf90',
+    'bots/skyline_archive/discord_archive.py': '45bf21216c60510bfe57aac5217e82513c1a56846af2a6300fa55748bec9e73d',
     'bots/skyline_archive/dom_extract.js': '050835ec858d9f64964d81b5e545e627e16ea6f109f5549960e1b6d51c558842',
     'bots/skyline_archive/github.py': '5dfa69bf6a0c719a30220deec49931de2473458fdb448ac2ef992e8fdd64eadb',
     'bots/skyline_archive/jobs.py': '73cd8b0e1be423f26bd05fee5c01d15302cd872d6c69fcd16927433d0ae916cb',
-    'bots/skyline_archive/operations.py': '97031a5d07fbcdccc9b6740fbe27daba92a918916be4fb7bf185fe6747e1d8ee',
+    'bots/skyline_archive/leaderboard.py': '880a28173f584833e7918e57040ccb0d93b0d9b2dfc3498bbe5f10b52f49626f',
+    'bots/skyline_archive/leaderboard_dom.js': '77330935c15b68d27656c947e069227fb5186c660c7ebe6535df9ced28eff32d',
+    'bots/skyline_archive/operations.py': '17f0328de930135e5ae56db79618c3addb85ecea382093c09219d60abd5595c6',
     'bots/skyline_archive/preferences.py': '25bfc3481289d8f2d809618b3fbde7414046839b066ab001c3bcbfa24f489dc3',
-    'bots/skyline_archive/progress.py': '9c9336cbdc14fe2eb00a5a4e4b60c47240e9482b24b21c66a8fb007dea7ed9d8',
-    'bots/skyline_archive/scanner.py': '891d3dd91fb4eea1d97b1628876ab14136f645ea758d86e30bd21be5ebe92cd8',
-    'bots/skyline_archive/settings.py': 'fbce643ac606980e289c65cdb8773a6325a6ced6f1d5c66e86059e769e2dbe75',
+    'bots/skyline_archive/progress.py': '069cfcb94e897ece90dbbf5d49c35bfaac88254d89d030edb45a1e93761222e3',
+    'bots/skyline_archive/scanner.py': '71f7362a75b5e708057bd3b304e6e40cdeabb6071b5a3e5cc02b7f5253018d05',
+    'bots/skyline_archive/settings.py': 'f7c74698ab4a470eeeccb6ad7021102f4bdce4c2a0d946e19d7fe0f00c890d2f',
     'bots/skyline_archive/storage.py': '8faf61ade2d9d5d775c1c1992c1a484360573ce2286c11ddf8baa2de2fc761af',
-    'bots/skyline_archive/survey.py': '86f2bef2980443f9e57439dc1e377b0de3a06b0d1ea3ed73fda949eaf037f4dc',
-    'bots/skyline_archive/ui.py': '3f185d45e485e1579859051355574d1355af0a2ec39cc7c426bedf7048971a52',
-    'bots/skyline_archive/verification.py': '44905dc6efaf6b776069c3d9127482e38763481ce0456daa26aa30c5febafc17',
+    'bots/skyline_archive/survey.py': 'c682381988226b780fea2bd47a5713797eb0726b81049987080bc3cb467247b2',
+    'bots/skyline_archive/ui.py': 'd3bf9b0b86a1c0a675d1d7744a8885cfafbd861b12c209b23d373053d0070870',
+    'bots/skyline_archive/verification.py': '70fad9950d773e78e0afab9fc2b5435bc71382f06c28afcb3142db4a55bc4880',
     'bots/skyline_archive/verify_worker.py': '7b7c6a89d566e402706cde37030c46d2a597f062da0f39f0a659d6357d9bd9cb',
-    'bots/skyline_archive/workflows.py': '8be3eb07cd8e4183dfb9cd0b6f4740692a929dd6f9e2c823892bad7db23ce5e5',
+    'bots/skyline_archive/workflows.py': 'fff6b12eacd851c4219c482d1604a8b556bedde60fcba4c32da638afb7b61899',
+    'bots/ws/__init__.py': '26fcbdf275d35ede6ee89f3267bdf2fbf677001e19de9c1858e9472a596c610b',
+    'bots/ws/__main__.py': 'c463a563d2dff82bd997c6a50e5a26b07b2e3a5c824cde16acbb874ac4779cb9',
     'tools/__init__.py': '55fa407b33a3257258b0a3da6854fb83ac702260d8921c1f1cb025fd0ec593e7',
     'tools/_common.py': '33eda94911afe784e2fbc22731126ac8ca318db14f9eade5ae814f597a702a6f',
     'tools/artifact_inventory.py': '76ce149815cfdff979c3f238eb9a6aecbb94b6cc0d72e2765865b8f7818a7dce',
@@ -98,7 +102,7 @@ def install_source(root):
             continue
         request = urllib.request.Request(
             f"{SOURCE_ROOT}{SOURCE_REVISION}/{relative}",
-            headers={"User-Agent": "skyline-archive-deployment"},
+            headers={"User-Agent": "ws-archive-deployment"},
         )
         with urllib.request.urlopen(request, timeout=45) as response:
             data = response.read(1024 * 1024 + 1)
@@ -245,7 +249,7 @@ def main():
         raise SetupError("Select Python 3.12 in PebbleHost Bot Settings.")
     os.umask(0o077)
     root = Path(__file__).resolve().parent
-    print(f"Skyline host setup: Python {sys.version.split()[0]}", flush=True)
+    print(f"WS host setup: Python {sys.version.split()[0]}", flush=True)
     app = install_source(root)
     print(f"PASS: application source verified ({SOURCE_REVISION[:12]}).", flush=True)
     config, state = prepare_private(root)
@@ -299,8 +303,8 @@ def main():
     message += "Service credentials are checked by the bot when used; check the console for connection results.\n"
     (root / "setup-status.txt").write_text(message, encoding="utf-8")
     print(message, flush=True)
-    from bots.skyline_archive.__main__ import main as run_bot
-    sys.argv = ["skyline-archive", "run"]
+    from bots.ws.__main__ import main as run_bot
+    sys.argv = ["ws", "run"]
     run_bot()
     return 0
 
