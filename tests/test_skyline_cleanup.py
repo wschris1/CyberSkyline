@@ -141,6 +141,19 @@ class CleanupTests(unittest.IsolatedAsyncioTestCase):
         for m in self.channel.messages.values(): m.author.id=777
         self.assertFalse((await self.plan()).channels)
 
+    async def test_ws_rename_preserves_legacy_post_identity_and_leaderboard_destinations(self):
+        self.channel.topic=self.channel.topic.replace('WS challenge ','NCL challenge ',1)
+        for message in self.channel.messages.values():
+            for embed in message.embeds:
+                if embed.footer.text:
+                    embed.set_footer(text=embed.footer.text.replace('WS archive ','NCL archive ',1))
+        before=self.bot.store.rows('SELECT key,channel_id,message_id,thread_id FROM questions')
+        self.assertEqual(len((await self.plan()).channels),1)
+        await self.bot.archive.publish([self.c])
+        self.assertEqual(before,self.bot.store.rows('SELECT key,channel_id,message_id,thread_id FROM questions'))
+        self.bot.store.put('leaderboards',{str(self.channel.id):dict(state='active')})
+        self.assertFalse((await self.plan()).channels)
+
     async def test_shared_legacy_channel_requires_all_events_and_scope(self):
         second=replace(self.c,url=self.c.url[:-24]+'4'*24,event='NCL Fall 2026 Team Game')
         self.bot.store.upsert_challenge(second)

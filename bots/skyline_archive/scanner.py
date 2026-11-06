@@ -38,13 +38,13 @@ def matches(item, scope):
 
 def validate_saved_session(settings):
     if not settings.auth_file.is_file():
-        raise SessionExpired('No Cyber Skyline login saved. Refresh the local login, then run /skyline session recheck.')
+        raise SessionExpired('No Cyber Skyline login saved. Refresh the local login, then run /ws session recheck.')
     try:
         state = json.loads(settings.auth_file.read_text(encoding='utf-8'))
         if not isinstance(state,dict) or not isinstance(state.get('cookies'),list) or not isinstance(state.get('origins'),list):
             raise ValueError()
     except (ValueError, UnicodeError):
-        raise SessionExpired('The saved login is invalid. Refresh it, then run /skyline session recheck.') from None
+        raise SessionExpired('The saved login is invalid. Refresh it, then run /ws session recheck.') from None
 
 
 class Scanner:
@@ -89,14 +89,14 @@ class Scanner:
         try:
             response = await self.page.goto(url, wait_until='domcontentloaded', timeout=45000)
             if response and response.status == 401:
-                raise SessionExpired('Cyber Skyline login expired. Refresh it, then run /skyline session recheck.')
+                raise SessionExpired('Cyber Skyline login expired. Refresh it, then run /ws session recheck.')
             if response and response.status >= 400:
                 raise ArchiveError(f'Cyber Skyline returned HTTP {response.status}; access or network failure.')
             deadline = time.monotonic() + timeout
             while time.monotonic() < deadline:
                 parsed = urlsplit(self.page.url)
                 if any(x in parsed.path.lower() for x in ('login','signin','sign-in')):
-                    raise SessionExpired('Cyber Skyline login expired. Refresh it, then run /skyline session recheck.')
+                    raise SessionExpired('Cyber Skyline login expired. Refresh it, then run /ws session recheck.')
                 if parsed.hostname != 'cyberskyline.com':
                     raise ArchiveError('Cyber Skyline redirected to an unexpected website; check access or service status.')
                 snapshot = await self.page.evaluate(EXTRACTOR)

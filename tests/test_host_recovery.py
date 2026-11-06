@@ -44,6 +44,14 @@ class RecoveryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             recovery.unique_messages([a, self.message(102)], 10)
 
+    def test_old_ncl_and_new_ws_tags_share_one_recovery_identity(self):
+        old=self.message()
+        old.embeds[0].footer.text=old.embeds[0].footer.text.replace('WS archive ','NCL archive ')
+        new=self.message(102)
+        self.assertEqual(len(recovery.unique_messages([old],10)),1)
+        with self.assertRaises(ValueError):
+            recovery.unique_messages([old,new],10)
+
     def test_source_ids_recover_to_stable_legacy_keys_and_survive_restart(self):
         a = self.message(key='question/live-id/part0')
         markers = recovery.unique_messages([a], 10)

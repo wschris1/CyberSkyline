@@ -64,14 +64,14 @@ def failure_help(error):
     if any(s in text for s in ('expected content','page layout','incomplete rows','missing title')):
         return ('Unsupported or incomplete page', 'Open the source page. If it loads normally, its question layout needs an extractor update.')
     if 'cache' in text or 'download limit' in text:
-        return ('File/cache limit', 'Check file size, free disk space and the file/cache budgets in /skyline settings.')
+        return ('File/cache limit', 'Check file size, free disk space and the file/cache budgets in /ws settings.')
     if 'upload' in text or 'files need retry' in text:
-        return ('Attachment problem', 'Check the file statuses below and /skyline health before retrying. Existing question posts are preserved.')
+        return ('Attachment problem', 'Check the file statuses below and /ws maintenance health before retrying. Existing question posts are preserved.')
     if any(s in text for s in ('forbidden','permission','category is full')):
-        return ('Discord destination', 'Check destination permissions and category capacity in /skyline settings, then retry.')
+        return ('Discord destination', 'Check destination permissions and category capacity in /ws settings, then retry.')
     if 'login' in text or 'session' in text:
-        return ('Source access/session', 'Check /skyline health. If login expired, refresh the saved login and run /skyline session recheck.')
-    return ('Scan error', 'Check the saved reason and /skyline health before retrying; a retry cannot fix every cause.')
+        return ('Source access/session', 'Check /ws maintenance health. If login expired, refresh the saved login and run /ws session recheck.')
+    return ('Scan error', 'Check the saved reason and /ws maintenance health before retrying; a retry cannot fix every cause.')
 
 
 class FailuresView(OwnerView):
@@ -100,7 +100,7 @@ class FailuresView(OwnerView):
         self.page=min(self.page,max(0,len(rows)-1))
         self.children[0].disabled=self.page==0
         clean=lambda value,limit=600:diagnostic_text(value,self.client.settings,limit)
-        lines=[f'**NCL TRACKER failures — scan {scan["id"]}**',
+        lines=[f'**WS failures — scan {scan["id"]}**',
                f'**State:** {clean(scan["state"],80)} · **Failed challenges:** {len(rows)}']
         try:
             stamp=int(datetime.fromisoformat(scan['started']).timestamp())
@@ -140,7 +140,7 @@ class FailuresView(OwnerView):
                         lines.append(f'{clean(f["name"],60)} — {clean(f["status"],30)}: {clean(f["error"],120)}')
                     if len(files)>3:
                         lines.append(f'Plus {len(files)-3} more files; see the challenge archive for their statuses.')
-        lines.append('Refresh to see changes. `/skyline retry-failed` retries the latest failed scan after its cause is fixed.')
+        lines.append('Refresh to see changes. `/ws retry-failed` retries the latest failed scan after its cause is fixed.')
         return '\n'.join(lines)[:1950]
 
 
@@ -321,7 +321,7 @@ class SettingsView(OwnerView):
         mappings=self.client.store.rows('SELECT kind,scope,discord_id FROM mappings ORDER BY kind,scope')
         mapped='\n'.join(f"{m['scope']} → <#{m['discord_id']}>" for m in mappings[:8]) or 'Created from source categories when archiving is enabled.'
         ai = 'OpenAI: ' + self.client.ai.status() if hasattr(self.client,'ai') else ''
-        return ('**NCL TRACKER settings**\n'+notice+'\n'+'\n'.join(rows)+'\n'+ai+'\n**Mappings:**\n'+mapped+
+        return ('**WS settings**\n'+notice+'\n'+'\n'.join(rows)+'\n'+ai+'\n**Mappings:**\n'+mapped+
                 f'\n{len(mappings)} saved mappings. Private saved settings override environment defaults. Changes apply to the next scan.')[:1950]
 
 
@@ -378,7 +378,7 @@ class SearchView(OwnerView):
                 links.append(f"[GitHub](https://github.com/{self.client.settings.repository}/blob/{quote(self.client.settings.branch,safe='')}/{quote(q['github_path'])})")
             lines.append(f"**{discord.utils.escape_markdown(q['title'])[:120]} · Q{q['number']}**\n{q['season']} / {q['competition']} / {q['category']} / {q['level']}\n{snippet}\n"+' · '.join(links))
         if not rows:
-            lines.append('No matching questions visible to you. Use `/skyline reindex` to index older GitHub imports without posting them.')
+            lines.append('No matching questions visible to you. Use `/ws maintenance reindex` to index older GitHub imports without posting them.')
         return '\n\n'.join(lines)[:1950]
 
 

@@ -221,7 +221,7 @@ class SurveyManager:
             raise ArchiveError("ready_text must be 200 characters or fewer.")
         key = hashlib.sha256(f"{owner_id}:{channel_id}:{challenge_url}".encode()).hexdigest()[:12]
         if key in self.watches:
-            raise ArchiveError(f"Watch {key} already exists. Use /skyline unwatch-survey before rearming it.")
+            raise ArchiveError(f"Watch {key} already exists. Use /ws survey unwatch before rearming it.")
         if len(self.watches) >= 10:
             raise ArchiveError("Remove an old watch first; this bot supports up to 10 watches.")
         self.watches[key] = {"challenge_url": challenge_url, "survey_url": survey_url, "ready_text": ready_text,

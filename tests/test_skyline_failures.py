@@ -69,7 +69,7 @@ class FailureReportTests(unittest.IsolatedAsyncioTestCase):
         text=view.render()
         self.assertIn(f'scan {ident}',text)
         self.assertIn('Item 2/2',text)
-        self.assertEqual(FailuresView(self.client,456).render().splitlines()[0],f'**NCL TRACKER failures — scan {newer}**')
+        self.assertEqual(FailuresView(self.client,456).render().splitlines()[0],f'**WS failures — scan {newer}**')
 
     async def test_refresh_after_retry_clamps_page_and_does_not_claim_success(self):
         ident,entries=self.scan(3)

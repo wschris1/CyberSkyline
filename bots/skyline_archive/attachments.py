@@ -188,7 +188,7 @@ class Attachments:
                 maximum,budget = self.limits()
                 available = min(budget-await asyncio.to_thread(self.usage),shutil.disk_usage(self.root).free-128*1048576)
                 if attachment.size > maximum or attachment.size > available:
-                    raise ArchiveError('Evidence exceeds the file/cache limit or available disk space. Adjust /skyline settings if appropriate.')
+                    raise ArchiveError('Evidence exceeds the file/cache limit or available disk space. Adjust /ws settings if appropriate.')
                 async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(resolver=PublicResolver()),
                     timeout=aiohttp.ClientTimeout(total=600,sock_read=45),trust_env=False) as session:
                     async with session.get(attachment.url,allow_redirects=False) as response:

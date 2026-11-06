@@ -7,7 +7,7 @@ import time
 import discord
 
 from .core import ArchiveError
-from .discord_archive import marker
+from .discord_archive import is_marker
 from .github import GitHub
 from .scanner import matches
 from .storage import digest, fingerprint
@@ -54,7 +54,7 @@ class Cleanup:
 
     def protected(self, origin):
         prefs = self.client.preferences.effective()
-        return {origin,prefs['archive_hub'],prefs['notification_channel'],self.store.get('last_command_channel',0)}
+        return {origin,prefs['archive_hub'],prefs['notification_channel'],self.store.get('last_command_channel',0)} | {int(k) for k,w in self.store.get('leaderboards',{}).items() if w.get('state')=='active' or w.get('pending')}
 
     async def inventory(self):
         guild = self.client.get_guild(self.client.settings.guild_id)
@@ -84,7 +84,7 @@ class Cleanup:
 
     async def managed(self, channel, keys):
         topic = getattr(channel,'topic','') or ''
-        if not (any(topic.startswith('NCL challenge '+key+' |') for key in keys) or topic.startswith('NCL TRACKER: ')):
+        if not (any(topic.startswith(prefix+key+' |') for key in keys for prefix in ('WS challenge ','NCL challenge ')) or topic.startswith(('WS: ','NCL TRACKER: '))):
             return False
         # Do not interpret names or a manually supplied mapping as proof of ownership.
         posts = self.store.rows("SELECT key,message_id FROM posts WHERE channel_id=? AND state='active' AND message_id IS NOT NULL",(channel.id,))
@@ -93,7 +93,7 @@ class Cleanup:
                 message = await channel.fetch_message(row['message_id'])
             except discord.NotFound:
                 continue
-            if message.author.id==channel.guild.me.id and any(e.footer.text==marker(row['key']) for e in message.embeds):
+            if message.author.id==channel.guild.me.id and any(is_marker(e.footer.text,row['key']) for e in message.embeds):
                 return True
         return False
 
@@ -196,7 +196,7 @@ class Cleanup:
                 continue
             self.store.begin_discord_cleanup(item,fresh.head,owner)
             try:
-                await channel.delete(reason=f'NCL TRACKER owner {owner}: prompts verified at {fresh.head[:12]}')
+                await channel.delete(reason=f'WS owner {owner}: prompts verified at {fresh.head[:12]}')
             except discord.NotFound:
                 pass
             except (discord.HTTPException,asyncio.TimeoutError,OSError) as exc:

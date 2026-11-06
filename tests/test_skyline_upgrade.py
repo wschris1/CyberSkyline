@@ -219,7 +219,7 @@ class UpgradeTests(unittest.IsolatedAsyncioTestCase):
             await self.bot.scan_task
         publish.assert_awaited_once()
         self.assertEqual(self.bot.progress.state,'paused')
-        self.assertIn('/skyline reorganize',self.bot.progress.detail)
+        self.assertIn('/ws maintenance reorganize',self.bot.progress.detail)
 
     async def test_waiting_event_reuses_one_message_and_pings_once_on_open(self):
         self.bot.store.save_settings(dict(enabled=True,frequency=10,notification_channel=self.hub.id))
@@ -317,8 +317,10 @@ class UpgradeTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_new_commands_are_still_owner_restricted(self):
         commands=SkylineCommands(self.bot)
-        for name in ('pause','resume','retry-failed','health','evidence','hint','explain','reorganize'):
+        for name in ('pause','resume','retry-failed','evidence','hint','explain'):
             self.assertIsNotNone(commands.get_command(name))
+        for name in ('health','reorganize','reindex'):
+            self.assertIsNotNone(commands.get_command('maintenance').get_command(name))
         i=self.interaction(); i.user=Identity(987)
         self.assertFalse(await commands.interaction_check(i))
 

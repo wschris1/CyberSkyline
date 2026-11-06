@@ -14,7 +14,11 @@ def pieces(text, size=3500):
 
 
 def marker(key):
-    return 'NCL archive ' + hashlib.sha256(key.encode()).hexdigest()[:32]
+    return 'WS archive ' + hashlib.sha256(key.encode()).hexdigest()[:32]
+
+
+def is_marker(text, key):
+    return text in (marker(key), marker(key).replace('WS archive ', 'NCL archive ', 1))
 
 
 def jump(guild, channel, message):
@@ -56,10 +60,10 @@ class DiscordArchive:
         if category is None:
             candidates = [x for x in guild.categories if x.name == name]
             if len(candidates) > 1:
-                raise ArchiveError('Several categories match. Set an explicit category mapping in /skyline settings.')
+                raise ArchiveError('Several categories match. Set an explicit category mapping in /ws settings.')
             if candidates:
                 if not self.store.get('creating-category/'+category_scope,False):
-                    raise ArchiveError('An unmapped category already has this name. Choose it explicitly in /skyline settings before reusing it.')
+                    raise ArchiveError('An unmapped category already has this name. Choose it explicitly in /ws settings before reusing it.')
                 category = candidates[0]
             else:
                 overwrites = {guild.default_role:discord.PermissionOverwrite(view_channel=False),
@@ -72,14 +76,14 @@ class DiscordArchive:
                     overwrites[member] = discord.PermissionOverwrite(view_channel=True,send_messages=True,
                                                                     read_message_history=True,send_messages_in_threads=True)
                 self.store.put('creating-category/'+category_scope,True)
-                category = await guild.create_category(name,overwrites=overwrites,reason='NCL TRACKER archive')
+                category = await guild.create_category(name,overwrites=overwrites,reason='WS archive')
             self.store.map('category',category_scope,category.id)
             self.store.put('creating-category/'+category_scope,False)
         channel_name = f'{slug(level_and_title(c.title)[1])}-{level}'[:100]
-        identity = 'NCL challenge '+c.key
+        identity = 'WS challenge '+c.key
         candidates = [x for x in category.text_channels if x.name == channel_name]
         # Topics identify a create that succeeded before its mapping was saved.
-        recovered = [x for x in category.text_channels if identity in (getattr(x,'topic','') or '')]
+        recovered = [x for x in category.text_channels if any(tag in (getattr(x,'topic','') or '') for tag in (identity,'NCL challenge '+c.key))]
         if len(recovered) > 1:
             raise ArchiveError('Duplicate challenge channel identities need reconciliation; nothing new was created.')
         if candidates and not recovered:
@@ -88,7 +92,7 @@ class DiscordArchive:
             raise ArchiveError('This Discord category is full. Map the source category to another category, then retry failed items.')
         channel = recovered[0] if recovered else await guild.create_text_channel(channel_name,category=category,
             topic=f'{identity} | {c.event} | {c.category} | {level}'[:1024],
-            reason='NCL TRACKER archive')
+            reason='WS archive')
         self.check_permissions(channel)
         self.store.map('challenge-channel',channel_scope,channel.id)
         return channel
@@ -97,7 +101,7 @@ class DiscordArchive:
         needed = ('view_channel','send_messages','read_message_history','embed_links','attach_files',
                   'create_public_threads','send_messages_in_threads','manage_threads')
         if not all(getattr(channel.permissions_for(channel.guild.me),name,False) for name in needed):
-            raise ArchiveError('Archive channel permissions are insufficient. Review /skyline settings.')
+            raise ArchiveError('Archive channel permissions are insufficient. Review /ws settings.')
         return channel
 
     async def message(self, channel, key, text, file_path=None, filename=None):
@@ -121,7 +125,7 @@ class DiscordArchive:
             after = datetime.fromisoformat(row['created']) - timedelta(seconds=10)
             async for candidate in channel.history(limit=2001,after=after,oldest_first=True):
                 seen += 1
-                if candidate.author.id == self.client.user.id and any(e.footer.text == marker(key) for e in candidate.embeds):
+                if candidate.author.id == self.client.user.id and any(is_marker(e.footer.text,key) for e in candidate.embeds):
                     message = candidate
                     break
             if message is None and seen >= 2001:
@@ -201,7 +205,7 @@ class DiscordArchive:
             thread = await self.channel(parent.id)
         if thread is None:
             thread = await parent.create_thread(name=f'{c.title} · Q{q["number"]}'[:100],auto_archive_duration=1440,
-                                                reason='NCL TRACKER question discussion')
+                                                reason='WS question discussion')
         if thread.archived:
             if thread.locked:
                 raise ArchiveError('A question thread is locked. Unlock it before syncing; its discussion was preserved.')
@@ -246,7 +250,7 @@ class DiscordArchive:
                     embed.add_field(name='Latest verification',value=f"{status['outcome']} · {status['method']}")
                 if embed.to_dict() != before:
                     await parents[0].edit(embed=embed,allowed_mentions=discord.AllowedMentions.none())
-                intro = f"## {c.title} — Q{q['number']}\n{context}\n{q['text']}\n\n**Instructions**\n{c.prompt}\n\n**Files**\n{files}\n\nDiscuss here. Use `/skyline verify answer:<answer>` to check a proposal without submitting it to Cyber Skyline."
+                intro = f"## {c.title} — Q{q['number']}\n{context}\n{q['text']}\n\n**Instructions**\n{c.prompt}\n\n**Files**\n{files}\n\nDiscuss here. Use `/ws verify answer:<answer>` to check a proposal without submitting it to Cyber Skyline."
                 await self.text(thread,f'layout3/{thread.id}/thread/'+q['key'],intro+'\n'+history)
             self.store.synced(c.key)
             self.store.mark_delivered(c,'discord')

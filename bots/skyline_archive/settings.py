@@ -60,12 +60,16 @@ class Settings:
     @classmethod
     def from_env(cls, env=None, require_bot=True, require_github=True):
         env = os.environ if env is None else env
+        env = dict(env)
+        for key in ("EVENT_URL", "STATE_DIR"):
+            if "WS_"+key in env:
+                env["SKYLINE_"+key] = env["WS_"+key]
         token = env.get("DISCORD_BOT_TOKEN", "").strip()
         git_token = env.get("GITHUB_TOKEN", "").strip()
         if require_bot and not token:
-            raise ArchiveError("Set DISCORD_BOT_TOKEN in bots/skyline_archive/.env.")
+            raise ArchiveError("Set DISCORD_BOT_TOKEN in the private bot environment file.")
         if require_github and not git_token:
-            raise ArchiveError("Set GITHUB_TOKEN in bots/skyline_archive/.env.")
+            raise ArchiveError("Set GITHUB_TOKEN in the private bot environment file.")
         owners = env.get("DISCORD_OWNER_IDS", "").strip()
         if owners and not re.fullmatch(r"[0-9]+(?:\s*,\s*[0-9]+)*", owners):
             raise ArchiveError("DISCORD_OWNER_IDS must contain comma-separated numeric user IDs.")

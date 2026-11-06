@@ -51,7 +51,7 @@ async def evidence(client, interaction, file=None, message_id=None):
                                                 origin.id if origin else None)
         rows.append(f"{discord.utils.escape_markdown(row['name'])}: {row['status']}"+(f" — {row['error']}" if row['error'] else ''))
     await interaction.followup.send(('**Evidence for Q'+str(question['number'])+'**\n'+'\n'.join(rows)+
-        '\nPrivate files are available to `/skyline verify`, `/skyline hint`, and `/skyline explain`. They are not uploaded to GitHub.')[:1950],ephemeral=True)
+        '\nPrivate files are available to `/ws verify`, `/ws hint`, and `/ws explain`. They are not uploaded to GitHub.')[:1950],ephemeral=True)
 
 
 async def assistance(client, interaction, mode):
@@ -110,7 +110,7 @@ async def health(client, interaction, test_ai=False):
         rows.append('Private cache: '+str(round(await asyncio.to_thread(client.attachments.usage)/1048576,1))+f" / {prefs['cache_mb']} MiB; file limit {prefs['max_file_mb']} MiB")
         rows.append('Last successful archive: '+str(client.store.get('last_success','none recorded')))
         if client.store.get('schedule_hold',False):
-            scheduled = 'paused by scan control; use /skyline resume'
+            scheduled = 'paused by scan control; use /ws resume'
         elif client.store.get('auth_invalid',False):
             scheduled = 'blocked until login is refreshed'
         elif prefs['enabled']:
@@ -126,18 +126,18 @@ async def health(client, interaction, test_ai=False):
         text = await client.scan_task
     finally:
         client.scan_phase='idle'
-    await interaction.followup.send(('**NCL TRACKER health**\n'+text)[:1950],ephemeral=True)
+    await interaction.followup.send(('**WS health**\n'+text)[:1950],ephemeral=True)
 
 
 async def reorganize(client, interaction, preview=True):
     if client.busy():
         raise ArchiveError('Wait for the scan or pause it before reorganizing.')
     if not client.preferences.effective()['archive_enabled']:
-        raise ArchiveError('Enable the Discord archive in /skyline settings first.')
+        raise ArchiveError('Enable the Discord archive in /ws settings first.')
     keys = client.store.rows('SELECT DISTINCT challenge_key FROM questions WHERE message_id IS NOT NULL')
     if preview:
         missing = sum(not client.store.mapping('challenge-channel',r['challenge_key']) for r in keys)
-        await interaction.response.send_message(f'{len(keys)} existing challenges; {missing} need challenge channels. Existing discussions will remain linked. Run `/skyline reorganize preview:false` to apply.',ephemeral=True)
+        await interaction.response.send_message(f'{len(keys)} existing challenges; {missing} need challenge channels. Existing discussions will remain linked. Run `/ws maintenance reorganize preview:false` to apply.',ephemeral=True)
         return
     await interaction.response.defer(ephemeral=True)
     async def work():
@@ -159,7 +159,7 @@ async def reorganize(client, interaction, preview=True):
                     progress.failed+=1
                 progress.processed+=1
                 if client.pause_requested:
-                    progress.update(state='paused',detail='Reorganization paused safely. Rerun /skyline reorganize preview:false to continue; saved channels and threads will be reused.')
+                    progress.update(state='paused',detail='Reorganization paused safely. Rerun /ws maintenance reorganize preview:false to continue; saved channels and threads will be reused.')
                     return
             progress.update(state='completed with errors' if progress.failed else 'completed',
                 detail='Existing discussions retained and linked. Rerun reorganize to retry any incomplete migrations.')

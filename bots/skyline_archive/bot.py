@@ -22,6 +22,7 @@ from .jobs import Jobs
 from . import operations
 from . import cleanup_ui
 from .cleanup import Cleanup
+from .leaderboard import Leaderboards
 from .preferences import Preferences
 from .attachments import Attachments
 from .discord_archive import DiscordArchive
@@ -73,11 +74,23 @@ class SessionCommands(app_commands.Group):
         await interaction.followup.send(message,ephemeral=True)
 
 
-class SkylineCommands(app_commands.Group):
+class WSCommands(app_commands.Group):
     def __init__(self,client):
-        super().__init__(name='skyline',description='Archive challenge questions and watch for surveys.',guild_only=True)
+        super().__init__(name='ws',description='Archive challenge questions and watch for surveys.',guild_only=True)
         self.client=client
+        # Group less frequent commands so the root stays within Discord's 25-child limit.
+        for name, description, commands in (
+            ('survey', 'Watch for usable competition survey forms.', [('watch-survey','watch'),('survey-status','status'),('unwatch-survey','unwatch')]),
+            ('maintenance', 'Health checks, indexing and archive organization.', [('health','health'),('reindex','reindex'),('reorganize','reorganize')])):
+            group = OwnedGroup(client, name, description)
+            for old, new in commands:
+                command = self.get_command(old)
+                self.remove_command(old)
+                command.name = new
+                group.add_command(command)
+            self.add_command(group)
         self.add_command(SessionCommands(client))
+        self.add_command(CleanupCommands(client))
 
     async def interaction_check(self,interaction):
         return await owner_check(self.client,interaction)
@@ -89,6 +102,14 @@ class SkylineCommands(app_commands.Group):
             await interaction.followup.send(message[:1900],ephemeral=True)
         else:
             await interaction.response.send_message(message[:1900],ephemeral=True)
+
+    @app_commands.command(name='leaderboard',description='Post standings and your position here at the chosen interval.')
+    @app_commands.describe(link='Cyber Skyline event leaderboard link.',time='Update interval: 10m, 1h, 1d; a plain number means minutes.',
+                           action='Start/update this channel, check status, refresh once, or stop.',
+                           team='Optional exact name check for the signed-in player/team.')
+    async def leaderboard(self,interaction:discord.Interaction,link:str|None=None,time:str|None=None,
+                          action:Literal['start','status','now','stop']='start',team:str=''):
+        await self.client.leaderboards.command(interaction,link,time,action,team)
 
     @app_commands.command(name='sync',description='Scan one Cyber Skyline event and archive its questions.')
     @app_commands.describe(event_url='The event overview URL (/world/...).',preview='Override the saved default; no archive writes when true.')
@@ -181,7 +202,7 @@ class SkylineCommands(app_commands.Group):
             archive=self.client.progress.render(self.client.scan_preview)
         else:
             archive=self.client.archive_status
-        auth='Waiting for login refresh; run `/skyline session recheck`.' if self.client.store.get('auth_invalid',False) else 'No known login failure.'
+        auth='Waiting for login refresh; run `/ws session recheck`.' if self.client.store.get('auth_invalid',False) else 'No known login failure.'
         await interaction.response.send_message((f'{mode}**Archive:** {archive}\n**Automatic sync:** {schedule}\n**Session:** {auth}\n'
             f'**Repository:** https://github.com/{self.client.settings.repository}')[:1950],ephemeral=True)
 
@@ -190,7 +211,7 @@ class SkylineCommands(app_commands.Group):
         if self.client.busy():
             raise ArchiveError('A scan or discovery is already running.')
         if self.client.store.get('auth_invalid',False):
-            raise ArchiveError('Refresh the saved login and run /skyline session recheck first.')
+            raise ArchiveError('Refresh the saved login and run /ws session recheck first.')
         await interaction.response.defer(ephemeral=True)
         self.client.start_sync(all_events=True,preview=True,channel=interaction.channel,catalog_only=True,
                                owner=interaction.user.id,workflow=destination)
@@ -227,7 +248,7 @@ class SkylineCommands(app_commands.Group):
     async def verify(self,interaction:discord.Interaction,answer:str|None=None):
         question=self.client.store.question(thread_id=interaction.channel_id)
         if not question:
-            raise ArchiveError('Run /skyline verify inside a mapped question thread.')
+            raise ArchiveError('Run /ws verify inside a mapped question thread.')
         if answer is not None:
             await self.client.verify_answer(interaction,question,answer)
             return
@@ -250,7 +271,7 @@ class SkylineCommands(app_commands.Group):
         if interaction.channel_id is None:
             raise ArchiveError('Run this command in the channel where you want the ping.')
         key=self.client.surveys.add(challenge_url,survey_url,ready_text,interaction.user.id,interaction.channel_id,interaction.guild_id)
-        await interaction.response.send_message(f'Watch `{key}` saved. I will ping you here after the form is ready on two checks. Use `/skyline survey-status` for progress.',ephemeral=True)
+        await interaction.response.send_message(f'Watch `{key}` saved. I will ping you here after the form is ready on two checks. Use `/ws survey status` for progress.',ephemeral=True)
 
     @app_commands.command(name='survey-status',description='Show your saved survey watches and last readiness checks.')
     async def survey_status(self,interaction:discord.Interaction):
@@ -268,13 +289,12 @@ class SkylineCommands(app_commands.Group):
 
 
 class CleanupCommands(app_commands.Group):
-    # The existing /skyline group already uses Discord's 25-child limit.
     def __init__(self,client):
-        super().__init__(name='skyline-cleanup',description='Remove Discord archives only after verifying their GitHub question copies.',guild_only=True)
+        super().__init__(name='cleanup',description='Remove Discord archives only after verifying their GitHub question copies.',guild_only=True)
         self.client=client
 
-    interaction_check=SkylineCommands.interaction_check
-    on_error=SkylineCommands.on_error
+    interaction_check=WSCommands.interaction_check
+    on_error=WSCommands.on_error
 
     @app_commands.command(name='preview',description='List eligible Discord archives; deletion requires a separate typed confirmation.')
     async def preview(self,interaction:discord.Interaction,season:str|None=None,competition:str|None=None,
@@ -304,7 +324,7 @@ class GuardedSurveyProbe:
             raise
 
 
-class SkylineBot(discord.Client):
+class WSBot(discord.Client):
     def __init__(self,settings):
         super().__init__(intents=discord.Intents(guilds=True,message_content=getattr(settings,'message_content',False)),
                          allowed_mentions=discord.AllowedMentions.none())
@@ -318,8 +338,7 @@ class SkylineBot(discord.Client):
         self.verifier=Verifier(self.store,self.attachments,ai=self.ai,
                                ai_enabled=lambda:self.preferences.effective()['ai_enabled'])
         self.tree=app_commands.CommandTree(self)
-        self.tree.add_command(SkylineCommands(self),guild=discord.Object(id=settings.guild_id))
-        self.tree.add_command(CleanupCommands(self),guild=discord.Object(id=settings.guild_id))
+        self.tree.add_command(WSCommands(self),guild=discord.Object(id=settings.guild_id))
         self.archive_status='No scan run yet.'
         self.scan_task=None
         self.scan_phase='idle'
@@ -327,10 +346,12 @@ class SkylineBot(discord.Client):
         self.progress=None
         self.recovered=asyncio.Event()
         self.background=[]
+        self.ws_closing=False
         self.http_session=None
         self.surveys=SurveyManager(settings.state_dir/'survey-watches.json',GuardedSurveyProbe(self),self.send_survey_ping)
         self.scan_options={}
         self.pause_requested=False
+        self.leaderboards=Leaderboards(self)
 
     def busy(self):
         return self.scan_task is not None and not self.scan_task.done()
@@ -341,6 +362,33 @@ class SkylineBot(discord.Client):
         self.background.append(asyncio.create_task(self.recover()))
         self.background.append(asyncio.create_task(self.survey_loop()))
         self.background.append(asyncio.create_task(self.schedule_loop()))
+        self.background.append(asyncio.create_task(self.leaderboard_loop()))
+        self.background.append(asyncio.create_task(self.apply_branding()))
+
+    async def apply_branding(self):
+        await self.wait_until_ready()
+        try:
+            if self.user.name != 'WS':
+                await self.user.edit(username='WS')
+            guild=self.get_guild(self.settings.guild_id)
+            if guild and guild.me and guild.me.nick != 'WS':
+                await guild.me.edit(nick='WS',reason='Rename bot to WS')
+        except discord.HTTPException:
+            LOG.warning('WS commands are ready; bot profile rename needs a permissions/rate-limit check.')
+
+    async def leaderboard_loop(self):
+        await self.wait_until_ready()
+        await self.recovered.wait()
+        while not self.is_closed():
+            try:
+                await self.leaderboards.tick()
+            except asyncio.CancelledError:
+                # /ws stop cancels a check, not the persistent scheduler itself.
+                if self.ws_closing:
+                    raise
+            except Exception as exc:
+                LOG.warning('Leaderboard scheduler unavailable (%s).',type(exc).__name__)
+            await asyncio.sleep(15)
 
     async def recover(self):
         await self.wait_until_ready()
@@ -356,7 +404,7 @@ class SkylineBot(discord.Client):
                     channel=await self.archive.channel(scan['channel_id'])
                     message=await channel.fetch_message(scan['message_id']) if channel else None
                     if message:
-                        await message.edit(content='**NCL TRACKER — interrupted by restart**\nSaved work and discussion were preserved. Use `/skyline resume` to continue from the checkpoint. Scheduled scans are held until resumed.')
+                        await message.edit(content='**WS — interrupted by restart**\nSaved work and discussion were preserved. Use `/ws resume` to continue from the checkpoint. Scheduled scans are held until resumed.')
                 except (discord.HTTPException,ArchiveError):
                     pass
         self.recovered.set()
@@ -364,9 +412,11 @@ class SkylineBot(discord.Client):
     def pause_sync(self):
         self.store.put('schedule_hold',True)
         if not self.busy():
-            return 'Scheduled checks are paused. Use /skyline resume to continue.'
+            return 'Scheduled checks are paused. Use /ws resume to continue.'
+        if self.scan_phase=='leaderboard':
+            return 'A leaderboard check is running. Use /ws leaderboard action:stop after it finishes to stop its schedule.'
         if self.scan_phase.startswith('cleanup'):
-            return 'Scheduled checks are paused. Use /skyline stop to stop remaining cleanup; completed deletions cannot be undone.'
+            return 'Scheduled checks are paused. Use /ws stop to stop remaining cleanup; completed deletions cannot be undone.'
         if self.scan_phase in ('checking login','indexing'):
             return 'Scheduled checks are paused. The current health/login/index check will finish normally.'
         self.pause_requested=True
@@ -375,7 +425,7 @@ class SkylineBot(discord.Client):
         if self.scan_phase not in ('pausing','stopping'):
             self.scan_phase='pausing'
             self.scan_task.cancel()
-        return 'Pause requested. Complete collected challenges are saved; use /skyline resume to continue.'
+        return 'Pause requested. Complete collected challenges are saved; use /ws resume to continue.'
 
     async def resume_interaction(self,interaction,retry=False):
         if self.busy():
@@ -394,24 +444,24 @@ class SkylineBot(discord.Client):
 
     async def launch_interaction(self,interaction,**options):
         if self.busy():
-            raise ArchiveError('A scan is already running. Use /skyline status or /skyline stop.')
+            raise ArchiveError('A scan is already running. Use /ws status or /ws stop.')
         await interaction.response.defer(ephemeral=True)
         self.store.put('last_command_channel',interaction.channel_id)
         self.start_sync(channel=interaction.channel,owner=interaction.user.id,**options)
         await interaction.followup.send('Started. One progress message will update in the archive hub or this channel. '
-            'Use `/skyline stop` to stop remaining work; completed posts are preserved.',ephemeral=True)
+            'Use `/ws stop` to stop remaining work; completed posts are preserved.',ephemeral=True)
 
     def start_sync(self,event_url=None,all_events=False,preview=None,workflow=None,**options):
         if self.busy():
-            raise ArchiveError('A scan is already running. Use /skyline status to check it or /skyline stop to cancel.')
+            raise ArchiveError('A scan is already running. Use /ws status to check it or /ws stop to cancel.')
         if workflow not in (None,'discord','github','both'):
             raise ArchiveError('Unknown archive workflow.')
         if workflow!='github' and self.store.get('auth_invalid',False):
-            raise ArchiveError('Waiting for login. Refresh the session, then run /skyline session recheck.')
+            raise ArchiveError('Waiting for login. Refresh the session, then run /ws session recheck.')
         prefs=self.preferences.effective()
         preview=prefs['default_preview'] if preview is None else preview
         if workflow in ('discord','both') and not prefs['archive_enabled'] and not preview:
-            raise ArchiveError('Enable the Discord archive and choose its hub in /skyline settings first.')
+            raise ArchiveError('Enable the Discord archive and choose its hub in /ws settings first.')
         self.scan_options={**options,'preferences':prefs,'workflow':workflow or 'both'}
         self.pause_requested=False
         self.scan_phase='scanning'
@@ -423,31 +473,34 @@ class SkylineBot(discord.Client):
 
     def stop_sync(self):
         if not self.busy():
-            return 'No scan is running. Use `/skyline sync` or `/skyline sync-all` to start one.'
+            return 'No scan is running. Use `/ws sync` or `/ws sync-all` to start one.'
+        if self.scan_phase=='leaderboard':
+            self.scan_task.cancel()
+            return 'Leaderboard check stop requested. Its update schedule is unchanged; use /ws leaderboard action:stop after it finishes.'
         if self.scan_phase.startswith('cleanup'):
             self.scan_task.cancel()
-            return 'Cleanup stop requested. Completed deletions cannot be undone; run /skyline-cleanup preview before any retry.'
+            return 'Cleanup stop requested. Completed deletions cannot be undone; run /ws cleanup preview before any retry.'
         if self.scan_phase=='publishing':
-            return 'GitHub publication has already started and cannot be cancelled. Use `/skyline status` for its result.'
+            return 'GitHub publication has already started and cannot be cancelled. Use `/ws status` for its result.'
         if self.scan_phase in ('checking login','indexing'):
             return 'The login check or index migration is in progress; wait for its result.'
         if self.scan_phase=='stopping':
-            return 'The scan is already stopping. Use `/skyline status` to check when cleanup finishes.'
+            return 'The scan is already stopping. Use `/ws status` to check when cleanup finishes.'
         self.scan_phase='stopping'
         self.archive_status='Stopping remaining work. Saved questions and completed posts are preserved.'
         if self.progress:
             self.progress.update(state='stopping',detail=self.archive_status)
         self.scan_task.cancel()
-        return 'Stop requested. Completed posts are preserved; pending work can be resumed. Use `/skyline status` for cleanup progress.'
+        return 'Stop requested. Completed posts are preserved; pending work can be resumed. Use `/ws status` for cleanup progress.'
 
     def scan_finished(self,task):
         if task is self.scan_task:
             if task.cancelled() and self.scan_phase=='pausing':
-                self.archive_status='Paused. Scheduled checks are held; use /skyline resume.'
+                self.archive_status='Paused. Scheduled checks are held; use /ws resume.'
                 if self.progress:
                     self.progress.update(state='paused',detail=self.archive_status)
             if task.cancelled() and self.scan_phase=='stopping':
-                self.archive_status='Scan stopped. Saved questions and completed posts are preserved; use /skyline resume.'
+                self.archive_status='Scan stopped. Saved questions and completed posts are preserved; use /ws resume.'
                 if self.progress:
                     self.progress.update(state='stopped',detail=self.archive_status)
             self.scan_phase='idle'
@@ -463,9 +516,9 @@ class SkylineBot(discord.Client):
         try:
             channel=await self.archive.channel(channel_id)
             if channel:
-                await channel.send('**Cyber Skyline login needs refreshing.**\nRun the existing local `python -m bots.skyline_archive login` workflow, replace the private session file on PebbleHost, then run `/skyline session recheck`. Scheduled archive attempts are paused until validation succeeds. Existing content is preserved.')
+                await channel.send('**Cyber Skyline login needs refreshing.**\nRun the existing local `python -m bots.ws login` workflow, replace the private session file on PebbleHost, then run `/ws session recheck`. Scheduled archive attempts are paused until validation succeeds. Existing content is preserved.')
         except discord.HTTPException:
-            LOG.warning('Login alert could not be delivered; see /skyline status.')
+            LOG.warning('Login alert could not be delivered; see /ws status.')
 
     async def run_sync(self,event_url,all_events,preview):
         options=dict(self.scan_options)
@@ -564,7 +617,7 @@ class SkylineBot(discord.Client):
                         notify=await self.archive.channel(prefs['notification_channel']) if prefs['notification_channel'] else destination
                         if notify:
                             mentions=' '.join(f'<@{owner}>' for owner in sorted(self.settings.owners))
-                            await notify.send(f'{mentions} The watched event is open. NCL TRACKER is scanning its questions.',
+                            await notify.send(f'{mentions} The watched event is open. WS is scanning its questions.',
                                 allowed_mentions=discord.AllowedMentions(users=[discord.Object(id=x) for x in self.settings.owners],roles=False,everyone=False))
                     except (discord.HTTPException,ArchiveError):
                         LOG.warning('Event-open alert delivery failed; scanning continues.')
@@ -651,25 +704,25 @@ class SkylineBot(discord.Client):
                         for item in self.jobs.items(scan_id,'published','collected'):
                             self.jobs.state(scan_id,item['url'],'failed',error)
                 else:
-                    self.archive_status+=' GitHub was not contacted. Use /skyline export-github when ready.'
+                    self.archive_status+=' GitHub was not contacted. Use /ws export-github when ready.'
                 if self.pause_requested:
-                    progress.update(state='paused',detail='Work saved. Use /skyline resume to release the schedule hold.')
+                    progress.update(state='paused',detail='Work saved. Use /ws resume to release the schedule hold.')
                     self.archive_status=progress.detail
                     return
             if errors:
-                self.archive_status+=' Pending errors: '+' '.join(errors[:2])+' Use /skyline retry-failed.'
+                self.archive_status+=' Pending errors: '+' '.join(errors[:2])+' Use /ws retry-failed.'
             progress.update(state='completed with errors' if errors else 'completed',detail=self.archive_status,failed=len(errors))
             if waiting:
                 self.store.put(watch_key,None)
             if prefs['notify_results'] and prefs['notification_channel'] and destination and destination.id!=prefs['notification_channel']:
                 channel=await self.archive.channel(prefs['notification_channel'])
                 if channel:
-                    await channel.send('NCL TRACKER scan completed. '+(message.jump_url if message else self.archive_status[:1500]))
+                    await channel.send('WS scan completed. '+(message.jump_url if message else self.archive_status[:1500]))
         except asyncio.CancelledError:
             state='paused' if self.pause_requested else ('stopped' if self.scan_phase=='stopping' else 'interrupted')
             if state!='stopped':
                 self.store.put('schedule_hold',True)
-            self.archive_status='Scan stopped. Saved questions and completed posts are preserved; use /skyline resume.' if state=='stopped' else 'Work saved. Use /skyline resume to continue; existing posts and threads are reused.'
+            self.archive_status='Scan stopped. Saved questions and completed posts are preserved; use /ws resume.' if state=='stopped' else 'Work saved. Use /ws resume to continue; existing posts and threads are reused.'
             progress.update(state=state,detail=self.archive_status)
             raise
         except SessionExpired as exc:
@@ -739,7 +792,7 @@ class SkylineBot(discord.Client):
                 progress.failed+=1
             progress.processed+=1
         if not selected:
-            raise ArchiveError('No complete mapped Discord archives matched this scope. Run /skyline scan-discord first. '+' '.join(errors[:2]))
+            raise ArchiveError('No complete mapped Discord archives matched this scope. Run /ws scan-discord first. '+' '.join(errors[:2]))
         count=sum(len(c.questions) for c in selected)
         if preview:
             self.archive_status=f'Preview complete: {len(selected)} challenges / {count} question files would be exported from saved Discord archives. '
@@ -752,7 +805,7 @@ class SkylineBot(discord.Client):
             self.archive_status=f'Complete: exported {len(selected)} Discord challenge archives / {count} questions. '
             self.archive_status+=(f'{publication.changed} files changed. {publication.commit_url}' if publication.changed else 'GitHub is already up to date.')
         if errors:
-            self.archive_status+=' Pending errors: '+' '.join(errors[:2])+' Use /skyline failures.'
+            self.archive_status+=' Pending errors: '+' '.join(errors[:2])+' Use /ws failures.'
         progress.update(state='completed with errors' if errors else 'completed',detail=self.archive_status,failed=len(errors))
 
     async def verify_answer(self,interaction,question,answer):
@@ -831,16 +884,17 @@ class SkylineBot(discord.Client):
                     channel_id=prefs['archive_hub'] or prefs['notification_channel'] or self.store.get('last_command_channel',0)
                     channel=await self.archive.channel(channel_id) if channel_id else None
                     if channel is None:
-                        self.archive_status='Scheduled scan waiting for an archive hub or notification destination in /skyline settings.'
+                        self.archive_status='Scheduled scan waiting for an archive hub or notification destination in /ws settings.'
                         await asyncio.sleep(15)
                         continue
                     self.start_sync(self.settings.event_url or None,all_events=not bool(self.settings.event_url),channel=channel,scheduled=True)
                     self.store.put('last_scheduled',time.time())
                 except (ArchiveError,discord.HTTPException):
-                    self.archive_status='Scheduled scan could not start. Check destination permissions and /skyline settings.'
+                    self.archive_status='Scheduled scan could not start. Check destination permissions and /ws settings.'
             await asyncio.sleep(15)
 
     async def close(self):
+        self.ws_closing=True
         tasks=self.background+([self.scan_task] if self.scan_task else [])
         for task in tasks:
             if not task.done():
@@ -851,3 +905,15 @@ class SkylineBot(discord.Client):
             await self.http_session.close()
         self.store.close()
         await super().close()
+
+
+# Python imports remain compatible with existing host tools and integrations.
+SkylineBot = WSBot
+SkylineCommands = WSCommands
+
+class OwnedGroup(app_commands.Group):
+    def __init__(self,client,name,description):
+        super().__init__(name=name,description=description,guild_only=True)
+        self.client=client
+    interaction_check=WSCommands.interaction_check
+    on_error=WSCommands.on_error

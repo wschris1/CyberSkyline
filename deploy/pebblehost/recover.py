@@ -27,8 +27,9 @@ def unique_messages(messages, bot_id):
             continue
         for embed in message.embeds:
             tag = embed.footer.text or ''
-            if not re.fullmatch(r'NCL archive [0-9a-f]{32}', tag):
+            if not re.fullmatch(r'(?:WS|NCL) archive [0-9a-f]{32}', tag):
                 continue
+            tag = tag.replace('NCL archive ', 'WS archive ', 1)
             if tag in found and found[tag].id != message.id:
                 raise RecoveryError('Duplicate archive markers require manual reconciliation.')
             found[tag] = message
@@ -169,7 +170,7 @@ async def recover(settings):
             channels = await guild.fetch_channels()
             # Only bot-created archive channels with the documented topic qualify.
             candidates = [c for c in channels if isinstance(c, discord.TextChannel)
-                          and (c.topic or '').startswith('NCL TRACKER: ')]
+                          and (c.topic or '').startswith(('WS: ','NCL TRACKER: '))]
             messages = []
             for channel in candidates:
                 messages.extend(await history(channel))

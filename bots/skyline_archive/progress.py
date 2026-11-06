@@ -54,7 +54,7 @@ class Progress:
             if seconds >= 10:
                 eta = f'about {round(seconds / samples * (self.total-self.processed))}s (scan phase only)'
         mode = {'discord':'Discord only','github':'Discord archive → GitHub','both':'Discord first, then GitHub'}[self.workflow]
-        text = (f'**NCL TRACKER — {self.state}**\n'
+        text = (f'**WS — {self.state}**\n'
                 f'**Mode:** {"Preview (no archive writes) — " if preview else ""}{mode}\n'
                 f'**Competition:** {clean(self.competition)[:180] or "Discovering"}\n'
                 f'**Category:** {clean(self.category)[:100] or "—"}\n'
@@ -88,7 +88,7 @@ class ProgressMessage:
             try:
                 await self.message.edit(content=text)
             except Exception:
-                # Status remains available via /skyline status; no duplicate replacement messages.
+                # Status remains available via /ws status; no duplicate replacement messages.
                 return
             self.last_text = text
 

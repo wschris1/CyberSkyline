@@ -1,4 +1,4 @@
-"""Run with python -m bots.skyline_archive from the repository root."""
+"""Run with python -m bots.ws from the repository root."""
 
 import argparse
 import asyncio
@@ -51,10 +51,10 @@ def main():
             print("GitHub export:", "configured" if settings.github_token else "needs GITHUB_TOKEN; Discord-only scans can run")
             print("Saved Cyber Skyline login:", "present" if settings.auth_file.is_file() else "missing; run the login command")
         else:
-            from .bot import SkylineBot
+            from .bot import WSBot
             logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
             with InstanceLock(settings.state_dir):
-                SkylineBot(settings).run(settings.discord_token, log_handler=None)
+                WSBot(settings).run(settings.discord_token, log_handler=None)
     except ArchiveError as exc:
         parser.exit(1, str(exc) + "\n")
     except KeyboardInterrupt:

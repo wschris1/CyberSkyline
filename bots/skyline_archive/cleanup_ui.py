@@ -22,7 +22,7 @@ class CleanupView(OwnerView):
             await i.response.edit_message(content=self.render(),view=self)
         async def confirm(i):
             if self.used or time.monotonic()-plan.created>600:
-                raise ArchiveError('This preview is closed or expired. Run /skyline-cleanup preview again.')
+                raise ArchiveError('This preview is closed or expired. Run /ws cleanup preview again.')
             if client.busy():
                 raise ArchiveError('Wait for the current scan or pause it, then run a fresh cleanup preview.')
             await i.response.send_modal(CleanupConfirmation(self))
@@ -75,7 +75,7 @@ class CleanupConfirmation(discord.ui.Modal):
         if not await view.interaction_check(i):
             return
         if view.used or time.monotonic()-view.plan.created>600:
-            await i.response.send_message('Preview expired or already used. Run /skyline-cleanup preview again.',ephemeral=True)
+            await i.response.send_message('Preview expired or already used. Run /ws cleanup preview again.',ephemeral=True)
             return
         if str(self.confirmation)!=view.plan.phrase:
             await i.response.send_message('The confirmation phrase did not match. Nothing was deleted.',ephemeral=True)

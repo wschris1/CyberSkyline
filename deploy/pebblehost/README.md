@@ -40,17 +40,21 @@ Do not copy your regular browser profile.
 
 The application is in `/home/container/skyline-app`, while credentials, browser
 session, and survey watches remain in the separate `/home/container/private` tree.
-Automatic archive scans remain off until enabled through `/skyline settings` or
+Automatic archive scans remain off until enabled through `/ws settings` or
 the existing environment interval. Configure a progress destination before enabling them.
 Survey watches are added with the Discord slash command after startup.
 
-## Upgrading an existing NCL TRACKER installation
+## Upgrading an existing WS installation
 
 Use the server's private panel file manager/SFTP connection. These steps keep the
 existing login, survey watches, mappings, questions and discussion intact.
 
-1. In Discord, use `/skyline pause` on releases that support it (otherwise `/skyline stop`) if collection is running. If publication has
-   started, wait for `/skyline status` to finish. Then press **Stop** in PebbleHost
+For a version still named Skyline, use `/skyline pause`, `/skyline stop` and
+`/skyline status` before stopping the host. `/ws` becomes available after this
+upgrade starts successfully.
+
+1. In Discord, use `/ws pause` on releases that support it (otherwise `/ws stop`) if collection is running. If publication has
+   started, wait for `/ws status` to finish. Then press **Stop** in PebbleHost
    and wait until the process is offline.
 2. Back up the root `bot.py`, `requirements.txt`, and the **entire**
    `/home/container/private` directory to a private location. Include
@@ -82,13 +86,13 @@ existing login, survey watches, mappings, questions and discussion intact.
    hashes, installs/checks Chromium, and starts the bot. New SQLite migrations
    run automatically. Check the console, `setup-status.txt` and
    `chromium-check.txt`; do not share the private environment or session file.
-8. In Discord run `/skyline settings`: choose an archive hub and notification
+8. In Discord run `/ws settings`: choose an archive hub and notification
    channel, enable the Discord archive, and turn **default preview** on for
    the first check. Keep scheduling off until the checks below succeed.
    Existing category/channel IDs remain mapped; new installs create only
    missing categories and challenge channels.
-9. Run `/skyline reindex` for older GitHub imports, `/skyline session recheck`,
-   and `/skyline pick`. Choose one small scope and **Preview**. Confirm the
+9. Run `/ws maintenance reindex` for older GitHub imports, `/ws session recheck`,
+   and `/ws pick`. Choose one small scope and **Preview**. Confirm the
    scope, permissions and extraction results before pressing **Start scan**.
    If login is invalid, use your existing desktop login workflow, replace
    `/home/container/private/skyline-archive/browser-state.json`, and recheck.
@@ -129,7 +133,7 @@ Recovery reads the source, downloads available evidence and rebuilds the local
 database; it never posts, edits, deletes or submits remote archive content.
 Duplicate markers, missing threads, source errors, and bounded history limits
 stop recovery for review. After `RECOVERY COMPLETE`, select `bot.py` again and
-restart. Review `/skyline settings` before enabling the archive or scheduled
+restart. Review `/ws settings` before enabling the archive or scheduled
 scans. Preview remains on and scheduling/AI remain off. A count-only report is
 saved as `private/skyline-archive/host-recovery-report.json`.
 
@@ -148,7 +152,7 @@ The release includes the OpenAI connector and EXIF creation-date adapter. No new
 Python package is required. Keep the existing private database and artifacts.
 Add `OPENAI_API_KEY=<your private key>` and `OPENAI_MODEL=gpt-5.4-mini` to
 `/home/container/private/skyline.env`, then restart. In Discord, open
-`/skyline settings` and select **Toggle OpenAI assistance**. Verify a question in
+`/ws settings` and select **Toggle OpenAI assistance**. Verify a question in
 its existing thread. The key is never entered in a Discord command.
 
 The switch is off by default. Saved preferences take precedence over
@@ -169,18 +173,28 @@ competition scan. Check those separately after private configuration is supplied
 
 ### Scan-control and challenge-channel release
 
-This update requires no dependency or credential changes. Preserve the entire private tree before replacing the pinned loader/application. Startup migrates SQLite to v4 and keeps a pre-migration SQLite backup. After restarting, run `/skyline health test_ai:true`, then `/skyline reorganize` to preview existing-archive migration and `/skyline reorganize preview:false` to apply it. Old discussions remain linked; no answers are deleted. Run reorganization again after interruption to reuse the saved IDs. Do not use an older release or recovery loader against v4 state. The standalone `recover.py` reconstructs legacy layouts only; for v3/v4 restore the full private backup.
+This update requires no dependency or credential changes. Preserve the entire private tree before replacing the pinned loader/application. Startup migrates SQLite to v4 and keeps a pre-migration SQLite backup. After restarting, run `/ws maintenance health test_ai:true`, then `/ws maintenance reorganize` to preview existing-archive migration and `/ws maintenance reorganize preview:false` to apply it. Old discussions remain linked; no answers are deleted. Run reorganization again after interruption to reuse the saved IDs. Do not use an older release or recovery loader against v4 state. The standalone `recover.py` reconstructs legacy layouts only; for v3/v4 restore the full private backup.
 
-Use `/skyline resume` after a paused/interrupted scan to release the persistent schedule hold. Confirm `/skyline settings` shows scheduled scans enabled, frequency 10, the intended default preview, and your archive/notification destinations. A not-yet-open event should show waiting, not failure. After one small archive run verify its challenge channel, question threads, old-discussion links, file statuses and search results; repeat to check reuse. Survey opening and actual competition opening remain event-dependent checks.
+Use `/ws resume` after a paused/interrupted scan to release the persistent schedule hold. Confirm `/ws settings` shows scheduled scans enabled, frequency 10, the intended default preview, and your archive/notification destinations. A not-yet-open event should show waiting, not failure. After one small archive run verify its challenge channel, question threads, old-discussion links, file statuses and search results; repeat to check reuse. Survey opening and actual competition opening remain event-dependent checks.
 
 ## Split scan/export upgrade
 
 This release adds `scan-discord`, `export-github` and `scan-both`, while retaining old commands. Follow the upgrade procedure above: pause, stop the host, back up the entire private directory, rename the old `skyline-app`, replace the root `bot.py` with this release's pinned loader, and start. No dependency changes are required. Startup backs up and migrates SQLite to v4; never replace the private database or session with a fresh copy. The GitHub token is optional for Discord-only operation.
 
-After startup, refresh Discord if new slash commands are not shown. Run `/skyline scan-discord event_url:<world URL> preview:true`, then a small scope with `/skyline pick destination:discord`. Confirm posts appear during collection and a repeat reuses channel/thread IDs. Test `/skyline export-github preview:true` before actual export; verify the existing source prompt hierarchy and absence of discussion text. `/skyline scan-both` performs both stages with Discord first. `/skyline resume` retains the paused job's workflow and releases its schedule hold. Existing ten-minute schedules remain combined. Local mocked tests establish workflow order, isolation, recovery and privacy; a live deployment still needs command registration, permission, source layout and service-response checks.
+After startup, refresh Discord if new slash commands are not shown. Run `/ws scan-discord event_url:<world URL> preview:true`, then a small scope with `/ws pick destination:discord`. Confirm posts appear during collection and a repeat reuses channel/thread IDs. Test `/ws export-github preview:true` before actual export; verify the existing source prompt hierarchy and absence of discussion text. `/ws scan-both` performs both stages with Discord first. `/ws resume` retains the paused job's workflow and releases its schedule hold. Existing ten-minute schedules remain combined. Local mocked tests establish workflow order, isolation, recovery and privacy; a live deployment still needs command registration, permission, source layout and service-response checks.
 
 ## Verified Discord cleanup upgrade
 
-This release adds `/skyline-cleanup preview` and `/skyline-cleanup allow-recreate`; existing commands remain available. Use the same stopped-host backup and pinned-loader upgrade procedure, preserving `/home/container/private` and the browser cache. There are no dependency or credential changes. Startup backs up existing SQLite to `archive.before-v5.sqlite3` and migrates to schema v5. Never run an older bot or legacy recovery loader against v5 state.
+This release adds `/ws cleanup preview` and `/ws cleanup allow-recreate`; existing commands remain available. Use the same stopped-host backup and pinned-loader upgrade procedure, preserving `/home/container/private` and the browser cache. There are no dependency or credential changes. Startup backs up existing SQLite to `archive.before-v5.sqlite3` and migrates to schema v5. Never run an older bot or legacy recovery loader against v5 state.
 
-After restarting, refresh Discord and run `/skyline-cleanup preview` from the archive hub. Verify the GitHub commit, listed channels, retained channels and category counts. Preview does not delete anything. Do not confirm deletion as a deployment smoke test: delete execution is covered by mocked guild tests. The owner should confirm only when ready to permanently discard all conversations and uploads in the listed channels. GitHub question copies remain unchanged. An interrupted cleanup is reconciled on startup without automatically retrying deletion; rerun preview to review it. Retirements survive restarts so the ten-minute schedule does not rebuild removed channels. See the [cleanup workflow and limits](../../docs/skyline-tracker.md#delete-discord-archives-already-exported-to-github).
+After restarting, refresh Discord and run `/ws cleanup preview` from the archive hub. Verify the GitHub commit, listed channels, retained channels and category counts. Preview does not delete anything. Do not confirm deletion as a deployment smoke test: delete execution is covered by mocked guild tests. The owner should confirm only when ready to permanently discard all conversations and uploads in the listed channels. GitHub question copies remain unchanged. An interrupted cleanup is reconciled on startup without automatically retrying deletion; rerun preview to review it. Retirements survive restarts so the ten-minute schedule does not rebuild removed channels. See the [cleanup workflow and limits](../../docs/skyline-tracker.md#delete-discord-archives-already-exported-to-github).
+
+## WS rename and leaderboard reports
+
+Use the same stopped-host backup and pinned-loader upgrade procedure. Preserve `private/skyline.env`, `private/skyline-archive`, the existing session, database and cache. Do not rename those paths: this release deliberately retains them for compatibility. No new dependency, token or database schema migration is required. Leaderboard settings/outbox records use the existing private SQLite metadata table. Existing `SKYLINE_*` variables remain valid; explicitly set `WS_EVENT_URL` / `WS_STATE_DIR` aliases take precedence.
+
+The bot registers only the `/ws` root, replacing `/skyline` and `/skyline-cleanup` in this guild. Survey commands move to `/ws survey`; health, reindex and reorganize move to `/ws maintenance`; cleanup is `/ws cleanup`. Source/archive identities, saved survey watches, scan jobs and prior cleanup retirements remain intact. The bot sets its account username and server nickname to WS when permitted; set the application name to WS in Discord's Developer Portal as well. No new permissions or credentials are needed. Historical conversations are not reposted.
+
+After upgrading, refresh Discord and run `/ws status`, `/ws maintenance health`, and a read-only `/ws cleanup preview` to check legacy mappings. Test `/ws leaderboard link:<specific event leaderboard URL> time:10m` in the intended text channel. Confirm the first report's player/team, rank, scope and timestamp against the source. Use `/ws leaderboard action:stop` to stop a test schedule, `action:now` to request one check, and `action:status` to inspect it. A stopped watch remains stopped after manual refresh and restart. Keep real standings, session information and report screenshots out of the public repository.
+
+Automated fixtures cover owner restrictions, interval/URL validation, rank parsing, unranked play, identity changes, stale-data handling, duplicate prevention after uncertain sends, schedule persistence, cancellation, read-only request guards and legacy archive reuse. A live deployment must still verify Discord registration/profile naming and the authenticated leaderboard's current page layout. This version supports event `/world/<ID>/leaderboard` pages, not public season-results pages or custom bracket filters. Reports wait behind active scans, and authentication failures use the existing session-refresh workflow.

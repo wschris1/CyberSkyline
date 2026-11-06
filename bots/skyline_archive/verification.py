@@ -17,7 +17,7 @@ def result(outcome, method, evidence):
 def select_answer(messages, user_id, since=None):
     """Do not guess which discussion message is an answer. Preserve exact content."""
     candidates = [m for m in messages if m.author.id == user_id and not m.author.bot and m.content
-                  and not m.content.startswith('/skyline ') and (since is None or m.created_at > since)]
+                  and not m.content.startswith(('/ws ', '/skyline ')) and (since is None or m.created_at > since)]
     return candidates[0].content if len(candidates) == 1 else None, candidates
 
 
@@ -45,7 +45,7 @@ class Verifier:
         if mode not in ('hint','explain'):
             raise ValueError('Unsupported assistance mode')
         if not self.ai or not self.ai_enabled():
-            return result('Inconclusive','AI configuration','Enable AI assistance in /skyline settings first.')
+            return result('Inconclusive','AI configuration','Enable AI assistance in /ws settings first.')
         if self.lock.locked():
             return result('Verification error','worker','Another analysis is running. Retry when it finishes.')
         payload = {**self.payload(question,''),'mode':mode}

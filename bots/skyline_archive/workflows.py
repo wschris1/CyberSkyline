@@ -5,7 +5,7 @@ import asyncio
 import discord
 
 from .core import ArchiveError, event_location, level_and_title
-from .discord_archive import marker
+from .discord_archive import is_marker
 from .scanner import matches
 from .storage import fingerprint, now
 
@@ -141,5 +141,5 @@ async def validate_parents(client, c, questions):
         post = client.store.one('SELECT key FROM posts WHERE channel_id=? AND message_id=? AND state=?',
                                 (q['channel_id'],q['message_id'],'active'))
         if (not post or message.author.id != channels[q['channel_id']].guild.me.id or
-                not any(e.footer.text == marker(post['key']) for e in message.embeds)):
+                not any(is_marker(e.footer.text,post['key']) for e in message.embeds)):
             raise ArchiveError('A question post could not be identified as a managed bot archive; nothing from its conversation was exported.')
