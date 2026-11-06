@@ -163,7 +163,8 @@ class MultiGuildTests(unittest.IsolatedAsyncioTestCase):
             child.start_sync(preview=True)
         self.assertIn('No scan is running',child.stop_sync())
         child.pause_sync()
-        self.assertFalse(self.bot.scan_task.cancelling())
+        await asyncio.sleep(0)  # Let a wrongly cancelled task settle on Python 3.10 too.
+        self.assertFalse(self.bot.scan_task.done())
         self.assertFalse(self.bot.store.get('schedule_hold',False))
         self.assertTrue(child.store.get('schedule_hold',False))
         raced=asyncio.create_task(asyncio.Event().wait())
