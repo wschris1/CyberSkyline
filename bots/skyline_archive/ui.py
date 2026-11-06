@@ -282,7 +282,7 @@ class SettingsView(OwnerView):
     def __init__(self,client,owner):
         super().__init__(client,owner)
         actions=[('Toggle scheduled scans','enabled'),('Set frequency','frequency'),('Toggle Discord archive','archive_enabled'),
-                 ('Toggle default preview','default_preview'),('Toggle login alerts','notify_login'),
+                 ('Toggle default preview','default_preview'),('Toggle fast comp mode','fast_comp'),('Toggle login alerts','notify_login'),
                  ('Toggle completion alerts','notify_results'),('Toggle OpenAI assistance','ai_enabled'),
                  ('Maximum file size (MiB)','max_file_mb'),('Private cache budget (MiB)','cache_mb'),
                  ('Set category name prefix','category_prefix'),('Category/channel mapping','mapping')]

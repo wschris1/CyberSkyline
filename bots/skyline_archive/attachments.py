@@ -86,6 +86,15 @@ class Attachments:
         async with self.lock:
             return await self._fetch(challenge,ref,context)
 
+    def defer(self, challenge, ref):
+        """Record work before publishing text, without touching the network or old files."""
+        key = digest([challenge.key, urlsplit(ref.url).path])
+        old = self.store.attachment(key)
+        values = dict(challenge_key=challenge.key,name=filename(ref.name),source=ref.url)
+        if old:
+            return self.store.attachment(key,**values)
+        return self.store.attachment(key,**values,status='pending',error=None)
+
     async def _fetch(self, challenge, ref, context):
         import aiohttp
         from yarl import URL

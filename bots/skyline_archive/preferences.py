@@ -5,7 +5,7 @@ from .core import ArchiveError
 
 DEFAULTS = dict(enabled=False,frequency=60,archive_enabled=False,archive_hub=0,notification_channel=0,
                 notify_login=True,notify_results=False,default_preview=False,category_prefix='',ai_enabled=False,
-                max_file_mb=512,cache_mb=2048)
+                max_file_mb=512,cache_mb=2048,fast_comp=False)
 
 
 class Preferences:
@@ -26,7 +26,7 @@ class Preferences:
         if not values.keys() <= DEFAULTS.keys():
             raise ArchiveError('Unknown setting.')
         result = {**self.effective(),**values}
-        for key in ('enabled','archive_enabled','notify_login','notify_results','default_preview','ai_enabled'):
+        for key in ('enabled','archive_enabled','notify_login','notify_results','default_preview','ai_enabled','fast_comp'):
             if type(result[key]) is not bool:
                 raise ArchiveError(f'{key} must be true or false.')
         if values.get('ai_enabled') and not getattr(self.settings,'openai_api_key',''):

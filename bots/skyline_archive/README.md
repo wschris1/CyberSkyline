@@ -259,3 +259,36 @@ A future event shows **waiting for event** and the next check, reusing the same 
 Private downloads default to **512 MiB per file / 2048 MiB total cache**, adjustable in `/ws settings`; old files are never deleted to meet a lowered budget. Downloads stream independently of Discord upload limits. Files over the server limit remain cached for analysis and are linked to the source challenge. The bot worker supports bounded facts/text/strings inspection of large files; deterministic checks remain limited to 64 MiB. Full memory-image analysis requires a separate stronger analysis environment.
 
 Supplemental evidence is private and question-specific, never added to GitHub. `/ws evidence` imports only your own uploads from the current question thread. File imports from message history require Message Content Intent; the file option works without it. Hints/explanations use the same fixed evidence tools and daily API budget, are saved separately, and never update verified-answer status. Images are available for metadata inspection; visual image reasoning is not implemented. Team assignment/tracking is not included.
+
+### Fast comp mode and web control
+
+`/ws fast [event_url] [all_events] [preview]` builds Discord challenge channels,
+question posts, and threads before downloading or uploading challenge files.
+Source file links appear immediately; completed file links replace the queued
+labels in the same posts and thread introductions. Use `/ws export-github` later,
+or choose the combined workflow in the panel. Discord's own rate limits still
+apply; fast mode does not make simultaneous source requests or promise an ETA.
+
+`/ws panel` opens the private website. It shows heartbeat/connection status,
+scan progress, recent runs and failures, and offers Discord scan, GitHub export,
+combined scan, preview, pause, stop, resume, retry failed, and session recheck.
+Its settings use the same SQLite preferences and validation as `/ws settings`.
+The new `fast_comp` preference also applies to scheduled scans; its default is
+false for existing installations. `/ws fast` explicitly enables it for that run.
+
+The text and file phases share one job lock. `text-ready` scan items persist in
+SQLite until files finish. Stop/restart/login expiration preserve them; use
+`/ws resume` after recovery. Failed downloads and uploads stay retryable via
+`/ws retry-failed`. A newly expired signed artifact link may require a fresh
+source scan to discover a refreshed link. Previously mapped posts and threads
+are reused, including all discussion and verification records. Preview does
+not create attachment rows, download files, or mark questions delivered.
+
+The panel never reads answer discussions, private evidence, credentials, or
+session cookies. It receives operational status, challenge names, counts,
+failure reasons, Discord links, and selected non-secret preferences. Keep its
+Sites audience owner-private. Its server pins the owner's ChatGPT identity,
+and every bot action also checks the paired Discord owner remains authorized.
+Commands expire after two minutes, are acknowledged separately from job
+completion, and have durable deduplication receipts. An uncertain interrupted
+command is not blindly rerun; inspect status and resume its checkpoint.

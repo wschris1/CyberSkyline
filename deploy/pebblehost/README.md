@@ -198,3 +198,44 @@ The bot registers only the `/ws` root, replacing `/skyline` and `/skyline-cleanu
 After upgrading, refresh Discord and run `/ws status`, `/ws maintenance health`, and a read-only `/ws cleanup preview` to check legacy mappings. Test `/ws leaderboard link:<specific event leaderboard URL> time:10m` in the intended text channel. Confirm the first report's player/team, rank, scope and timestamp against the source. Use `/ws leaderboard action:stop` to stop a test schedule, `action:now` to request one check, and `action:status` to inspect it. A stopped watch remains stopped after manual refresh and restart. Keep real standings, session information and report screenshots out of the public repository.
 
 Automated fixtures cover owner restrictions, interval/URL validation, rank parsing, unranked play, identity changes, stale-data handling, duplicate prevention after uncertain sends, schedule persistence, cancellation, read-only request guards and legacy archive reuse. A live deployment must still verify Discord registration/profile naming and the authenticated leaderboard's current page layout. This version supports event `/world/<ID>/leaderboard` pages, not public season-results pages or custom bracket filters. Reports wait behind active scans, and authentication failures use the existing session-refresh workflow.
+
+## Private web panel
+
+The hosted WS control panel uses an outbound HTTPS connection from the existing
+bot, with no incoming server port, reverse proxy, or extra bot process. Its
+source lives in the private Sites source repository; the bridge is
+`bots/skyline_archive/panel.py` in this repository.
+
+Provision the owner-private Site, database migration, and server runtime secrets
+`WS_AGENT_TOKEN`, `WS_OWNER_EMAIL` (initial identity binding), and
+`WS_DISCORD_OWNER`. The Site's service token belongs only to this Site.
+Place `panel.json` in the existing private state directory
+(`private/skyline-archive/panel.json` on the standard installation):
+
+```json
+{
+  "url": "https://YOUR-PANEL.chatgpt.site",
+  "owner_id": "YOUR_EXISTING_DISCORD_OWNER_ID",
+  "service_token": "PRIVATE_SITES_SERVICE_TOKEN",
+  "agent_token": "MATCHING_PRIVATE_WS_AGENT_TOKEN"
+}
+```
+
+Never commit this file or place these values in browser code, Discord messages,
+public logs, or the startup loader. Restrict it to the host account. A missing or
+invalid panel configuration leaves Discord commands working. A panel outage does
+not stop the bot or its schedule; the site disables controls after 45 seconds
+without a heartbeat. New commands expire after two minutes instead of running
+unexpectedly after a long outage. Requests use HTTPS, fixed Site origin, no
+redirects, bounded timeouts, an agent-only secret and the platform's private
+service authorization.
+
+Upgrade as above: stop only after an active scan is paused/finished, archive
+`private`, `skyline-app`, `bot.py`, and `requirements.txt`, rename the old
+`skyline-app`, replace the root loader with this release's loader, and start.
+Retain all private files. Existing SQLite v5 data is reused; this release adds
+compatible scan states and namespaced metadata, with no destructive migration.
+Verify `/ws status`, `/ws panel`, and a preview from the website. Enable the
+`fast_comp` default in panel Settings or `/ws settings` if desired. `/ws fast`
+always uses questions first for that run. Automated tests use synthetic services;
+check live permissions, authenticated pages, and large-file delivery separately.

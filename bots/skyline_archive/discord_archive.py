@@ -166,10 +166,16 @@ class DiscordArchive:
                 await self.message(channel,row['key'],'This continuation was superseded by the updated question above.')
         return messages
 
-    async def files(self, channel, c, progress=None):
+    async def files(self, channel, c, progress=None, defer=False):
         links = []
         rows = self.store.rows('SELECT * FROM attachments WHERE challenge_key=? AND key NOT IN (SELECT attachment_key FROM evidence) ORDER BY name,key',(c.key,))
         for row in rows:
+            if defer:
+                if row['status']=='uploaded' and row['message_id'] and row['channel_id']:
+                    links.append(f"[{discord.utils.escape_markdown(row['name'])}]({jump(self.guild_id,row['channel_id'],row['message_id'])})")
+                else:
+                    links.append(f"{discord.utils.escape_markdown(row['name'])}: queued for the file phase — [source]({c.url})")
+                continue
             path = self.attachments.local_path(row)
             if row['status'] not in ('ready','uploaded','oversized-upload','upload-failed') or path is None:
                 if path is None and row['status'] in ('ready','uploaded','oversized-upload','upload-failed'):
@@ -220,7 +226,7 @@ class DiscordArchive:
                 progress.update(discord_challenge=c.title)
                 if not progress.collecting:
                     progress.update(state='archiving to Discord',competition=c.event,category=c.category,challenge=c.title)
-            file_links = await self.files(channel,c,progress)
+            file_links = await self.files(channel,c,progress,defer=bool(progress and progress.fast_comp and not progress.files_phase))
             context = f'**{c.event}** · {c.category} · {level_and_title(c.title)[0]}\nSource: <{c.url}>\n'
             files = '\n'.join(file_links) or 'No downloadable files listed.'
             namespace = f'layout3/{channel.id}/'

@@ -10,6 +10,9 @@ from .core import clean
 @dataclass
 class Progress:
     workflow: str = 'both'
+    fast_comp: bool = False
+    files_phase: bool = False
+    files_deferred: int = 0
     collecting: bool = False
     discord_completed: int = 0
     discord_challenge: str = ''
@@ -54,6 +57,8 @@ class Progress:
             if seconds >= 10:
                 eta = f'about {round(seconds / samples * (self.total-self.processed))}s (scan phase only)'
         mode = {'discord':'Discord only','github':'Discord archive → GitHub','both':'Discord first, then GitHub'}[self.workflow]
+        if self.fast_comp:
+            mode += ' · Fast comp: questions first, files second'
         text = (f'**WS — {self.state}**\n'
                 f'**Mode:** {"Preview (no archive writes) — " if preview else ""}{mode}\n'
                 f'**Competition:** {clean(self.competition)[:180] or "Discovering"}\n'
@@ -63,6 +68,7 @@ class Progress:
                 f'**New:** {self.new} · **Skipped:** {self.skipped} · **Failed:** {self.failed+self.publication_failed}\n'
                 f'**Discord archives completed:** {self.discord_completed} · **Posting:** {clean(self.discord_challenge)[:100] or "—"}\n'
                 f'**Files downloaded/cached:** {self.attachments}/{self.attachment_total} · **Download failures:** {self.attachment_failed}\n'
+                f'**Files deferred:** {self.files_deferred}\n'
                 f'**Files uploaded/linked:** {self.uploaded} · **Upload failures/oversized:** {self.upload_failed}\n'
                 f'**Elapsed:** {elapsed}s · **Remaining:** {eta}\n{self.detail}')
         return text[:1950]

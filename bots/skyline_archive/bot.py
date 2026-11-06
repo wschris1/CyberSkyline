@@ -23,6 +23,7 @@ from . import operations
 from . import cleanup_ui
 from .cleanup import Cleanup
 from .leaderboard import Leaderboards
+from .panel import PanelBridge
 from .preferences import Preferences
 from .attachments import Attachments
 from .discord_archive import DiscordArchive
@@ -91,6 +92,8 @@ class WSCommands(app_commands.Group):
             self.add_command(group)
         self.add_command(SessionCommands(client))
         self.add_command(CleanupCommands(client))
+        self.add_command(app_commands.Command(name='panel',description='Open the private WS web control panel.',callback=self.panel))
+        self.add_command(app_commands.Command(name='fast',description='Competition mode: questions and threads first, then files.',callback=self.fast))
 
     async def interaction_check(self,interaction):
         return await owner_check(self.client,interaction)
@@ -110,6 +113,18 @@ class WSCommands(app_commands.Group):
     async def leaderboard(self,interaction:discord.Interaction,link:str|None=None,time:str|None=None,
                           action:Literal['start','status','now','stop']='start',team:str=''):
         await self.client.leaderboards.command(interaction,link,time,action,team)
+
+    async def panel(self,interaction:discord.Interaction):
+        url=self.client.panel.url
+        await interaction.response.send_message(
+            f'Your private WS control panel: <{url}>\nSign in with your ChatGPT account. Only the paired owner can control this bot.'
+            if url else 'The web panel is not connected. Configure panel.json inside the private bot state directory.',ephemeral=True)
+
+    async def fast(self,interaction:discord.Interaction,event_url:str|None=None,all_events:bool=False,preview:bool|None=None):
+        if all_events and event_url:
+            raise ArchiveError('Choose one event URL or all_events:true.')
+        await self.client.launch_interaction(interaction,workflow='discord',fast_comp=True,preview=preview,
+            all_events=all_events,event_url=None if all_events else skyline_url(event_url or self.client.settings.event_url))
 
     @app_commands.command(name='sync',description='Scan one Cyber Skyline event and archive its questions.')
     @app_commands.describe(event_url='The event overview URL (/world/...).',preview='Override the saved default; no archive writes when true.')
@@ -352,6 +367,7 @@ class WSBot(discord.Client):
         self.scan_options={}
         self.pause_requested=False
         self.leaderboards=Leaderboards(self)
+        self.panel=PanelBridge(self)
 
     def busy(self):
         return self.scan_task is not None and not self.scan_task.done()
@@ -364,6 +380,7 @@ class WSBot(discord.Client):
         self.background.append(asyncio.create_task(self.schedule_loop()))
         self.background.append(asyncio.create_task(self.leaderboard_loop()))
         self.background.append(asyncio.create_task(self.apply_branding()))
+        self.background.append(asyncio.create_task(self.panel.run()))
 
     async def apply_branding(self):
         await self.wait_until_ready()
@@ -462,12 +479,13 @@ class WSBot(discord.Client):
         preview=prefs['default_preview'] if preview is None else preview
         if workflow in ('discord','both') and not prefs['archive_enabled'] and not preview:
             raise ArchiveError('Enable the Discord archive and choose its hub in /ws settings first.')
-        self.scan_options={**options,'preferences':prefs,'workflow':workflow or 'both'}
+        fast_comp=bool(options.get('fast_comp',prefs.get('fast_comp',False)) and prefs['archive_enabled'] and workflow!='github')
+        self.scan_options={**options,'preferences':prefs,'workflow':workflow or 'both','fast_comp':fast_comp}
         self.pause_requested=False
         self.scan_phase='scanning'
         self.scan_preview=preview
         self.archive_status='Starting preview…' if preview else 'Starting scan…'
-        self.progress=Progress(workflow=workflow or 'both')
+        self.progress=Progress(workflow=workflow or 'both',fast_comp=fast_comp)
         self.scan_task=asyncio.create_task(self.run_sync(event_url,all_events,preview))
         self.scan_task.add_done_callback(self.scan_finished)
 
@@ -545,6 +563,7 @@ class WSBot(discord.Client):
             else:
                 scan_id=self.jobs.create(dict(event_url=event_url,all_events=all_events,scope=scope,
                     owner=options.get('owner'),scheduled=options.get('scheduled',False),workflow=workflow,
+                    fast_comp=options.get('fast_comp',False),panel_command=options.get('panel_command'),
                     archive_channel_id=options.get('archive_channel_id',0)),preview)
                 previous=None
             waiting=self.store.get(watch_key)
@@ -600,6 +619,10 @@ class WSBot(discord.Client):
                     return
                 self.store.upsert_challenge(c)
                 for ref in c.attachment_refs:
+                    if progress.fast_comp:
+                        self.attachments.defer(c,ref)
+                        progress.files_deferred+=1
+                        continue
                     progress.detail='Downloading '+ref.name[:120]
                     row=await self.attachments.fetch(c,ref,context)
                     if row['status'] in ('ready','uploaded','oversized-upload','upload-failed') and self.attachments.local_path(row):
@@ -626,7 +649,7 @@ class WSBot(discord.Client):
             saved_items=self.jobs.items(scan_id)
             progress.new=sum(r['state']=='collected' for r in saved_items)
             progress.skipped=sum(r['state']=='published' for r in saved_items)
-            skip_urls=[r['url'] for r in saved_items if r['state'] in ('collected','published')]
+            skip_urls=[r['url'] for r in saved_items if r['state'] in ('collected','published','text-ready')]
             if pipeline:
                 for item in saved_items:
                     if item['state']=='collected':
@@ -691,6 +714,8 @@ class WSBot(discord.Client):
                 progress.update(state='archiving to Discord' if prefs['archive_enabled'] else 'preparing GitHub export',detail=summary)
                 await pipeline.finish()
                 errors.extend(pipeline.errors)
+                if progress.fast_comp:
+                    errors.extend(await self.finish_fast_files(scan_id))
                 progress.publication_failed=0
                 self.archive_status='Complete: '+summary+f' {progress.discord_completed} Discord challenge archives completed this run.'
                 if workflow=='both':
@@ -750,6 +775,46 @@ class WSBot(discord.Client):
                          elapsed=(progress.finished or time.monotonic())-progress.started+progress.elapsed_before)),now(),scan_id))
             if live:
                 await live.finish()
+
+    async def finish_fast_files(self,scan_id):
+        """Durable second phase: all question posts finish before any file transfer."""
+        items=self.jobs.items(scan_id,'text-ready')
+        if not items:
+            return []
+        progress=self.progress
+        progress.files_phase=True
+        challenges=[self.store.decode_challenge(r['payload']) for r in items]
+        progress.files_deferred=sum(len(c.attachment_refs) for c in challenges)
+        progress.attachment_total=max(progress.attachment_total,progress.files_deferred)
+        progress.update(state='fetching deferred files',detail='Questions and threads are ready. Filling in their file links.')
+        errors=[]
+        async with Scanner(self.settings).opened() as context:
+            for c in challenges:
+                progress.update(competition=c.event,category=c.category,challenge=c.title)
+                try:
+                    failed=False
+                    for ref in c.attachment_refs:
+                        progress.detail='Fetching '+ref.name[:120]+'; existing question threads stay available.'
+                        row=await self.attachments.fetch(c,ref,context)
+                        if row['status'] in ('ready','uploaded','oversized-upload','upload-failed') and self.attachments.local_path(row):
+                            progress.attachments+=1
+                        else:
+                            progress.attachment_failed+=1
+                            failed=True
+                        progress.files_deferred=max(0,progress.files_deferred-1)
+                    await self.archive.publish([c],progress)
+                    if self.store.one("SELECT key FROM attachments WHERE challenge_key=? AND status='upload-failed'",(c.key,)):
+                        failed=True
+                    if failed:
+                        raise ArchiveError('Files need retry; questions and discussions are ready and preserved.')
+                    self.jobs.state(scan_id,c.url,'published')
+                except SessionExpired:
+                    raise
+                except (ArchiveError,discord.HTTPException,OSError,asyncio.TimeoutError) as exc:
+                    error=str(exc) if isinstance(exc,ArchiveError) else 'File phase failed; questions were preserved. Retry failed items.'
+                    self.jobs.state(scan_id,c.url,'failed',error)
+                    errors.append(f'{c.title}: {error}')
+        return errors
 
     async def publish_github(self,challenges):
         self.scan_phase='publishing'  # Atomic ref update cannot be cancelled by /stop.

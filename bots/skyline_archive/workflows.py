@@ -57,6 +57,11 @@ class DiscordPipeline:
                 if self.enabled:
                     await self.client.archive.publish([c],self.progress)
                     self.progress.discord_completed += 1
+                    self.client.store.put('last_success',now())
+                if self.progress.fast_comp and c.attachment_refs:
+                    self.client.jobs.state(self.scan_id,url,'text-ready')
+                    self.completed += 1
+                    continue
                 failed_files = self.client.store.rows("SELECT key FROM attachments WHERE challenge_key=? "
                     "AND status IN ('failed','unavailable','cache-full','oversized','upload-failed','missing-cache') "
                     "AND key NOT IN (SELECT attachment_key FROM evidence)",(c.key,))
