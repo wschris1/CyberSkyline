@@ -18,7 +18,7 @@ Q5 - 15 points
 
 Before its 20th-century restoration, the carousel in the park from question 4 had a horse that rumors say was used to count the rotations. What sculpture is trailing behind it in the same row?
 
-NOTE: This question only allows maximum of 2 attempts, you have 2 attempts remaining.
+NOTE: This question only allows maximum of 2 attempts, you have 1 attempt remaining.
 
 ## Referenced files
 
